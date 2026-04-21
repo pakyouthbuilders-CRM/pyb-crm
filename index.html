@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pak Youth Builders — CRM</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f0f2f5;color:#1a1a1a}
+.crm-wrap{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:210px;background:#0f2044;display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sidebar-logo{padding:20px 16px 16px;border-bottom:1px solid rgba(255,255,255,0.1)}
+.sidebar-logo .co{font-size:13px;font-weight:700;color:#fff;line-height:1.3}
+.sidebar-logo .sub{font-size:10px;color:rgba(255,255,255,0.45);margin-top:3px}
+.nav-section{padding:12px 0 4px}
+.nav-label{font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);padding:0 16px 6px;letter-spacing:0.08em;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 16px;font-size:12px;color:rgba(255,255,255,0.65);cursor:pointer;border-left:2px solid transparent;transition:all 0.15s}
+.nav-item:hover{background:rgba(255,255,255,0.07);color:#fff}
+.nav-item.active{background:rgba(26,86,219,0.25);color:#fff;border-left:2px solid #4f8ef7}
+.nav-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot-ebay{background:#4f8ef7}.dot-walmart{background:#EF9F27}.dot-tiktok{background:#ED93B1}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:#fff;border-bottom:1px solid #e5e7eb;padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.page-title{font-size:15px;font-weight:700;color:#0f2044}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.badge-admin{font-size:10px;background:#e6f1fb;color:#185FA5;padding:3px 10px;border-radius:20px;font-weight:700}
+.avatar{width:32px;height:32px;border-radius:50%;background:#0f2044;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.content{flex:1;overflow-y:auto;padding:20px 24px;background:#f0f2f5}
+.section{display:none}.section.active{display:block}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.kpi-card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px}
+.kpi-label{font-size:10px;color:#6b7280;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;font-weight:600}
+.kpi-val{font-size:24px;font-weight:700;color:#0f2044}
+.kpi-sub{font-size:10px;margin-top:3px}.kpi-up{color:#16a34a}.kpi-down{color:#dc2626}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:16px 18px;margin-bottom:14px}
+.card-title{font-size:13px;font-weight:700;color:#0f2044;margin-bottom:12px}
+.dept-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:12px}
+.dept-name{min-width:65px;color:#6b7280;font-weight:600}
+.bar-wrap{flex:1;height:8px;background:#f0f2f5;border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width 0.5s}
+.bar-ebay{background:#4f8ef7}.bar-walmart{background:#EF9F27}.bar-tiktok{background:#ED93B1}
+.dept-pct{min-width:40px;text-align:right;color:#0f2044;font-weight:700;font-size:12px}
+.pay-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0f2f5;font-size:12px}
+.pay-row:last-child{border-bottom:none}
+.pay-name{color:#0f2044;font-weight:600}.pay-dept{font-size:10px;color:#6b7280;margin-top:1px}
+.pay-amt{font-weight:700;color:#0f2044}
+.status-pill{font-size:9px;padding:3px 8px;border-radius:10px;font-weight:700}
+.pill-green{background:#dcfce7;color:#16a34a}.pill-amber{background:#fef3c7;color:#d97706}.pill-red{background:#fee2e2;color:#dc2626}
+.search-bar{display:flex;gap:8px;margin-bottom:14px;align-items:center}
+.search-bar input,.search-bar select{font-size:12px;padding:7px 11px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;color:#1a1a1a;outline:none}
+.search-bar input:focus,.search-bar select:focus{border-color:#4f8ef7}
+.search-bar input{flex:1}
+.btn-add{font-size:11px;padding:7px 16px;background:#0f2044;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;white-space:nowrap}
+.btn-add:hover{background:#1a3570}
+.btn-refresh{font-size:11px;padding:7px 14px;background:#16a34a;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700}
+.table-wrap{overflow-x:auto;border-radius:10px;border:1px solid #e5e7eb}
+table{width:100%;border-collapse:collapse;font-size:11px;background:#fff}
+th{background:#f8fafc;color:#6b7280;font-weight:700;padding:9px 12px;text-align:left;border-bottom:1px solid #e5e7eb;white-space:nowrap}
+td{padding:9px 12px;border-bottom:1px solid #f0f2f5;color:#1a1a1a;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f8fafc}
+.dept-tag{font-size:9px;padding:2px 8px;border-radius:10px;font-weight:700}
+.tag-ebay{background:#e6f1fb;color:#185FA5}.tag-walmart{background:#fef3c7;color:#d97706}.tag-tiktok{background:#fce7f3;color:#be185d}
+.btn-view{font-size:10px;color:#185FA5;cursor:pointer;background:none;border:none;padding:0;font-weight:700}
+.btn-view:hover{text-decoration:underline}
+.btn-del{font-size:10px;color:#dc2626;cursor:pointer;background:none;border:none;padding:0;font-weight:700;margin-left:8px}
+.profile-header{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:18px;margin-bottom:14px;display:flex;align-items:center;gap:16px}
+.profile-avatar{width:50px;height:50px;border-radius:50%;background:#0f2044;color:#fff;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.profile-name{font-size:16px;font-weight:700;color:#0f2044}
+.profile-meta{font-size:11px;color:#6b7280;margin-top:4px}
+.profile-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.info-block{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:12px 14px}
+.info-label{font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;font-weight:700}
+.info-val{font-size:12px;font-weight:700;color:#0f2044}
+.back-btn{font-size:11px;color:#185FA5;cursor:pointer;margin-bottom:12px;display:inline-flex;align-items:center;gap:4px;background:none;border:none;padding:0;font-weight:700}
+.loading{text-align:center;padding:40px;color:#6b7280;font-size:13px}
+.toast{position:fixed;bottom:24px;right:24px;background:#0f2044;color:#fff;padding:12px 20px;border-radius:10px;font-size:12px;font-weight:700;z-index:9999;display:none;animation:fadeIn 0.3s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.modal-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.45);z-index:1000;display:none;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border-radius:12px;padding:24px;width:480px;max-height:90vh;overflow-y:auto}
+.modal-title{font-size:15px;font-weight:700;color:#0f2044;margin-bottom:18px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group label{font-size:11px;color:#6b7280;font-weight:700}
+.form-group input,.form-group select,.form-group textarea{font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;color:#1a1a1a;outline:none}
+.form-group input:focus,.form-group select:focus{border-color:#4f8ef7}
+.form-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+.btn-cancel{font-size:11px;padding:7px 16px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;cursor:pointer;color:#6b7280;font-weight:700}
+.btn-save{font-size:11px;padding:7px 18px;background:#0f2044;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top:2px solid #fff;border-radius:50%;animation:spin 0.8s linear infinite;margin-right:6px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty-state{text-align:center;padding:50px 20px;color:#6b7280}
+.empty-state .big{font-size:36px;margin-bottom:10px}
+.empty-state p{font-size:13px}
+</style>
+</head>
+<body>
+
+<div class="crm-wrap">
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="co">Pak Youth Builders</div>
+      <div class="sub">CRM Management System</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Overview</div>
+      <div class="nav-item active" onclick="nav('dashboard',this)">&#9635; Dashboard</div>
+      <div class="nav-item" onclick="nav('master',this)">&#9776; Master Record</div>
+      <div class="nav-item" onclick="nav('payments',this)">&#36; Payments</div>
+      <div class="nav-item" onclick="nav('progress',this)">&#9998; Progress Tracker</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Departments</div>
+      <div class="nav-item" onclick="nav('ebay',this)"><span class="nav-dot dot-ebay"></span> eBay Dept</div>
+      <div class="nav-item" onclick="nav('walmart',this)"><span class="nav-dot dot-walmart"></span> Walmart Dept</div>
+      <div class="nav-item" onclick="nav('tiktok',this)"><span class="nav-dot dot-tiktok"></span> TikTok Dept</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Reports</div>
+      <div class="nav-item" onclick="nav('growth',this)">&#8593; Growth Report</div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="page-title" id="pageTitle">Dashboard</div>
+      <div class="topbar-right">
+        <button class="btn-refresh" onclick="refreshAll()">&#8635; Sync Data</button>
+        <span class="badge-admin">Admin</span>
+        <div class="avatar">PY</div>
+      </div>
+    </div>
+    <div class="content" id="mainContent">
+
+      <!-- DASHBOARD -->
+      <div class="section active" id="sec-dashboard">
+        <div class="kpi-grid">
+          <div class="kpi-card"><div class="kpi-label">Total Clients</div><div class="kpi-val" id="kpi-total">—</div><div class="kpi-sub kpi-up" id="kpi-active"></div></div>
+          <div class="kpi-card"><div class="kpi-label">Monthly Revenue</div><div class="kpi-val" id="kpi-rev">—</div><div class="kpi-sub kpi-up">This month</div></div>
+          <div class="kpi-card"><div class="kpi-label">Our Commission</div><div class="kpi-val" id="kpi-comm">—</div><div class="kpi-sub kpi-up">Earned</div></div>
+          <div class="kpi-card"><div class="kpi-label">Pending Payments</div><div class="kpi-val" id="kpi-pend">—</div><div class="kpi-sub kpi-down">To collect</div></div>
+        </div>
+        <div class="grid-2">
+          <div class="card"><div class="card-title">Department revenue share</div><div id="dept-bars"><div class="loading">Loading...</div></div></div>
+          <div class="card"><div class="card-title">Recent payments</div><div id="dash-payments"><div class="loading">Loading...</div></div></div>
+        </div>
+        <div class="card"><div class="card-title">All clients overview</div><div class="table-wrap"><table><thead><tr><th>ID</th><th>Client</th><th>Dept</th><th>Store</th><th>Revenue</th><th>Commission</th><th>Status</th></tr></thead><tbody id="dash-clients"></tbody></table></div></div>
+      </div>
+
+      <!-- MASTER -->
+      <div class="section" id="sec-master">
+        <div class="search-bar">
+          <input type="text" placeholder="Search clients..." id="master-search" oninput="filterMaster()">
+          <select id="master-dept-filter" onchange="filterMaster()">
+            <option value="">All Departments</option>
+            <option>eBay</option><option>Walmart</option><option>TikTok</option>
+          </select>
+          <select id="master-status-filter" onchange="filterMaster()">
+            <option value="">All Status</option>
+            <option>Active</option><option>Inactive</option><option>Hold</option>
+          </select>
+          <button class="btn-add" onclick="openClientForm()">+ Add Client</button>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>ID</th><th>Client Name</th><th>Dept</th><th>Country</th><th>City</th><th>Phone</th><th>Store Name</th><th>Deal Type</th><th>Deal %/Amt</th><th>Revenue</th><th>Commission</th><th>Manager</th><th>Start Date</th><th>Status</th><th>Actions</th></tr></thead><tbody id="master-body"><tr><td colspan="15" class="loading">Loading data from Google Sheets...</td></tr></tbody></table></div>
+      </div>
+
+      <!-- PAYMENTS -->
+      <div class="section" id="sec-payments">
+        <div class="search-bar">
+          <input type="text" placeholder="Search payments..." id="pay-search" oninput="filterPayments()">
+          <select id="pay-status-filter" onchange="filterPayments()">
+            <option value="">All Status</option>
+            <option>Received</option><option>Pending</option><option>Overdue</option>
+          </select>
+          <button class="btn-add" onclick="openPaymentForm()">+ Add Payment</button>
+        </div>
+        <div class="kpi-grid" style="margin-bottom:14px">
+          <div class="kpi-card"><div class="kpi-label">Total Received</div><div class="kpi-val" id="pay-received">—</div></div>
+          <div class="kpi-card"><div class="kpi-label">Pending</div><div class="kpi-val" id="pay-pending">—</div></div>
+          <div class="kpi-card"><div class="kpi-label">Overdue</div><div class="kpi-val kpi-down" id="pay-overdue">—</div></div>
+          <div class="kpi-card"><div class="kpi-label">Total Invoices</div><div class="kpi-val" id="pay-count">—</div></div>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Invoice #</th><th>Client Name</th><th>Department</th><th>Month</th><th>Amount ($)</th><th>Commission ($)</th><th>Date Received</th><th>Status</th><th>Actions</th></tr></thead><tbody id="pay-body"><tr><td colspan="9" class="loading">Loading...</td></tr></tbody></table></div>
+      </div>
+
+      <!-- PROGRESS -->
+      <div class="section" id="sec-progress">
+        <div class="search-bar">
+          <input type="text" placeholder="Search progress records..." id="prog-search" oninput="filterProgress()">
+          <button class="btn-add" onclick="openProgressForm()">+ Add Progress Record</button>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Client ID</th><th>Client Name</th><th>Month</th><th>Revenue ($)</th><th>Orders</th><th>Commission ($)</th><th>Performance</th><th>Notes</th><th>Actions</th></tr></thead><tbody id="prog-body"><tr><td colspan="9" class="loading">Loading...</td></tr></tbody></table></div>
+      </div>
+
+      <!-- DEPT SECTIONS -->
+      <div class="section" id="sec-ebay"><div id="ebay-list"></div><div id="ebay-profile" style="display:none"></div></div>
+      <div class="section" id="sec-walmart"><div id="walmart-list"></div><div id="walmart-profile" style="display:none"></div></div>
+      <div class="section" id="sec-tiktok"><div id="tiktok-list"></div><div id="tiktok-profile" style="display:none"></div></div>
+
+      <!-- GROWTH -->
+      <div class="section" id="sec-growth">
+        <div class="kpi-grid">
+          <div class="kpi-card"><div class="kpi-label">eBay Clients</div><div class="kpi-val" id="g-ebay">—</div><div class="kpi-sub kpi-up" id="g-ebay-rev"></div></div>
+          <div class="kpi-card"><div class="kpi-label">Walmart Clients</div><div class="kpi-val" id="g-walmart">—</div><div class="kpi-sub kpi-up" id="g-walmart-rev"></div></div>
+          <div class="kpi-card"><div class="kpi-label">TikTok Clients</div><div class="kpi-val" id="g-tiktok">—</div><div class="kpi-sub kpi-up" id="g-tiktok-rev"></div></div>
+          <div class="kpi-card"><div class="kpi-label">Total Revenue</div><div class="kpi-val" id="g-total">—</div><div class="kpi-sub">All departments</div></div>
+        </div>
+        <div class="card"><div class="card-title">Department breakdown</div><div id="growth-detail"></div></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ADD CLIENT MODAL -->
+<div class="modal-bg" id="clientModal">
+  <div class="modal">
+    <div class="modal-title" id="clientModalTitle">Add New Client</div>
+    <div class="form-row">
+      <div class="form-group"><label>Client Name *</label><input id="f-name" placeholder="John Smith"></div>
+      <div class="form-group"><label>Department *</label><select id="f-dept"><option>eBay</option><option>Walmart</option><option>TikTok</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Country</label><input id="f-country" placeholder="USA"></div>
+      <div class="form-group"><label>City</label><input id="f-city" placeholder="New York"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Phone</label><input id="f-phone" placeholder="+1 555 0100"></div>
+      <div class="form-group"><label>Email</label><input id="f-email" placeholder="client@email.com"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Store Name</label><input id="f-store" placeholder="My Store"></div>
+      <div class="form-group"><label>Deal Type</label><select id="f-deal"><option>% Commission</option><option>Fixed Monthly</option><option>Both</option><option>Milestone</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Deal % or Amount</label><input id="f-pct" placeholder="15% or $500"></div>
+      <div class="form-group"><label>Monthly Revenue ($)</label><input id="f-rev" type="number" placeholder="5000"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Our Commission ($)</label><input id="f-comm" type="number" placeholder="750"></div>
+      <div class="form-group"><label>Account Manager</label><input id="f-mgr" placeholder="Ahmed Khan"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Contract Start Date</label><input id="f-start" type="date"></div>
+      <div class="form-group"><label>Status</label><select id="f-status"><option>Active</option><option>Inactive</option><option>Hold</option></select></div>
+    </div>
+    <div class="form-group"><label>Notes</label><textarea id="f-notes" rows="2" placeholder="Any additional notes..."></textarea></div>
+    <div class="form-btns">
+      <button class="btn-cancel" onclick="closeModal('clientModal')">Cancel</button>
+      <button class="btn-save" id="clientSaveBtn" onclick="saveClient()">Save Client</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD PAYMENT MODAL -->
+<div class="modal-bg" id="paymentModal">
+  <div class="modal">
+    <div class="modal-title">Add Payment Record</div>
+    <div class="form-row">
+      <div class="form-group"><label>Invoice #</label><input id="p-inv" placeholder="INV-001"></div>
+      <div class="form-group"><label>Client Name *</label><input id="p-client" placeholder="John Smith"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Department</label><select id="p-dept"><option>eBay</option><option>Walmart</option><option>TikTok</option></select></div>
+      <div class="form-group"><label>Month</label><input id="p-month" placeholder="Apr 2025"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Amount ($)</label><input id="p-amount" type="number" placeholder="5000"></div>
+      <div class="form-group"><label>Commission ($)</label><input id="p-comm" type="number" placeholder="750"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Date Received</label><input id="p-date" type="date"></div>
+      <div class="form-group"><label>Status</label><select id="p-status"><option>Received</option><option>Pending</option><option>Overdue</option></select></div>
+    </div>
+    <div class="form-btns">
+      <button class="btn-cancel" onclick="closeModal('paymentModal')">Cancel</button>
+      <button class="btn-save" id="paySaveBtn" onclick="savePayment()">Save Payment</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD PROGRESS MODAL -->
+<div class="modal-bg" id="progressModal">
+  <div class="modal">
+    <div class="modal-title">Add Progress Record</div>
+    <div class="form-row">
+      <div class="form-group"><label>Client ID</label><input id="pr-id" placeholder="EB-001"></div>
+      <div class="form-group"><label>Client Name *</label><input id="pr-client" placeholder="John Smith"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Month</label><input id="pr-month" placeholder="Apr 2025"></div>
+      <div class="form-group"><label>Revenue ($)</label><input id="pr-rev" type="number" placeholder="5000"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Orders</label><input id="pr-orders" type="number" placeholder="50"></div>
+      <div class="form-group"><label>Commission ($)</label><input id="pr-comm" type="number" placeholder="750"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Performance</label><select id="pr-perf"><option>Good</option><option>Attention</option><option>Critical</option></select></div>
+      <div class="form-group"><label>Notes</label><input id="pr-notes" placeholder="On track / Needs follow-up"></div>
+    </div>
+    <div class="form-btns">
+      <button class="btn-cancel" onclick="closeModal('progressModal')">Cancel</button>
+      <button class="btn-save" id="progSaveBtn" onclick="saveProgress()">Save Record</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SHEET_ID = '1X6FaHYrSs96XYZMLkWBwzp23zCTjSDk13YAVp_TfYwg';
+const API_KEY = 'AIzaSyBevUeL-MqrlyKFxQ6VfbBDH19uAnma4nU';
+const BASE = 'https://sheets.googleapis.com/v4/spreadsheets';
+
+let allClients=[], allPayments=[], allProgress=[];
+
+async function fetchSheet(range){
+  const url=`${BASE}/${SHEET_ID}/values/${encodeURIComponent(range)}?key=${API_KEY}`;
+  const r=await fetch(url);
+  const d=await r.json();
+  return d.values||[];
+}
+
+async function appendSheet(range,values){
+  const url=`${BASE}/${SHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&key=${API_KEY}`;
+  const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({values:[values]})});
+  return r.json();
+}
+
+function rowsToObjects(rows){
+  if(!rows||rows.length<2) return [];
+  const headers=rows[0];
+  return rows.slice(1).map((row,i)=>{
+    const obj={_row:i+2};
+    headers.forEach((h,j)=>obj[h]=row[j]||'');
+    return obj;
+  });
+}
+
+async function loadAll(){
+  try{
+    const [cr,pr,pgr]=await Promise.all([
+      fetchSheet('Clients!A:P'),
+      fetchSheet('Payments!A:H'),
+      fetchSheet('Progress!A:H')
+    ]);
+    allClients=rowsToObjects(cr);
+    allPayments=rowsToObjects(pr);
+    allProgress=rowsToObjects(pgr);
+    renderDashboard();
+    renderMaster();
+    renderPayments();
+    renderProgress();
+  }catch(e){
+    showToast('Error loading data. Check API key & sheet settings.');
+    console.error(e);
+  }
+}
+
+function pill(s){
+  const cls=s==='Active'||s==='Received'?'pill-green':s==='Pending'||s==='Hold'||s==='Attention'?'pill-amber':'pill-red';
+  return `<span class="status-pill ${cls}">${s||'—'}</span>`;
+}
+function tag(d){
+  const cls=d==='eBay'?'tag-ebay':d==='Walmart'?'tag-walmart':'tag-tiktok';
+  return `<span class="dept-tag ${cls}">${d}</span>`;
+}
+function ini(n){return (n||'?').split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();}
+function fmt(v){return '$'+(parseFloat(v)||0).toLocaleString();}
+
+function renderDashboard(){
+  const active=allClients.filter(c=>c['Status']==='Active').length;
+  const totalRev=allClients.reduce((a,c)=>a+(parseFloat(c['Monthly Revenue'])||0),0);
+  const totalComm=allClients.reduce((a,c)=>a+(parseFloat(c['Our Commission'])||0),0);
+  const pending=allPayments.filter(p=>p['Status']==='Pending'||p['Status']==='Overdue').reduce((a,p)=>a+(parseFloat(p['Amount ($)'])||0),0);
+  document.getElementById('kpi-total').textContent=allClients.length;
+  document.getElementById('kpi-active').textContent=active+' active';
+  document.getElementById('kpi-rev').textContent=fmt(totalRev);
+  document.getElementById('kpi-comm').textContent=fmt(totalComm);
+  document.getElementById('kpi-pend').textContent=fmt(pending);
+
+  const depts=['eBay','Walmart','TikTok'];
+  const dRevs=depts.map(d=>allClients.filter(c=>c['Department']===d).reduce((a,c)=>a+(parseFloat(c['Monthly Revenue'])||0),0));
+  const maxR=Math.max(...dRevs,1);
+  const bCls=['bar-ebay','bar-walmart','bar-tiktok'];
+  document.getElementById('dept-bars').innerHTML=allClients.length===0?'<div class="empty-state"><p>No clients yet. Add your first client!</p></div>':depts.map((d,i)=>`
+    <div class="dept-row"><div class="dept-name">${d}</div>
+    <div class="bar-wrap"><div class="bar-fill ${bCls[i]}" style="width:${Math.round(dRevs[i]/maxR*100)}%"></div></div>
+    <div class="dept-pct">${fmt(dRevs[i])}</div></div>`).join('');
+
+  document.getElementById('dash-payments').innerHTML=allPayments.length===0?'<div class="empty-state"><p>No payments yet.</p></div>':allPayments.slice(-5).reverse().map(p=>`
+    <div class="pay-row"><div><div class="pay-name">${p['Client Name']}</div><div class="pay-dept">${p['Department']} · ${p['Month']}</div></div>
+    <div style="text-align:right"><div class="pay-amt">${fmt(p['Amount ($)'])}</div><div style="margin-top:2px">${pill(p['Status'])}</div></div></div>`).join('');
+
+  document.getElementById('dash-clients').innerHTML=allClients.length===0?'<tr><td colspan="7"><div class="empty-state"><div class="big">&#128101;</div><p>No clients yet. Click "Master Record" and add your first client.</p></div></td></tr>':
+    allClients.map(c=>`<tr><td style="color:#6b7280;font-size:10px">${c['ID']||'—'}</td><td><b>${c['Client Name']}</b></td><td>${tag(c['Department'])}</td><td>${c['Store Name']||'—'}</td><td>${fmt(c['Monthly Revenue'])}</td><td>${fmt(c['Our Commission'])}</td><td>${pill(c['Status'])}</td></tr>`).join('');
+}
+
+function renderMaster(data){
+  const list=data||allClients;
+  document.getElementById('master-body').innerHTML=list.length===0?'<tr><td colspan="15"><div class="empty-state"><div class="big">&#128101;</div><p>No clients found. Add your first client!</p></div></td></tr>':
+    list.map(c=>`<tr>
+      <td style="color:#6b7280;font-size:10px">${c['ID']||'—'}</td>
+      <td><b>${c['Client Name']}</b></td><td>${tag(c['Department'])}</td>
+      <td>${c['Country']||'—'}</td><td>${c['City']||'—'}</td><td>${c['Phone']||'—'}</td>
+      <td>${c['Store Name']||'—'}</td><td style="font-size:10px">${c['Deal Type']||'—'}</td>
+      <td>${c['Deal % or Amount']||'—'}</td><td>${fmt(c['Monthly Revenue'])}</td>
+      <td>${fmt(c['Our Commission'])}</td><td>${c['Account Manager']||'—'}</td>
+      <td>${c['Contract Start']||'—'}</td><td>${pill(c['Status'])}</td>
+      <td><button class="btn-view" onclick="viewClient('${c['ID']}','${c['Department']}')">View</button></td>
+    </tr>`).join('');
+}
+
+function filterMaster(){
+  const s=document.getElementById('master-search').value.toLowerCase();
+  const d=document.getElementById('master-dept-filter').value;
+  const st=document.getElementById('master-status-filter').value;
+  const f=allClients.filter(c=>
+    (!s||Object.values(c).join(' ').toLowerCase().includes(s))&&
+    (!d||c['Department']===d)&&
+    (!st||c['Status']===st));
+  renderMaster(f);
+}
+
+function renderPayments(data){
+  const list=data||allPayments;
+  const rec=list.filter(p=>p['Status']==='Received').reduce((a,p)=>a+(parseFloat(p['Amount ($)'])||0),0);
+  const pen=list.filter(p=>p['Status']==='Pending').reduce((a,p)=>a+(parseFloat(p['Amount ($)'])||0),0);
+  const ov=list.filter(p=>p['Status']==='Overdue').reduce((a,p)=>a+(parseFloat(p['Amount ($)'])||0),0);
+  document.getElementById('pay-received').textContent=fmt(rec);
+  document.getElementById('pay-pending').textContent=fmt(pen);
+  document.getElementById('pay-overdue').textContent=fmt(ov);
+  document.getElementById('pay-count').textContent=list.length;
+  document.getElementById('pay-body').innerHTML=list.length===0?'<tr><td colspan="9"><div class="empty-state"><p>No payment records yet.</p></div></td></tr>':
+    list.map(p=>`<tr>
+      <td style="color:#6b7280">${p['Invoice No']||'—'}</td><td><b>${p['Client Name']}</b></td>
+      <td>${tag(p['Department'])}</td><td>${p['Month']||'—'}</td>
+      <td>${fmt(p['Amount ($)'])}</td><td>${fmt(p['Commission ($)'])}</td>
+      <td>${p['Date Received']||'—'}</td><td>${pill(p['Status'])}</td>
+      <td><button class="btn-del" onclick="showToast('Delete coming soon')">Del</button></td>
+    </tr>`).join('');
+}
+
+function filterPayments(){
+  const s=document.getElementById('pay-search').value.toLowerCase();
+  const st=document.getElementById('pay-status-filter').value;
+  const f=allPayments.filter(p=>(!s||Object.values(p).join(' ').toLowerCase().includes(s))&&(!st||p['Status']===st));
+  renderPayments(f);
+}
+
+function renderProgress(data){
+  const list=data||allProgress;
+  document.getElementById('prog-body').innerHTML=list.length===0?'<tr><td colspan="9"><div class="empty-state"><p>No progress records yet.</p></div></td></tr>':
+    list.map(p=>`<tr>
+      <td style="color:#6b7280">${p['Client ID']||'—'}</td><td><b>${p['Client Name']}</b></td>
+      <td>${p['Month']||'—'}</td><td>${fmt(p['Revenue'])}</td><td>${p['Orders']||'—'}</td>
+      <td>${fmt(p['Commission'])}</td><td>${pill(p['Performance'])}</td>
+      <td style="color:#6b7280;font-size:10px">${p['Notes']||'—'}</td>
+      <td><button class="btn-del" onclick="showToast('Delete coming soon')">Del</button></td>
+    </tr>`).join('');
+}
+
+function filterProgress(){
+  const s=document.getElementById('prog-search').value.toLowerCase();
+  const f=allProgress.filter(p=>!s||Object.values(p).join(' ').toLowerCase().includes(s));
+  renderProgress(f);
+}
+
+function renderDept(dept){
+  const dname=dept.charAt(0).toUpperCase()+dept.slice(1);
+  const dc=allClients.filter(c=>c['Department']===dname);
+  const totalR=dc.reduce((a,c)=>a+(parseFloat(c['Monthly Revenue'])||0),0);
+  const totalC=dc.reduce((a,c)=>a+(parseFloat(c['Our Commission'])||0),0);
+  const active=dc.filter(c=>c['Status']==='Active').length;
+  document.getElementById(dept+'-list').innerHTML=`
+    <div class="kpi-grid" style="margin-bottom:14px">
+      <div class="kpi-card"><div class="kpi-label">Total Clients</div><div class="kpi-val">${dc.length}</div><div class="kpi-sub kpi-up">${active} active</div></div>
+      <div class="kpi-card"><div class="kpi-label">Monthly Revenue</div><div class="kpi-val">${fmt(totalR)}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Our Commission</div><div class="kpi-val">${fmt(totalC)}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Inactive/Hold</div><div class="kpi-val kpi-down">${dc.length-active}</div></div>
+    </div>
+    <div class="search-bar">
+      <input type="text" placeholder="Search ${dname} clients...">
+      <button class="btn-add" onclick="openClientForm('${dname}')">+ Add Client</button>
+    </div>
+    <div class="table-wrap"><table><thead><tr><th>ID</th><th>Client Name</th><th>Country</th><th>Store Name</th><th>Deal Type</th><th>Deal %/Amt</th><th>Revenue</th><th>Commission</th><th>Manager</th><th>Status</th><th>Action</th></tr></thead>
+    <tbody>${dc.length===0?`<tr><td colspan="11"><div class="empty-state"><p>No ${dname} clients yet.</p></div></td></tr>`:
+      dc.map(c=>`<tr>
+        <td style="color:#6b7280;font-size:10px">${c['ID']||'—'}</td><td><b>${c['Client Name']}</b></td>
+        <td>${c['Country']||'—'}</td><td>${c['Store Name']||'—'}</td>
+        <td style="font-size:10px">${c['Deal Type']||'—'}</td><td>${c['Deal % or Amount']||'—'}</td>
+        <td>${fmt(c['Monthly Revenue'])}</td><td>${fmt(c['Our Commission'])}</td>
+        <td>${c['Account Manager']||'—'}</td><td>${pill(c['Status'])}</td>
+        <td><button class="btn-view" onclick="viewClient('${c['ID']}','${dept}')">View &rarr;</button></td>
+      </tr>`).join('')}
+    </tbody></table></div>`;
+}
+
+function viewClient(id,dept){
+  const deptKey=dept.toLowerCase();
+  const c=allClients.find(x=>x['ID']===id);
+  if(!c){showToast('Client not found');return;}
+  document.getElementById(deptKey+'-list').style.display='none';
+  const profEl=document.getElementById(deptKey+'-profile');
+  profEl.style.display='block';
+  const cp=allProgress.filter(p=>p['Client ID']===id||p['Client Name']===c['Client Name']);
+  profEl.innerHTML=`
+    <button class="back-btn" onclick="backToDept('${deptKey}')">&larr; Back to ${c['Department']} Department</button>
+    <div class="profile-header">
+      <div class="profile-avatar">${ini(c['Client Name'])}</div>
+      <div>
+        <div class="profile-name">${c['Client Name']}</div>
+        <div class="profile-meta">${c['Store Name']||'—'} &middot; ${tag(c['Department'])} &middot; ${pill(c['Status'])}</div>
+        <div class="profile-meta" style="margin-top:4px">${c['Email']||''} &middot; ${c['Phone']||''}</div>
+      </div>
+      <div style="margin-left:auto;text-align:right">
+        <div style="font-size:10px;color:#6b7280">Since</div>
+        <div style="font-size:12px;font-weight:700">${c['Contract Start']||'—'}</div>
+        <div style="font-size:10px;color:#6b7280;margin-top:6px">Manager</div>
+        <div style="font-size:12px;font-weight:700">${c['Account Manager']||'—'}</div>
+      </div>
+    </div>
+    <div class="profile-grid">
+      <div class="info-block"><div class="info-label">Country / City</div><div class="info-val">${c['City']||'—'}, ${c['Country']||'—'}</div></div>
+      <div class="info-block"><div class="info-label">Deal Type</div><div class="info-val">${c['Deal Type']||'—'}</div></div>
+      <div class="info-block"><div class="info-label">Deal Value</div><div class="info-val">${c['Deal % or Amount']||'—'}</div></div>
+      <div class="info-block"><div class="info-label">Monthly Revenue</div><div class="info-val">${fmt(c['Monthly Revenue'])}</div></div>
+      <div class="info-block"><div class="info-label">Our Commission</div><div class="info-val">${fmt(c['Our Commission'])}</div></div>
+      <div class="info-block"><div class="info-label">Notes</div><div class="info-val" style="font-weight:400;font-size:11px">${c['Notes']||'—'}</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Monthly progress tracker</div>
+      <div class="table-wrap"><table><thead><tr><th>Month</th><th>Revenue</th><th>Orders</th><th>Commission</th><th>Performance</th><th>Notes</th></tr></thead>
+      <tbody>${cp.length===0?`<tr><td colspan="6"><div class="empty-state"><p>No progress records yet for this client. Add from Progress Tracker.</p></div></td></tr>`:
+        cp.map(p=>`<tr><td>${p['Month']||'—'}</td><td>${fmt(p['Revenue'])}</td><td>${p['Orders']||'—'}</td><td>${fmt(p['Commission'])}</td><td>${pill(p['Performance'])}</td><td style="color:#6b7280;font-size:10px">${p['Notes']||'—'}</td></tr>`).join('')}
+      </tbody></table></div>
+    </div>`;
+}
+
+function backToDept(dept){
+  document.getElementById(dept+'-list').style.display='block';
+  document.getElementById(dept+'-profile').style.display='none';
+}
+
+function renderGrowth(){
+  const depts=['eBay','Walmart','TikTok'];
+  const data=depts.map(d=>{
+    const dc=allClients.filter(c=>c['Department']===d);
+    return{dept:d,count:dc.length,rev:dc.reduce((a,c)=>a+(parseFloat(c['Monthly Revenue'])||0),0),comm:dc.reduce((a,c)=>a+(parseFloat(c['Our Commission'])||0),0),active:dc.filter(c=>c['Status']==='Active').length};
+  });
+  document.getElementById('g-ebay').textContent=data[0].count;
+  document.getElementById('g-ebay-rev').textContent=fmt(data[0].rev)+' revenue';
+  document.getElementById('g-walmart').textContent=data[1].count;
+  document.getElementById('g-walmart-rev').textContent=fmt(data[1].rev)+' revenue';
+  document.getElementById('g-tiktok').textContent=data[2].count;
+  document.getElementById('g-tiktok-rev').textContent=fmt(data[2].rev)+' revenue';
+  const totalR=data.reduce((a,d)=>a+d.rev,0);
+  document.getElementById('g-total').textContent=fmt(totalR);
+  document.getElementById('growth-detail').innerHTML=data.map(d=>`
+    <div class="pay-row">
+      <div><div class="pay-name">${d.dept} Department</div>
+      <div class="pay-dept">${d.count} clients &middot; ${d.active} active &middot; Commission: ${fmt(d.comm)}</div></div>
+      <div style="text-align:right"><div class="pay-amt">${fmt(d.rev)}</div>
+      <div style="font-size:10px;color:#6b7280">monthly revenue</div></div>
+    </div>`).join('');
+}
+
+function nav(id,el){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  const titles={dashboard:'Dashboard',master:'Master Record',payments:'Payments',progress:'Progress Tracker',ebay:'eBay Department',walmart:'Walmart Department',tiktok:'TikTok Department',growth:'Growth Report'};
+  document.getElementById('pageTitle').textContent=titles[id]||id;
+  if(['ebay','walmart','tiktok'].includes(id)){
+    document.getElementById(id+'-list').style.display='block';
+    document.getElementById(id+'-profile').style.display='none';
+    renderDept(id);
+  }
+  if(id==='growth') renderGrowth();
+}
+
+function openClientForm(dept){
+  document.getElementById('clientModalTitle').textContent='Add New Client';
+  if(dept) document.getElementById('f-dept').value=dept;
+  document.getElementById('clientModal').classList.add('open');
+}
+function openPaymentForm(){document.getElementById('paymentModal').classList.add('open');}
+function openProgressForm(){document.getElementById('progressModal').classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+function genId(dept){
+  const pre=dept==='eBay'?'EB':dept==='Walmart'?'WM':'TT';
+  const count=allClients.filter(c=>c['Department']===dept).length+1;
+  return `${pre}-${String(count).padStart(3,'0')}`;
+}
+
+async function saveClient(){
+  const name=document.getElementById('f-name').value.trim();
+  if(!name){showToast('Client name is required!');return;}
+  const dept=document.getElementById('f-dept').value;
+  const id=genId(dept);
+  const row=[id,name,dept,
+    document.getElementById('f-country').value,
+    document.getElementById('f-city').value,
+    document.getElementById('f-phone').value,
+    document.getElementById('f-email').value,
+    document.getElementById('f-store').value,
+    document.getElementById('f-deal').value,
+    document.getElementById('f-pct').value,
+    document.getElementById('f-rev').value||'0',
+    document.getElementById('f-comm').value||'0',
+    document.getElementById('f-mgr').value,
+    document.getElementById('f-start').value,
+    document.getElementById('f-status').value,
+    document.getElementById('f-notes').value
+  ];
+  const btn=document.getElementById('clientSaveBtn');
+  btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
+  try{
+    await appendSheet('Clients!A:P',row);
+    closeModal('clientModal');
+    showToast('Client saved successfully!');
+    await loadAll();
+    document.getElementById('f-name').value='';
+    document.getElementById('f-country').value='';
+    document.getElementById('f-city').value='';
+    document.getElementById('f-phone').value='';
+    document.getElementById('f-email').value='';
+    document.getElementById('f-store').value='';
+    document.getElementById('f-pct').value='';
+    document.getElementById('f-rev').value='';
+    document.getElementById('f-comm').value='';
+    document.getElementById('f-mgr').value='';
+    document.getElementById('f-notes').value='';
+  }catch(e){showToast('Error saving. Check API key.');}
+  btn.innerHTML='Save Client';btn.disabled=false;
+}
+
+async function savePayment(){
+  const client=document.getElementById('p-client').value.trim();
+  if(!client){showToast('Client name is required!');return;}
+  const row=[
+    document.getElementById('p-inv').value||'INV-'+Date.now(),
+    client,
+    document.getElementById('p-dept').value,
+    document.getElementById('p-month').value,
+    document.getElementById('p-amount').value||'0',
+    document.getElementById('p-comm').value||'0',
+    document.getElementById('p-date').value,
+    document.getElementById('p-status').value
+  ];
+  const btn=document.getElementById('paySaveBtn');
+  btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
+  try{
+    await appendSheet('Payments!A:H',row);
+    closeModal('paymentModal');
+    showToast('Payment saved!');
+    await loadAll();
+  }catch(e){showToast('Error saving payment.');}
+  btn.innerHTML='Save Payment';btn.disabled=false;
+}
+
+async function saveProgress(){
+  const client=document.getElementById('pr-client').value.trim();
+  if(!client){showToast('Client name is required!');return;}
+  const row=[
+    document.getElementById('pr-id').value,
+    client,
+    document.getElementById('pr-month').value,
+    document.getElementById('pr-rev').value||'0',
+    document.getElementById('pr-orders').value||'0',
+    document.getElementById('pr-comm').value||'0',
+    document.getElementById('pr-perf').value,
+    document.getElementById('pr-notes').value
+  ];
+  const btn=document.getElementById('progSaveBtn');
+  btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
+  try{
+    await appendSheet('Progress!A:H',row);
+    closeModal('progressModal');
+    showToast('Progress record saved!');
+    await loadAll();
+  }catch(e){showToast('Error saving progress.');}
+  btn.innerHTML='Save Record';btn.disabled=false;
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.display='block';
+  setTimeout(()=>t.style.display='none',3000);
+}
+
+async function refreshAll(){
+  showToast('Syncing data...');
+  await loadAll();
+  showToast('Data synced successfully!');
+}
+
+window.addEventListener('click',e=>{
+  if(e.target.classList.contains('modal-bg')) e.target.classList.remove('open');
+});
+
+loadAll();
+</script>
+</body>
+</html>
