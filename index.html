@@ -180,7 +180,7 @@ tr:hover td{background:#f8fafc}
           <div class="kpi-card"><div class="kpi-label">TikTok Clients</div><div class="kpi-val" id="g-tiktok">—</div><div class="kpi-sub kpi-up" id="g-tiktok-rev"></div></div>
           <div class="kpi-card"><div class="kpi-label">Total Revenue</div><div class="kpi-val" id="g-total">—</div><div class="kpi-sub">All departments</div></div>
         </div>
-        <div class="card"><div class="card-title">Department breakdown</div><div id="growth-detail"><div class="loading">Loading...</div></div></div>
+        <div class="card"><div class="card-title">Department breakdown</div><div id="growth-detail"></div></div>
       </div>
     </div>
   </div>
@@ -199,7 +199,7 @@ tr:hover td{background:#f8fafc}
       <div class="form-group"><label>City</label><input id="f-city" placeholder="New York"></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label>Phone</label><input id="f-phone" placeholder="+1 555 0100"></div>
+      <div class="form-group"><label>Phone</label><input id="f-phone" placeholder="+92 300 0000000"></div>
       <div class="form-group"><label>Email</label><input id="f-email" placeholder="client@email.com"></div>
     </div>
     <div class="form-row">
@@ -280,6 +280,8 @@ tr:hover td{background:#f8fafc}
   </div>
 </div>
 
+<!-- hidden iframe for CORS-free writes -->
+<iframe id="write-frame" style="display:none"></iframe>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -291,25 +293,25 @@ let allClients=[],allPayments=[],allProgress=[];
 async function gRead(range){
   const url=`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?key=${API_KEY}`;
   const r=await fetch(url);
-  if(!r.ok)throw new Error('Read failed: '+r.status);
+  if(!r.ok)throw new Error('Read failed');
   const d=await r.json();
   return d.values||[];
 }
 
-async function gWrite(sheet,row){
-  // Build URL with params - Apps Script handles via doGet
-  const rowEncoded=encodeURIComponent(JSON.stringify(row));
-  const url=`${SCRIPT_URL}?action=write&sheet=${encodeURIComponent(sheet)}&row=${rowEncoded}`;
-  const r=await fetch(url,{redirect:'follow'});
-  const text=await r.text();
-  let d;
-  try{d=JSON.parse(text);}catch(e){
-    // Response might be HTML redirect - if fetch succeeded, treat as success
-    if(r.ok||r.status===0)return{status:'success'};
-    throw new Error('Unexpected response');
-  }
-  if(d.status==='error')throw new Error(d.message);
-  return d;
+// Write using hidden iframe — bypasses CORS completely
+function gWrite(sheet, row){
+  return new Promise((resolve)=>{
+    const params=new URLSearchParams({
+      action:'write',
+      sheet:sheet,
+      row:JSON.stringify(row)
+    });
+    const frame=document.getElementById('write-frame');
+    frame.onload=()=>resolve({status:'success'});
+    frame.src=SCRIPT_URL+'?'+params.toString();
+    // Resolve after 4 seconds regardless (iframe load may not fire for cross-origin)
+    setTimeout(()=>resolve({status:'success'}),4000);
+  });
 }
 
 function toObj(rows){
@@ -325,21 +327,24 @@ function toObj(rows){
 async function loadAll(){
   try{
     showToast('Loading data...','info');
-    const[cr,pr,pgr]=await Promise.all([gRead('Clients!A:P'),gRead('Payments!A:H'),gRead('Progress!A:H')]);
-    allClients=toObj(cr);allPayments=toObj(pr);allProgress=toObj(pgr);
+    const[cr,pr,pgr]=await Promise.all([
+      gRead('Clients!A:P'),
+      gRead('Payments!A:H'),
+      gRead('Progress!A:H')
+    ]);
+    allClients=toObj(cr);
+    allPayments=toObj(pr);
+    allProgress=toObj(pgr);
     renderDashboard();renderMaster();renderPayments();renderProgress();
-    showToast('Data loaded successfully!','success');
-  }catch(e){showToast('Load error: '+e.message,'error');console.error(e);}
+    showToast('Data loaded!','success');
+  }catch(e){
+    showToast('Load error: '+e.message,'error');
+    console.error(e);
+  }
 }
 
-function pill(s){
-  const c=s==='Active'||s==='Received'||s==='Good'?'pill-green':s==='Pending'||s==='Hold'||s==='Attention'?'pill-amber':'pill-red';
-  return`<span class="status-pill ${c}">${s||'—'}</span>`;
-}
-function tag(d){
-  const c=d==='eBay'?'tag-ebay':d==='Walmart'?'tag-walmart':'tag-tiktok';
-  return`<span class="dept-tag ${c}">${d||'—'}</span>`;
-}
+function pill(s){const c=s==='Active'||s==='Received'||s==='Good'?'pill-green':s==='Pending'||s==='Hold'||s==='Attention'?'pill-amber':'pill-red';return`<span class="status-pill ${c}">${s||'—'}</span>`;}
+function tag(d){const c=d==='eBay'?'tag-ebay':d==='Walmart'?'tag-walmart':'tag-tiktok';return`<span class="dept-tag ${c}">${d||'—'}</span>`;}
 function ini(n){return(n||'?').split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();}
 function fmt(v){return'$'+(parseFloat(v)||0).toLocaleString();}
 
@@ -356,7 +361,7 @@ function renderDashboard(){
   const depts=['eBay','Walmart','TikTok'],bCls=['bar-ebay','bar-walmart','bar-tiktok'];
   const dRevs=depts.map(d=>allClients.filter(c=>c['Department']===d).reduce((a,c)=>a+(parseFloat(c['Monthly Revenue'])||0),0));
   const maxR=Math.max(...dRevs,1);
-  document.getElementById('dept-bars').innerHTML=allClients.length===0?'<div class="empty-state"><p>No clients yet. Add your first client from Master Record.</p></div>':depts.map((d,i)=>`<div class="dept-row"><div class="dept-name">${d}</div><div class="bar-wrap"><div class="bar-fill ${bCls[i]}" style="width:${Math.round(dRevs[i]/maxR*100)}%"></div></div><div class="dept-pct">${fmt(dRevs[i])}</div></div>`).join('');
+  document.getElementById('dept-bars').innerHTML=allClients.length===0?'<div class="empty-state"><p>No clients yet.</p></div>':depts.map((d,i)=>`<div class="dept-row"><div class="dept-name">${d}</div><div class="bar-wrap"><div class="bar-fill ${bCls[i]}" style="width:${Math.round(dRevs[i]/maxR*100)}%"></div></div><div class="dept-pct">${fmt(dRevs[i])}</div></div>`).join('');
   document.getElementById('dash-payments').innerHTML=allPayments.length===0?'<div class="empty-state"><p>No payments yet.</p></div>':allPayments.slice(-5).reverse().map(p=>`<div class="pay-row"><div><div class="pay-name">${p['Client Name']||'—'}</div><div class="pay-dept">${p['Department']||''} · ${p['Month']||''}</div></div><div style="text-align:right"><div class="pay-amt">${fmt(p['Amount ($)'])}</div><div style="margin-top:2px">${pill(p['Status'])}</div></div></div>`).join('');
   document.getElementById('dash-clients').innerHTML=allClients.length===0?'<tr><td colspan="7"><div class="empty-state"><p>No clients yet.</p></div></td></tr>':allClients.map(c=>`<tr><td style="color:#6b7280;font-size:10px">${c['ID']||'—'}</td><td><b>${c['Client Name']||'—'}</b></td><td>${tag(c['Department'])}</td><td>${c['Store Name']||'—'}</td><td>${fmt(c['Monthly Revenue'])}</td><td>${fmt(c['Our Commission'])}</td><td>${pill(c['Status'])}</td></tr>`).join('');
 }
@@ -409,12 +414,10 @@ function renderDept(dept){
       <div class="kpi-card"><div class="kpi-label">Total Clients</div><div class="kpi-val">${dc.length}</div><div class="kpi-sub kpi-up">${act} active</div></div>
       <div class="kpi-card"><div class="kpi-label">Monthly Revenue</div><div class="kpi-val">${fmt(tR)}</div></div>
       <div class="kpi-card"><div class="kpi-label">Our Commission</div><div class="kpi-val">${fmt(tC)}</div></div>
-      <div class="kpi-card"><div class="kpi-label">Inactive / Hold</div><div class="kpi-val kpi-down">${dc.length-act}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Inactive/Hold</div><div class="kpi-val kpi-down">${dc.length-act}</div></div>
     </div>
-    <div class="search-bar">
-      <input type="text" placeholder="Search ${dname} clients...">
-      <button class="btn-add" onclick="openClientForm('${dname}')">+ Add Client</button>
-    </div>
+    <div class="search-bar"><input type="text" placeholder="Search ${dname} clients...">
+    <button class="btn-add" onclick="openClientForm('${dname}')">+ Add Client</button></div>
     <div class="table-wrap"><table><thead><tr><th>ID</th><th>Client Name</th><th>Country</th><th>Store Name</th><th>Deal Type</th><th>Deal %/Amt</th><th>Revenue</th><th>Commission</th><th>Manager</th><th>Status</th><th>Action</th></tr></thead>
     <tbody>${dc.length===0?`<tr><td colspan="11"><div class="empty-state"><p>No ${dname} clients yet.</p></div></td></tr>`:dc.map(c=>`<tr><td style="color:#6b7280;font-size:10px">${c['ID']||'—'}</td><td><b>${c['Client Name']||'—'}</b></td><td>${c['Country']||'—'}</td><td>${c['Store Name']||'—'}</td><td style="font-size:10px">${c['Deal Type']||'—'}</td><td>${c['Deal % or Amount']||'—'}</td><td>${fmt(c['Monthly Revenue'])}</td><td>${fmt(c['Our Commission'])}</td><td>${c['Account Manager']||'—'}</td><td>${pill(c['Status'])}</td><td><button class="btn-view" onclick="viewClient('${c['ID']}','${dept}')">View →</button></td></tr>`).join('')}</tbody></table></div>`;
 }
@@ -494,29 +497,27 @@ async function saveClient(){
   const dept=document.getElementById('f-dept').value;
   const btn=document.getElementById('clientSaveBtn');
   btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
-  try{
-    const row=[genId(dept),name,dept,
-      document.getElementById('f-country').value,
-      document.getElementById('f-city').value,
-      document.getElementById('f-phone').value,
-      document.getElementById('f-email').value,
-      document.getElementById('f-store').value,
-      document.getElementById('f-deal').value,
-      document.getElementById('f-pct').value,
-      document.getElementById('f-rev').value||'0',
-      document.getElementById('f-comm').value||'0',
-      document.getElementById('f-mgr').value,
-      document.getElementById('f-start').value,
-      document.getElementById('f-status').value,
-      document.getElementById('f-notes').value
-    ];
-    await gWrite('Clients',row);
-    closeModal('clientModal');
-    showToast('✅ Client saved! Refreshing...','success');
-    ['f-name','f-country','f-city','f-phone','f-email','f-store','f-pct','f-rev','f-comm','f-mgr','f-notes'].forEach(id=>document.getElementById(id).value='');
-    setTimeout(()=>loadAll(),3000);
-  }catch(e){showToast('Save error: '+e.message,'error');console.error(e);}
+  const row=[genId(dept),name,dept,
+    document.getElementById('f-country').value,
+    document.getElementById('f-city').value,
+    document.getElementById('f-phone').value,
+    document.getElementById('f-email').value,
+    document.getElementById('f-store').value,
+    document.getElementById('f-deal').value,
+    document.getElementById('f-pct').value,
+    document.getElementById('f-rev').value||'0',
+    document.getElementById('f-comm').value||'0',
+    document.getElementById('f-mgr').value,
+    document.getElementById('f-start').value,
+    document.getElementById('f-status').value,
+    document.getElementById('f-notes').value
+  ];
+  await gWrite('Clients',row);
+  closeModal('clientModal');
+  showToast('✅ Saving to Google Sheet... Please wait 5 seconds then click Sync','success');
+  ['f-name','f-country','f-city','f-phone','f-email','f-store','f-pct','f-rev','f-comm','f-mgr','f-notes'].forEach(id=>document.getElementById(id).value='');
   btn.innerHTML='Save Client';btn.disabled=false;
+  setTimeout(()=>loadAll(),5000);
 }
 
 async function savePayment(){
@@ -524,14 +525,12 @@ async function savePayment(){
   if(!client){showToast('Client name is required!','error');return;}
   const btn=document.getElementById('paySaveBtn');
   btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
-  try{
-    const row=[document.getElementById('p-inv').value||'INV-'+Date.now(),client,document.getElementById('p-dept').value,document.getElementById('p-month').value,document.getElementById('p-amount').value||'0',document.getElementById('p-comm').value||'0',document.getElementById('p-date').value,document.getElementById('p-status').value];
-    await gWrite('Payments',row);
-    closeModal('paymentModal');
-    showToast('✅ Payment saved! Refreshing...','success');
-    setTimeout(()=>loadAll(),3000);
-  }catch(e){showToast('Save error: '+e.message,'error');}
+  const row=[document.getElementById('p-inv').value||'INV-'+Date.now(),client,document.getElementById('p-dept').value,document.getElementById('p-month').value,document.getElementById('p-amount').value||'0',document.getElementById('p-comm').value||'0',document.getElementById('p-date').value,document.getElementById('p-status').value];
+  await gWrite('Payments',row);
+  closeModal('paymentModal');
+  showToast('✅ Payment saving... Click Sync in 5 seconds','success');
   btn.innerHTML='Save Payment';btn.disabled=false;
+  setTimeout(()=>loadAll(),5000);
 }
 
 async function saveProgress(){
@@ -539,20 +538,18 @@ async function saveProgress(){
   if(!client){showToast('Client name is required!','error');return;}
   const btn=document.getElementById('progSaveBtn');
   btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
-  try{
-    const row=[document.getElementById('pr-id').value,client,document.getElementById('pr-month').value,document.getElementById('pr-rev').value||'0',document.getElementById('pr-orders').value||'0',document.getElementById('pr-comm').value||'0',document.getElementById('pr-perf').value,document.getElementById('pr-notes').value];
-    await gWrite('Progress',row);
-    closeModal('progressModal');
-    showToast('✅ Progress saved! Refreshing...','success');
-    setTimeout(()=>loadAll(),3000);
-  }catch(e){showToast('Save error: '+e.message,'error');}
+  const row=[document.getElementById('pr-id').value,client,document.getElementById('pr-month').value,document.getElementById('pr-rev').value||'0',document.getElementById('pr-orders').value||'0',document.getElementById('pr-comm').value||'0',document.getElementById('pr-perf').value,document.getElementById('pr-notes').value];
+  await gWrite('Progress',row);
+  closeModal('progressModal');
+  showToast('✅ Progress saving... Click Sync in 5 seconds','success');
   btn.innerHTML='Save Record';btn.disabled=false;
+  setTimeout(()=>loadAll(),5000);
 }
 
 function showToast(msg,type='info'){
   const t=document.getElementById('toast');
   t.textContent=msg;t.className='toast toast-'+type;t.style.display='block';
-  setTimeout(()=>t.style.display='none',4000);
+  setTimeout(()=>t.style.display='none',5000);
 }
 
 window.addEventListener('click',e=>{if(e.target.classList.contains('modal-bg'))e.target.classList.remove('open');});
