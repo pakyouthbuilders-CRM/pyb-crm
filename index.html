@@ -291,28 +291,25 @@ let allClients=[],allPayments=[],allProgress=[];
 async function gRead(range){
   const url=`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?key=${API_KEY}`;
   const r=await fetch(url);
-  if(!r.ok)throw new Error('Read failed');
+  if(!r.ok)throw new Error('Read failed: '+r.status);
   const d=await r.json();
   return d.values||[];
 }
 
-// Uses no-cors via form submission trick with iframe
-function gWrite(sheet,row){
-  return new Promise((resolve,reject)=>{
-    try{
-      const params=new URLSearchParams();
-      params.append('sheet',sheet);
-      params.append('row',JSON.stringify(row));
-      const url=SCRIPT_URL+'?'+params.toString();
-      // Use fetch with no-cors mode - data will be written even if we can't read response
-      fetch(url,{method:'GET',mode:'no-cors'})
-        .then(()=>{
-          // With no-cors we can't read response, but if no error thrown, it worked
-          setTimeout(()=>resolve({status:'success'}),1500);
-        })
-        .catch(err=>reject(err));
-    }catch(e){reject(e);}
-  });
+async function gWrite(sheet,row){
+  // Build URL with params - Apps Script handles via doGet
+  const rowEncoded=encodeURIComponent(JSON.stringify(row));
+  const url=`${SCRIPT_URL}?action=write&sheet=${encodeURIComponent(sheet)}&row=${rowEncoded}`;
+  const r=await fetch(url,{redirect:'follow'});
+  const text=await r.text();
+  let d;
+  try{d=JSON.parse(text);}catch(e){
+    // Response might be HTML redirect - if fetch succeeded, treat as success
+    if(r.ok||r.status===0)return{status:'success'};
+    throw new Error('Unexpected response');
+  }
+  if(d.status==='error')throw new Error(d.message);
+  return d;
 }
 
 function toObj(rows){
@@ -331,8 +328,8 @@ async function loadAll(){
     const[cr,pr,pgr]=await Promise.all([gRead('Clients!A:P'),gRead('Payments!A:H'),gRead('Progress!A:H')]);
     allClients=toObj(cr);allPayments=toObj(pr);allProgress=toObj(pgr);
     renderDashboard();renderMaster();renderPayments();renderProgress();
-    showToast('Data loaded!','success');
-  }catch(e){showToast('Error: '+e.message,'error');console.error(e);}
+    showToast('Data loaded successfully!','success');
+  }catch(e){showToast('Load error: '+e.message,'error');console.error(e);}
 }
 
 function pill(s){
@@ -498,13 +495,27 @@ async function saveClient(){
   const btn=document.getElementById('clientSaveBtn');
   btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
   try{
-    const row=[genId(dept),name,dept,document.getElementById('f-country').value,document.getElementById('f-city').value,document.getElementById('f-phone').value,document.getElementById('f-email').value,document.getElementById('f-store').value,document.getElementById('f-deal').value,document.getElementById('f-pct').value,document.getElementById('f-rev').value||'0',document.getElementById('f-comm').value||'0',document.getElementById('f-mgr').value,document.getElementById('f-start').value,document.getElementById('f-status').value,document.getElementById('f-notes').value];
+    const row=[genId(dept),name,dept,
+      document.getElementById('f-country').value,
+      document.getElementById('f-city').value,
+      document.getElementById('f-phone').value,
+      document.getElementById('f-email').value,
+      document.getElementById('f-store').value,
+      document.getElementById('f-deal').value,
+      document.getElementById('f-pct').value,
+      document.getElementById('f-rev').value||'0',
+      document.getElementById('f-comm').value||'0',
+      document.getElementById('f-mgr').value,
+      document.getElementById('f-start').value,
+      document.getElementById('f-status').value,
+      document.getElementById('f-notes').value
+    ];
     await gWrite('Clients',row);
     closeModal('clientModal');
-    showToast('✅ Client saved! Click Sync to refresh.','success');
+    showToast('✅ Client saved! Refreshing...','success');
     ['f-name','f-country','f-city','f-phone','f-email','f-store','f-pct','f-rev','f-comm','f-mgr','f-notes'].forEach(id=>document.getElementById(id).value='');
-    setTimeout(()=>loadAll(),2000);
-  }catch(e){showToast('Error: '+e.message,'error');}
+    setTimeout(()=>loadAll(),3000);
+  }catch(e){showToast('Save error: '+e.message,'error');console.error(e);}
   btn.innerHTML='Save Client';btn.disabled=false;
 }
 
@@ -517,9 +528,9 @@ async function savePayment(){
     const row=[document.getElementById('p-inv').value||'INV-'+Date.now(),client,document.getElementById('p-dept').value,document.getElementById('p-month').value,document.getElementById('p-amount').value||'0',document.getElementById('p-comm').value||'0',document.getElementById('p-date').value,document.getElementById('p-status').value];
     await gWrite('Payments',row);
     closeModal('paymentModal');
-    showToast('✅ Payment saved! Click Sync to refresh.','success');
-    setTimeout(()=>loadAll(),2000);
-  }catch(e){showToast('Error: '+e.message,'error');}
+    showToast('✅ Payment saved! Refreshing...','success');
+    setTimeout(()=>loadAll(),3000);
+  }catch(e){showToast('Save error: '+e.message,'error');}
   btn.innerHTML='Save Payment';btn.disabled=false;
 }
 
@@ -532,9 +543,9 @@ async function saveProgress(){
     const row=[document.getElementById('pr-id').value,client,document.getElementById('pr-month').value,document.getElementById('pr-rev').value||'0',document.getElementById('pr-orders').value||'0',document.getElementById('pr-comm').value||'0',document.getElementById('pr-perf').value,document.getElementById('pr-notes').value];
     await gWrite('Progress',row);
     closeModal('progressModal');
-    showToast('✅ Progress saved! Click Sync to refresh.','success');
-    setTimeout(()=>loadAll(),2000);
-  }catch(e){showToast('Error: '+e.message,'error');}
+    showToast('✅ Progress saved! Refreshing...','success');
+    setTimeout(()=>loadAll(),3000);
+  }catch(e){showToast('Save error: '+e.message,'error');}
   btn.innerHTML='Save Record';btn.disabled=false;
 }
 
