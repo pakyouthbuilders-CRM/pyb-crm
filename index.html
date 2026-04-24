@@ -47,6 +47,7 @@ body{font-family:Arial,sans-serif;background:#f0f2f5;color:#1a1a1a}
 .pay-amt{font-weight:700;color:#0f2044}
 .status-pill{font-size:9px;padding:3px 8px;border-radius:10px;font-weight:700}
 .pill-green{background:#dcfce7;color:#16a34a}.pill-amber{background:#fef3c7;color:#d97706}.pill-red{background:#fee2e2;color:#dc2626}
+.pill-blue{background:#e6f1fb;color:#185FA5}.pill-purple{background:#f3e8ff;color:#7c3aed}
 .search-bar{display:flex;gap:8px;margin-bottom:14px;align-items:center;flex-wrap:wrap}
 .search-bar input,.search-bar select{font-size:12px;padding:7px 11px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;color:#1a1a1a;outline:none}
 .search-bar input{flex:1;min-width:150px}
@@ -62,7 +63,8 @@ tr:hover td{background:#f8fafc}
 .dept-tag{font-size:9px;padding:2px 8px;border-radius:10px;font-weight:700}
 .tag-ebay{background:#e6f1fb;color:#185FA5}.tag-walmart{background:#fef3c7;color:#d97706}.tag-tiktok{background:#fce7f3;color:#be185d}
 .btn-view{font-size:10px;color:#185FA5;cursor:pointer;background:none;border:none;padding:0;font-weight:700}
-.btn-view:hover{text-decoration:underline}
+.btn-edit{font-size:10px;color:#d97706;cursor:pointer;background:none;border:none;padding:0;font-weight:700;margin-left:8px}
+.btn-del{font-size:10px;color:#dc2626;cursor:pointer;background:none;border:none;padding:0;font-weight:700;margin-left:8px}
 .profile-header{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:18px;margin-bottom:14px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .profile-avatar{width:50px;height:50px;border-radius:50%;background:#0f2044;color:#fff;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .profile-name{font-size:16px;font-weight:700;color:#0f2044}
@@ -73,23 +75,37 @@ tr:hover td{background:#f8fafc}
 .info-val{font-size:12px;font-weight:700;color:#0f2044}
 .back-btn{font-size:11px;color:#185FA5;cursor:pointer;margin-bottom:12px;display:inline-flex;align-items:center;gap:4px;background:none;border:none;padding:0;font-weight:700}
 .loading{text-align:center;padding:40px;color:#6b7280;font-size:13px}
-.toast{position:fixed;bottom:24px;right:24px;color:#fff;padding:12px 20px;border-radius:10px;font-size:12px;font-weight:700;z-index:9999;display:none;max-width:380px}
+.toast{position:fixed;bottom:24px;right:24px;color:#fff;padding:12px 20px;border-radius:10px;font-size:12px;font-weight:700;z-index:9999;display:none;max-width:400px}
 .toast-success{background:#16a34a}.toast-error{background:#dc2626}.toast-info{background:#0f2044}
 .modal-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.45);z-index:1000;display:none;align-items:center;justify-content:center}
 .modal-bg.open{display:flex}
-.modal{background:#fff;border-radius:12px;padding:24px;width:480px;max-height:90vh;overflow-y:auto}
+.modal{background:#fff;border-radius:12px;padding:24px;width:500px;max-height:90vh;overflow-y:auto}
 .modal-title{font-size:15px;font-weight:700;color:#0f2044;margin-bottom:18px}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
-.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
 .form-group label{font-size:11px;color:#6b7280;font-weight:700}
 .form-group input,.form-group select,.form-group textarea{font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;color:#1a1a1a;outline:none}
 .form-group input:focus,.form-group select:focus{border-color:#4f8ef7}
+.form-section{font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.06em;margin:14px 0 8px;padding-bottom:6px;border-bottom:1px solid #f0f2f5}
+.client-type-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.type-card{border:2px solid #e5e7eb;border-radius:10px;padding:12px;cursor:pointer;text-align:center;transition:all 0.15s}
+.type-card:hover{border-color:#4f8ef7;background:#f0f7ff}
+.type-card.selected{border-color:#0f2044;background:#e6f1fb}
+.type-card .icon{font-size:24px;margin-bottom:6px}
+.type-card .label{font-size:12px;font-weight:700;color:#0f2044}
+.type-card .desc{font-size:10px;color:#6b7280;margin-top:2px}
 .form-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
 .btn-cancel{font-size:11px;padding:7px 16px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;cursor:pointer;color:#6b7280;font-weight:700}
 .btn-save{font-size:11px;padding:7px 18px;background:#0f2044;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700}
+.btn-update{font-size:11px;padding:7px 18px;background:#d97706;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700}
+.btn-danger{font-size:11px;padding:7px 16px;background:#dc2626;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700}
 .spinner{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.3);border-top:2px solid #fff;border-radius:50%;animation:spin 0.8s linear infinite;margin-right:6px;vertical-align:middle}
 @keyframes spin{to{transform:rotate(360deg)}}
 .empty-state{text-align:center;padding:40px 20px;color:#6b7280}
+.confirm-modal{background:#fff;border-radius:12px;padding:24px;width:380px;text-align:center}
+.confirm-modal h3{font-size:15px;font-weight:700;color:#0f2044;margin-bottom:8px}
+.confirm-modal p{font-size:12px;color:#6b7280;margin-bottom:20px}
+.confirm-btns{display:flex;gap:10px;justify-content:center}
 </style>
 </head>
 <body>
@@ -127,6 +143,7 @@ tr:hover td{background:#f8fafc}
       </div>
     </div>
     <div class="content">
+      <!-- DASHBOARD -->
       <div class="section active" id="sec-dashboard">
         <div class="kpi-grid">
           <div class="kpi-card"><div class="kpi-label">Total Clients</div><div class="kpi-val" id="kpi-total">—</div><div class="kpi-sub kpi-up" id="kpi-active"></div></div>
@@ -138,8 +155,9 @@ tr:hover td{background:#f8fafc}
           <div class="card"><div class="card-title">Department revenue share</div><div id="dept-bars"><div class="loading">Loading...</div></div></div>
           <div class="card"><div class="card-title">Recent payments</div><div id="dash-payments"><div class="loading">Loading...</div></div></div>
         </div>
-        <div class="card"><div class="card-title">All clients overview</div><div class="table-wrap"><table><thead><tr><th>ID</th><th>Client</th><th>Dept</th><th>Store</th><th>Revenue</th><th>Commission</th><th>Status</th></tr></thead><tbody id="dash-clients"><tr><td colspan="7" class="loading">Loading...</td></tr></tbody></table></div></div>
+        <div class="card"><div class="card-title">All clients overview</div><div class="table-wrap"><table><thead><tr><th>ID</th><th>Client</th><th>Type</th><th>Dept</th><th>Store</th><th>Revenue</th><th>Commission</th><th>Status</th></tr></thead><tbody id="dash-clients"><tr><td colspan="8" class="loading">Loading...</td></tr></tbody></table></div></div>
       </div>
+      <!-- MASTER -->
       <div class="section" id="sec-master">
         <div class="search-bar">
           <input type="text" placeholder="Search clients..." id="master-search" oninput="filterMaster()">
@@ -147,8 +165,9 @@ tr:hover td{background:#f8fafc}
           <select id="master-status-filter" onchange="filterMaster()"><option value="">All Status</option><option>Active</option><option>Inactive</option><option>Hold</option></select>
           <button class="btn-add" onclick="openClientForm()">+ Add Client</button>
         </div>
-        <div class="table-wrap"><table><thead><tr><th>ID</th><th>Client Name</th><th>Dept</th><th>Country</th><th>City</th><th>Phone</th><th>Email</th><th>Store Name</th><th>Deal Type</th><th>Deal %/Amt</th><th>Revenue</th><th>Commission</th><th>Manager</th><th>Start Date</th><th>Status</th><th>Action</th></tr></thead><tbody id="master-body"><tr><td colspan="16" class="loading">Loading...</td></tr></tbody></table></div>
+        <div class="table-wrap"><table><thead><tr><th>ID</th><th>Client Name</th><th>Client Type</th><th>Dept</th><th>Country</th><th>City</th><th>Phone</th><th>Store Name</th><th>Deal Type</th><th>Deal %/Amt</th><th>Revenue</th><th>Commission</th><th>Manager</th><th>Status</th><th>Actions</th></tr></thead><tbody id="master-body"><tr><td colspan="15" class="loading">Loading...</td></tr></tbody></table></div>
       </div>
+      <!-- PAYMENTS -->
       <div class="section" id="sec-payments">
         <div class="search-bar">
           <input type="text" placeholder="Search payments..." id="pay-search" oninput="filterPayments()">
@@ -161,34 +180,53 @@ tr:hover td{background:#f8fafc}
           <div class="kpi-card"><div class="kpi-label">Overdue</div><div class="kpi-val kpi-down" id="pay-overdue">—</div></div>
           <div class="kpi-card"><div class="kpi-label">Total Invoices</div><div class="kpi-val" id="pay-count">—</div></div>
         </div>
-        <div class="table-wrap"><table><thead><tr><th>Invoice #</th><th>Client Name</th><th>Department</th><th>Month</th><th>Amount ($)</th><th>Commission ($)</th><th>Date Received</th><th>Status</th></tr></thead><tbody id="pay-body"><tr><td colspan="8" class="loading">Loading...</td></tr></tbody></table></div>
+        <div class="table-wrap"><table><thead><tr><th>Invoice #</th><th>Client Name</th><th>Department</th><th>Month</th><th>Amount ($)</th><th>Commission ($)</th><th>Date Received</th><th>Status</th><th>Actions</th></tr></thead><tbody id="pay-body"><tr><td colspan="9" class="loading">Loading...</td></tr></tbody></table></div>
       </div>
+      <!-- PROGRESS -->
       <div class="section" id="sec-progress">
         <div class="search-bar">
           <input type="text" placeholder="Search progress..." id="prog-search" oninput="filterProgress()">
           <button class="btn-add" onclick="openProgressForm()">+ Add Progress Record</button>
         </div>
-        <div class="table-wrap"><table><thead><tr><th>Client ID</th><th>Client Name</th><th>Month</th><th>Revenue ($)</th><th>Orders</th><th>Commission ($)</th><th>Performance</th><th>Notes</th></tr></thead><tbody id="prog-body"><tr><td colspan="8" class="loading">Loading...</td></tr></tbody></table></div>
+        <div class="table-wrap"><table><thead><tr><th>Client ID</th><th>Client Name</th><th>Month</th><th>Revenue ($)</th><th>Orders</th><th>Commission ($)</th><th>Performance</th><th>Notes</th><th>Actions</th></tr></thead><tbody id="prog-body"><tr><td colspan="9" class="loading">Loading...</td></tr></tbody></table></div>
       </div>
+      <!-- DEPT SECTIONS -->
       <div class="section" id="sec-ebay"><div id="ebay-list"></div><div id="ebay-profile" style="display:none"></div></div>
       <div class="section" id="sec-walmart"><div id="walmart-list"></div><div id="walmart-profile" style="display:none"></div></div>
       <div class="section" id="sec-tiktok"><div id="tiktok-list"></div><div id="tiktok-profile" style="display:none"></div></div>
+      <!-- GROWTH -->
       <div class="section" id="sec-growth">
         <div class="kpi-grid">
           <div class="kpi-card"><div class="kpi-label">eBay Clients</div><div class="kpi-val" id="g-ebay">—</div><div class="kpi-sub kpi-up" id="g-ebay-rev"></div></div>
           <div class="kpi-card"><div class="kpi-label">Walmart Clients</div><div class="kpi-val" id="g-walmart">—</div><div class="kpi-sub kpi-up" id="g-walmart-rev"></div></div>
           <div class="kpi-card"><div class="kpi-label">TikTok Clients</div><div class="kpi-val" id="g-tiktok">—</div><div class="kpi-sub kpi-up" id="g-tiktok-rev"></div></div>
-          <div class="kpi-card"><div class="kpi-label">Total Revenue</div><div class="kpi-val" id="g-total">—</div><div class="kpi-sub">All departments</div></div>
+          <div class="kpi-card"><div class="kpi-label">Total Revenue</div><div class="kpi-val" id="g-total">—</div></div>
         </div>
         <div class="card"><div class="card-title">Department breakdown</div><div id="growth-detail"></div></div>
       </div>
     </div>
   </div>
 </div>
+
 <!-- CLIENT MODAL -->
 <div class="modal-bg" id="clientModal">
   <div class="modal">
-    <div class="modal-title">Add New Client</div>
+    <div class="modal-title" id="clientModalTitle">Add New Client</div>
+    <div class="form-section">Client Type</div>
+    <div class="client-type-wrap">
+      <div class="type-card selected" id="type-direct" onclick="selectType('Direct Client')">
+        <div class="icon">👤</div>
+        <div class="label">Direct Client</div>
+        <div class="desc">Client owns the store directly</div>
+      </div>
+      <div class="type-card" id="type-third" onclick="selectType('Third Party')">
+        <div class="icon">🤝</div>
+        <div class="label">Third Party</div>
+        <div class="desc">Managing on behalf of someone</div>
+      </div>
+    </div>
+    <input type="hidden" id="f-client-type" value="Direct Client">
+    <div class="form-section">Basic Info</div>
     <div class="form-row">
       <div class="form-group"><label>Client Name *</label><input id="f-name" placeholder="John Smith"></div>
       <div class="form-group"><label>Department *</label><select id="f-dept"><option>eBay</option><option>Walmart</option><option>TikTok</option></select></div>
@@ -201,6 +239,7 @@ tr:hover td{background:#f8fafc}
       <div class="form-group"><label>Phone</label><input id="f-phone" placeholder="+92 300 0000000"></div>
       <div class="form-group"><label>Email</label><input id="f-email" placeholder="client@email.com"></div>
     </div>
+    <div class="form-section">Store & Deal Info</div>
     <div class="form-row">
       <div class="form-group"><label>Store Name</label><input id="f-store" placeholder="My Store"></div>
       <div class="form-group"><label>Deal Type</label><select id="f-deal"><option>% Commission</option><option>Fixed Monthly</option><option>Both</option><option>Milestone</option></select></div>
@@ -218,12 +257,15 @@ tr:hover td{background:#f8fafc}
       <div class="form-group"><label>Status</label><select id="f-status"><option>Active</option><option>Inactive</option><option>Hold</option></select></div>
     </div>
     <div class="form-group"><label>Notes</label><textarea id="f-notes" rows="2" placeholder="Any additional notes..."></textarea></div>
+    <input type="hidden" id="f-row-num">
+    <input type="hidden" id="f-client-id">
     <div class="form-btns">
       <button class="btn-cancel" onclick="closeModal('clientModal')">Cancel</button>
       <button class="btn-save" id="clientSaveBtn" onclick="saveClient()">Save Client</button>
     </div>
   </div>
 </div>
+
 <!-- PAYMENT MODAL -->
 <div class="modal-bg" id="paymentModal">
   <div class="modal">
@@ -250,6 +292,7 @@ tr:hover td{background:#f8fafc}
     </div>
   </div>
 </div>
+
 <!-- PROGRESS MODAL -->
 <div class="modal-bg" id="progressModal">
   <div class="modal">
@@ -276,35 +319,40 @@ tr:hover td{background:#f8fafc}
     </div>
   </div>
 </div>
+
+<!-- CONFIRM DELETE MODAL -->
+<div class="modal-bg" id="confirmModal">
+  <div class="confirm-modal">
+    <h3>⚠️ Confirm Delete</h3>
+    <p id="confirmText">Are you sure you want to delete this record? This cannot be undone.</p>
+    <div class="confirm-btns">
+      <button class="btn-cancel" onclick="closeModal('confirmModal')">Cancel</button>
+      <button class="btn-danger" id="confirmBtn">Delete</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
+
 <script>
-const SCRIPT='https://script.google.com/macros/s/AKfycbx4VRk0r3QOATrYZKadjrG5SI6D-VbrTR18hKTOOQIcKOQ0l4bu5-oMnd3AtW8jiA4ktA/exec';
+const SCRIPT='https://script.google.com/macros/s/AKfycbygwV-51vrv3gU14BktBKF_1-yiSL3mVkqBGBVAPe2kGph3x1qIIcPZyUB5WypNhFLAYg/exec';
 const SHEET_ID='1X6FaHYrSs96XYZMLkWBwzp23zCTjSDk13YAVp_TfYwg';
 const API_KEY='AIzaSyBevUeL-MqrlyKFxQ6VfbBDH19uAnma4nU';
 let allClients=[],allPayments=[],allProgress=[];
+let editMode=false,editRowNum=null;
 
 async function gRead(range){
-  const url=`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?key=${API_KEY}`;
-  const r=await fetch(url);
+  const r=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?key=${API_KEY}`);
   if(!r.ok)throw new Error('Read failed');
-  const d=await r.json();
-  return d.values||[];
+  const d=await r.json();return d.values||[];
 }
 
-async function gWrite(sheet,row){
-  // Properly encode the row as JSON then URL encode it
-  const rowJson=JSON.stringify(row);
-  const url=SCRIPT+'?action=write&sheet='+encodeURIComponent(sheet)+'&row='+encodeURIComponent(rowJson);
-  const r=await fetch(url,{method:'GET'});
+async function gAction(params){
+  const url=SCRIPT+'?'+Object.entries(params).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');
+  const r=await fetch(url);
   const text=await r.text();
-  try{
-    const d=JSON.parse(text);
-    if(d.status==='error')throw new Error(d.msg||'Write failed');
-    return d;
-  }catch(e){
-    // If we got a response, data was likely written
-    return {status:'success'};
-  }
+  try{const d=JSON.parse(text);if(d.status==='error')throw new Error(d.msg);return d;}
+  catch(e){return {status:'success'};}
 }
 
 function toObj(rows){
@@ -320,13 +368,17 @@ function toObj(rows){
 async function loadAll(){
   try{
     showToast('Loading...','info');
-    const[cr,pr,pgr]=await Promise.all([gRead('Clients!A:P'),gRead('Payments!A:H'),gRead('Progress!A:H')]);
+    const[cr,pr,pgr]=await Promise.all([gRead('Clients!A:Q'),gRead('Payments!A:H'),gRead('Progress!A:H')]);
     allClients=toObj(cr);allPayments=toObj(pr);allProgress=toObj(pgr);
     renderDashboard();renderMaster();renderPayments();renderProgress();
     showToast('Data loaded!','success');
   }catch(e){showToast('Error: '+e.message,'error');}
 }
 
+function clientTypePill(t){
+  if(t==='Third Party')return`<span class="status-pill pill-purple">🤝 Third Party</span>`;
+  return`<span class="status-pill pill-blue">👤 Direct</span>`;
+}
 function pill(s){const c=s==='Active'||s==='Received'||s==='Good'?'pill-green':s==='Pending'||s==='Hold'||s==='Attention'?'pill-amber':'pill-red';return`<span class="status-pill ${c}">${s||'—'}</span>`;}
 function tag(d){const c=d==='eBay'?'tag-ebay':d==='Walmart'?'tag-walmart':'tag-tiktok';return`<span class="dept-tag ${c}">${d||'—'}</span>`;}
 function ini(n){return(n||'?').split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();}
@@ -345,14 +397,31 @@ function renderDashboard(){
   const depts=['eBay','Walmart','TikTok'],bCls=['bar-ebay','bar-walmart','bar-tiktok'];
   const dRevs=depts.map(d=>allClients.filter(c=>c['Department']===d).reduce((a,c)=>a+(parseFloat(c['Monthly Revenue'])||0),0));
   const maxR=Math.max(...dRevs,1);
-  document.getElementById('dept-bars').innerHTML=allClients.length===0?'<div class="empty-state"><p>No clients yet. Add your first client!</p></div>':depts.map((d,i)=>`<div class="dept-row"><div class="dept-name">${d}</div><div class="bar-wrap"><div class="bar-fill ${bCls[i]}" style="width:${Math.round(dRevs[i]/maxR*100)}%"></div></div><div class="dept-pct">${fmt(dRevs[i])}</div></div>`).join('');
+  document.getElementById('dept-bars').innerHTML=allClients.length===0?'<div class="empty-state"><p>No clients yet.</p></div>':depts.map((d,i)=>`<div class="dept-row"><div class="dept-name">${d}</div><div class="bar-wrap"><div class="bar-fill ${bCls[i]}" style="width:${Math.round(dRevs[i]/maxR*100)}%"></div></div><div class="dept-pct">${fmt(dRevs[i])}</div></div>`).join('');
   document.getElementById('dash-payments').innerHTML=allPayments.length===0?'<div class="empty-state"><p>No payments yet.</p></div>':allPayments.slice(-5).reverse().map(p=>`<div class="pay-row"><div><div class="pay-name">${p['Client Name']||'—'}</div><div class="pay-dept">${p['Department']||''} · ${p['Month']||''}</div></div><div style="text-align:right"><div class="pay-amt">${fmt(p['Amount ($)'])}</div><div style="margin-top:2px">${pill(p['Status'])}</div></div></div>`).join('');
-  document.getElementById('dash-clients').innerHTML=allClients.length===0?'<tr><td colspan="7"><div class="empty-state"><p>No clients yet.</p></div></td></tr>':allClients.map(c=>`<tr><td style="color:#6b7280;font-size:10px">${c['ID']||'—'}</td><td><b>${c['Client Name']||'—'}</b></td><td>${tag(c['Department'])}</td><td>${c['Store Name']||'—'}</td><td>${fmt(c['Monthly Revenue'])}</td><td>${fmt(c['Our Commission'])}</td><td>${pill(c['Status'])}</td></tr>`).join('');
+  document.getElementById('dash-clients').innerHTML=allClients.length===0?'<tr><td colspan="8"><div class="empty-state"><p>No clients yet.</p></div></td></tr>':allClients.map(c=>`<tr><td style="color:#6b7280;font-size:10px">${c['ID']||'—'}</td><td><b>${c['Client Name']||'—'}</b></td><td>${clientTypePill(c['Client Type'])}</td><td>${tag(c['Department'])}</td><td>${c['Store Name']||'—'}</td><td>${fmt(c['Monthly Revenue'])}</td><td>${fmt(c['Our Commission'])}</td><td>${pill(c['Status'])}</td></tr>`).join('');
 }
 
 function renderMaster(data){
   const list=data||allClients;
-  document.getElementById('master-body').innerHTML=list.length===0?'<tr><td colspan="16"><div class="empty-state"><p>No clients found.</p></div></td></tr>':list.map(c=>`<tr><td style="color:#6b7280;font-size:10px">${c['ID']||'—'}</td><td><b>${c['Client Name']||'—'}</b></td><td>${tag(c['Department'])}</td><td>${c['Country']||'—'}</td><td>${c['City']||'—'}</td><td>${c['Phone']||'—'}</td><td>${c['Email']||'—'}</td><td>${c['Store Name']||'—'}</td><td style="font-size:10px">${c['Deal Type']||'—'}</td><td>${c['Deal % or Amount']||'—'}</td><td>${fmt(c['Monthly Revenue'])}</td><td>${fmt(c['Our Commission'])}</td><td>${c['Account Manager']||'—'}</td><td>${c['Contract Start']||'—'}</td><td>${pill(c['Status'])}</td><td><button class="btn-view" onclick="viewClient('${c['ID']}','${(c['Department']||'').toLowerCase()}')">View →</button></td></tr>`).join('');
+  document.getElementById('master-body').innerHTML=list.length===0?'<tr><td colspan="15"><div class="empty-state"><p>No clients found.</p></div></td></tr>':list.map(c=>`<tr>
+    <td style="color:#6b7280;font-size:10px">${c['ID']||'—'}</td>
+    <td><b>${c['Client Name']||'—'}</b></td>
+    <td>${clientTypePill(c['Client Type'])}</td>
+    <td>${tag(c['Department'])}</td>
+    <td>${c['Country']||'—'}</td><td>${c['City']||'—'}</td><td>${c['Phone']||'—'}</td>
+    <td>${c['Store Name']||'—'}</td>
+    <td style="font-size:10px">${c['Deal Type']||'—'}</td>
+    <td>${c['Deal % or Amount']||'—'}</td>
+    <td>${fmt(c['Monthly Revenue'])}</td><td>${fmt(c['Our Commission'])}</td>
+    <td>${c['Account Manager']||'—'}</td>
+    <td>${pill(c['Status'])}</td>
+    <td>
+      <button class="btn-view" onclick="viewClient('${c['ID']}','${(c['Department']||'').toLowerCase()}')">View</button>
+      <button class="btn-edit" onclick="openEditForm('${c['ID']}')">✏️</button>
+      <button class="btn-del" onclick="confirmDelete('Clients',${c._row},'${c['Client Name']}')">🗑️</button>
+    </td>
+  </tr>`).join('');
 }
 
 function filterMaster(){
@@ -368,7 +437,7 @@ function renderPayments(data){
   document.getElementById('pay-pending').textContent=fmt(list.filter(p=>p['Status']==='Pending').reduce((a,p)=>a+(parseFloat(p['Amount ($)'])||0),0));
   document.getElementById('pay-overdue').textContent=fmt(list.filter(p=>p['Status']==='Overdue').reduce((a,p)=>a+(parseFloat(p['Amount ($)'])||0),0));
   document.getElementById('pay-count').textContent=list.length;
-  document.getElementById('pay-body').innerHTML=list.length===0?'<tr><td colspan="8"><div class="empty-state"><p>No payment records yet.</p></div></td></tr>':list.map(p=>`<tr><td style="color:#6b7280">${p['Invoice No']||'—'}</td><td><b>${p['Client Name']||'—'}</b></td><td>${tag(p['Department'])}</td><td>${p['Month']||'—'}</td><td>${fmt(p['Amount ($)'])}</td><td>${fmt(p['Commission ($)'])}</td><td>${p['Date Received']||'—'}</td><td>${pill(p['Status'])}</td></tr>`).join('');
+  document.getElementById('pay-body').innerHTML=list.length===0?'<tr><td colspan="9"><div class="empty-state"><p>No payment records yet.</p></div></td></tr>':list.map(p=>`<tr><td style="color:#6b7280">${p['Invoice No']||'—'}</td><td><b>${p['Client Name']||'—'}</b></td><td>${tag(p['Department'])}</td><td>${p['Month']||'—'}</td><td>${fmt(p['Amount ($)'])}</td><td>${fmt(p['Commission ($)'])}</td><td>${p['Date Received']||'—'}</td><td>${pill(p['Status'])}</td><td><button class="btn-del" onclick="confirmDelete('Payments',${p._row},'payment ${p['Invoice No']||''}')">🗑️</button></td></tr>`).join('');
 }
 
 function filterPayments(){
@@ -379,7 +448,7 @@ function filterPayments(){
 
 function renderProgress(data){
   const list=data||allProgress;
-  document.getElementById('prog-body').innerHTML=list.length===0?'<tr><td colspan="8"><div class="empty-state"><p>No progress records yet.</p></div></td></tr>':list.map(p=>`<tr><td style="color:#6b7280">${p['Client ID']||'—'}</td><td><b>${p['Client Name']||'—'}</b></td><td>${p['Month']||'—'}</td><td>${fmt(p['Revenue'])}</td><td>${p['Orders']||'—'}</td><td>${fmt(p['Commission'])}</td><td>${pill(p['Performance'])}</td><td style="color:#6b7280;font-size:10px">${p['Notes']||'—'}</td></tr>`).join('');
+  document.getElementById('prog-body').innerHTML=list.length===0?'<tr><td colspan="9"><div class="empty-state"><p>No progress records yet.</p></div></td></tr>':list.map(p=>`<tr><td style="color:#6b7280">${p['Client ID']||'—'}</td><td><b>${p['Client Name']||'—'}</b></td><td>${p['Month']||'—'}</td><td>${fmt(p['Revenue'])}</td><td>${p['Orders']||'—'}</td><td>${fmt(p['Commission'])}</td><td>${pill(p['Performance'])}</td><td style="color:#6b7280;font-size:10px">${p['Notes']||'—'}</td><td><button class="btn-del" onclick="confirmDelete('Progress',${p._row},'progress record')">🗑️</button></td></tr>`).join('');
 }
 
 function filterProgress(){
@@ -402,8 +471,21 @@ function renderDept(dept){
     </div>
     <div class="search-bar"><input type="text" placeholder="Search ${dname} clients...">
     <button class="btn-add" onclick="openClientForm('${dname}')">+ Add Client</button></div>
-    <div class="table-wrap"><table><thead><tr><th>ID</th><th>Client Name</th><th>Country</th><th>Store Name</th><th>Deal Type</th><th>Deal %/Amt</th><th>Revenue</th><th>Commission</th><th>Manager</th><th>Status</th><th>Action</th></tr></thead>
-    <tbody>${dc.length===0?`<tr><td colspan="11"><div class="empty-state"><p>No ${dname} clients yet.</p></div></td></tr>`:dc.map(c=>`<tr><td style="color:#6b7280;font-size:10px">${c['ID']||'—'}</td><td><b>${c['Client Name']||'—'}</b></td><td>${c['Country']||'—'}</td><td>${c['Store Name']||'—'}</td><td style="font-size:10px">${c['Deal Type']||'—'}</td><td>${c['Deal % or Amount']||'—'}</td><td>${fmt(c['Monthly Revenue'])}</td><td>${fmt(c['Our Commission'])}</td><td>${c['Account Manager']||'—'}</td><td>${pill(c['Status'])}</td><td><button class="btn-view" onclick="viewClient('${c['ID']}','${dept}')">View →</button></td></tr>`).join('')}</tbody></table></div>`;
+    <div class="table-wrap"><table><thead><tr><th>ID</th><th>Client Name</th><th>Type</th><th>Country</th><th>Store Name</th><th>Deal %/Amt</th><th>Revenue</th><th>Commission</th><th>Manager</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>${dc.length===0?`<tr><td colspan="11"><div class="empty-state"><p>No ${dname} clients yet.</p></div></td></tr>`:dc.map(c=>`<tr>
+      <td style="color:#6b7280;font-size:10px">${c['ID']||'—'}</td>
+      <td><b>${c['Client Name']||'—'}</b></td>
+      <td>${clientTypePill(c['Client Type'])}</td>
+      <td>${c['Country']||'—'}</td><td>${c['Store Name']||'—'}</td>
+      <td>${c['Deal % or Amount']||'—'}</td>
+      <td>${fmt(c['Monthly Revenue'])}</td><td>${fmt(c['Our Commission'])}</td>
+      <td>${c['Account Manager']||'—'}</td><td>${pill(c['Status'])}</td>
+      <td>
+        <button class="btn-view" onclick="viewClient('${c['ID']}','${dept}')">View</button>
+        <button class="btn-edit" onclick="openEditForm('${c['ID']}')">✏️</button>
+        <button class="btn-del" onclick="confirmDelete('Clients',${c._row},'${c['Client Name']}')">🗑️</button>
+      </td>
+    </tr>`).join('')}</tbody></table></div>`;
 }
 
 function viewClient(id,dept){
@@ -418,12 +500,14 @@ function viewClient(id,dept){
     <button class="back-btn" onclick="backToDept('${deptKey}')">← Back to ${c['Department']} Department</button>
     <div class="profile-header">
       <div class="profile-avatar">${ini(c['Client Name'])}</div>
-      <div><div class="profile-name">${c['Client Name']||'—'}</div>
-      <div class="profile-meta">${c['Store Name']||'—'} · ${tag(c['Department'])} · ${pill(c['Status'])}</div>
-      <div class="profile-meta" style="margin-top:4px">${c['Email']||''} · ${c['Phone']||''}</div></div>
-      <div style="margin-left:auto;text-align:right">
-        <div style="font-size:10px;color:#6b7280">Since</div><div style="font-size:12px;font-weight:700">${c['Contract Start']||'—'}</div>
-        <div style="font-size:10px;color:#6b7280;margin-top:6px">Manager</div><div style="font-size:12px;font-weight:700">${c['Account Manager']||'—'}</div>
+      <div style="flex:1">
+        <div class="profile-name">${c['Client Name']||'—'} ${clientTypePill(c['Client Type'])}</div>
+        <div class="profile-meta">${c['Store Name']||'—'} · ${tag(c['Department'])} · ${pill(c['Status'])}</div>
+        <div class="profile-meta" style="margin-top:4px">${c['Email']||''} · ${c['Phone']||''}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+        <button class="btn-update" onclick="openEditForm('${c['ID']}')">✏️ Edit</button>
+        <button class="btn-danger" onclick="confirmDelete('Clients',${c._row},'${c['Client Name']}')">🗑️ Delete</button>
       </div>
     </div>
     <div class="profile-grid">
@@ -432,8 +516,9 @@ function viewClient(id,dept){
       <div class="info-block"><div class="info-label">Deal Value</div><div class="info-val">${c['Deal % or Amount']||'—'}</div></div>
       <div class="info-block"><div class="info-label">Monthly Revenue</div><div class="info-val">${fmt(c['Monthly Revenue'])}</div></div>
       <div class="info-block"><div class="info-label">Our Commission</div><div class="info-val">${fmt(c['Our Commission'])}</div></div>
-      <div class="info-block"><div class="info-label">Notes</div><div class="info-val" style="font-weight:400;font-size:11px">${c['Notes']||'—'}</div></div>
+      <div class="info-block"><div class="info-label">Account Manager</div><div class="info-val">${c['Account Manager']||'—'}</div></div>
     </div>
+    ${c['Notes']?`<div class="card" style="margin-bottom:12px"><div class="info-label">Notes</div><div style="font-size:12px;margin-top:6px">${c['Notes']}</div></div>`:''}
     <div class="card"><div class="card-title">Monthly progress tracker</div>
     <div class="table-wrap"><table><thead><tr><th>Month</th><th>Revenue</th><th>Orders</th><th>Commission</th><th>Performance</th><th>Notes</th></tr></thead>
     <tbody>${cp.length===0?'<tr><td colspan="6"><div class="empty-state"><p>No progress records yet.</p></div></td></tr>':cp.map(p=>`<tr><td>${p['Month']||'—'}</td><td>${fmt(p['Revenue'])}</td><td>${p['Orders']||'—'}</td><td>${fmt(p['Commission'])}</td><td>${pill(p['Performance'])}</td><td style="color:#6b7280;font-size:10px">${p['Notes']||'—'}</td></tr>`).join('')}
@@ -455,7 +540,7 @@ function renderGrowth(){
   document.getElementById('g-tiktok').textContent=data[2].count;
   document.getElementById('g-tiktok-rev').textContent=fmt(data[2].rev)+' revenue';
   document.getElementById('g-total').textContent=fmt(data.reduce((a,d)=>a+d.rev,0));
-  document.getElementById('growth-detail').innerHTML=data.map(d=>`<div class="pay-row"><div><div class="pay-name">${d.dept} Department</div><div class="pay-dept">${d.count} clients · ${d.active} active · Commission: ${fmt(d.comm)}</div></div><div style="text-align:right"><div class="pay-amt">${fmt(d.rev)}</div><div style="font-size:10px;color:#6b7280">monthly revenue</div></div></div>`).join('');
+  document.getElementById('growth-detail').innerHTML=data.map(d=>`<div class="pay-row"><div><div class="pay-name">${d.dept} Department</div><div class="pay-dept">${d.count} clients · ${d.active} active · Commission: ${fmt(d.comm)}</div></div><div style="text-align:right"><div class="pay-amt">${fmt(d.rev)}</div></div></div>`).join('');
 }
 
 function nav(id,el){
@@ -469,41 +554,116 @@ function nav(id,el){
   if(id==='growth')renderGrowth();
 }
 
-function openClientForm(dept){if(dept)document.getElementById('f-dept').value=dept;document.getElementById('clientModal').classList.add('open');}
+function selectType(type){
+  document.getElementById('f-client-type').value=type;
+  document.getElementById('type-direct').classList.toggle('selected',type==='Direct Client');
+  document.getElementById('type-third').classList.toggle('selected',type==='Third Party');
+}
+
+function openClientForm(dept){
+  editMode=false;editRowNum=null;
+  document.getElementById('clientModalTitle').textContent='Add New Client';
+  document.getElementById('clientSaveBtn').textContent='Save Client';
+  document.getElementById('clientSaveBtn').className='btn-save';
+  clearClientForm();
+  if(dept)document.getElementById('f-dept').value=dept;
+  selectType('Direct Client');
+  document.getElementById('clientModal').classList.add('open');
+}
+
+function openEditForm(id){
+  const c=allClients.find(x=>x['ID']===id);
+  if(!c){showToast('Client not found','error');return;}
+  editMode=true;editRowNum=c._row;
+  document.getElementById('clientModalTitle').textContent='✏️ Edit Client';
+  document.getElementById('clientSaveBtn').textContent='Update Client';
+  document.getElementById('clientSaveBtn').className='btn-update';
+  selectType(c['Client Type']||'Direct Client');
+  document.getElementById('f-name').value=c['Client Name']||'';
+  document.getElementById('f-dept').value=c['Department']||'eBay';
+  document.getElementById('f-country').value=c['Country']||'';
+  document.getElementById('f-city').value=c['City']||'';
+  document.getElementById('f-phone').value=c['Phone']||'';
+  document.getElementById('f-email').value=c['Email']||'';
+  document.getElementById('f-store').value=c['Store Name']||'';
+  document.getElementById('f-deal').value=c['Deal Type']||'% Commission';
+  document.getElementById('f-pct').value=c['Deal % or Amount']||'';
+  document.getElementById('f-rev').value=c['Monthly Revenue']||'';
+  document.getElementById('f-comm').value=c['Our Commission']||'';
+  document.getElementById('f-mgr').value=c['Account Manager']||'';
+  document.getElementById('f-start').value=c['Contract Start']||'';
+  document.getElementById('f-status').value=c['Status']||'Active';
+  document.getElementById('f-notes').value=c['Notes']||'';
+  document.getElementById('f-client-id').value=c['ID']||'';
+  document.getElementById('clientModal').classList.add('open');
+}
+
+function clearClientForm(){
+  ['f-name','f-country','f-city','f-phone','f-email','f-store','f-pct','f-rev','f-comm','f-mgr','f-notes','f-client-id'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-status').value='Active';
+  document.getElementById('f-start').value='';
+}
+
 function openPaymentForm(){document.getElementById('paymentModal').classList.add('open');}
 function openProgressForm(){document.getElementById('progressModal').classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 function genId(dept){const pre=dept==='eBay'?'EB':dept==='Walmart'?'WM':'TT';return`${pre}-${String(allClients.filter(c=>c['Department']===dept).length+1).padStart(3,'0')}`;}
 
+// Confirm Delete
+function confirmDelete(sheet,rowNum,name){
+  document.getElementById('confirmText').textContent=`Delete "${name}"? This cannot be undone.`;
+  document.getElementById('confirmBtn').onclick=()=>deleteRecord(sheet,rowNum);
+  document.getElementById('confirmModal').classList.add('open');
+}
+
+async function deleteRecord(sheet,rowNum){
+  closeModal('confirmModal');
+  showToast('Deleting...','info');
+  try{
+    await gAction({action:'delete',sheet:sheet,rowNum:rowNum});
+    showToast('✅ Deleted successfully!','success');
+    setTimeout(()=>loadAll(),3000);
+  }catch(e){showToast('Delete error: '+e.message,'error');}
+}
+
 async function saveClient(){
   const name=document.getElementById('f-name').value.trim();
   if(!name){showToast('Client name is required!','error');return;}
   const dept=document.getElementById('f-dept').value;
+  const clientType=document.getElementById('f-client-type').value;
   const btn=document.getElementById('clientSaveBtn');
+  const origText=btn.textContent;
   btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
+  const clientId=editMode?(document.getElementById('f-client-id').value||genId(dept)):genId(dept);
+  const row=[
+    clientId,name,dept,
+    document.getElementById('f-country').value,
+    document.getElementById('f-city').value,
+    document.getElementById('f-phone').value,
+    document.getElementById('f-email').value,
+    document.getElementById('f-store').value,
+    document.getElementById('f-deal').value,
+    document.getElementById('f-pct').value,
+    document.getElementById('f-rev').value||'0',
+    document.getElementById('f-comm').value||'0',
+    document.getElementById('f-mgr').value,
+    document.getElementById('f-start').value,
+    document.getElementById('f-status').value,
+    document.getElementById('f-notes').value,
+    clientType
+  ];
   try{
-    const row=[genId(dept),name,dept,
-      document.getElementById('f-country').value,
-      document.getElementById('f-city').value,
-      document.getElementById('f-phone').value,
-      document.getElementById('f-email').value,
-      document.getElementById('f-store').value,
-      document.getElementById('f-deal').value,
-      document.getElementById('f-pct').value,
-      document.getElementById('f-rev').value||'0',
-      document.getElementById('f-comm').value||'0',
-      document.getElementById('f-mgr').value,
-      document.getElementById('f-start').value,
-      document.getElementById('f-status').value,
-      document.getElementById('f-notes').value
-    ];
-    await gWrite('Clients',row);
-    closeModal('clientModal');
-    showToast('✅ Client saved successfully!','success');
-    ['f-name','f-country','f-city','f-phone','f-email','f-store','f-pct','f-rev','f-comm','f-mgr','f-notes'].forEach(id=>document.getElementById(id).value='');
+    if(editMode&&editRowNum){
+      await gAction({action:'update',sheet:'Clients',rowNum:editRowNum,row:JSON.stringify(row)});
+      showToast('✅ Client updated!','success');
+    }else{
+      await gAction({action:'write',sheet:'Clients',row:JSON.stringify(row)});
+      showToast('✅ Client saved!','success');
+    }
+    closeModal('clientModal');clearClientForm();
     setTimeout(()=>loadAll(),3000);
   }catch(e){showToast('Error: '+e.message,'error');}
-  btn.innerHTML='Save Client';btn.disabled=false;
+  btn.innerHTML=origText;btn.disabled=false;
 }
 
 async function savePayment(){
@@ -513,9 +673,8 @@ async function savePayment(){
   btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
   try{
     const row=[document.getElementById('p-inv').value||'INV-'+Date.now(),client,document.getElementById('p-dept').value,document.getElementById('p-month').value,document.getElementById('p-amount').value||'0',document.getElementById('p-comm').value||'0',document.getElementById('p-date').value,document.getElementById('p-status').value];
-    await gWrite('Payments',row);
-    closeModal('paymentModal');
-    showToast('✅ Payment saved!','success');
+    await gAction({action:'write',sheet:'Payments',row:JSON.stringify(row)});
+    closeModal('paymentModal');showToast('✅ Payment saved!','success');
     setTimeout(()=>loadAll(),3000);
   }catch(e){showToast('Error: '+e.message,'error');}
   btn.innerHTML='Save Payment';btn.disabled=false;
@@ -528,9 +687,8 @@ async function saveProgress(){
   btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
   try{
     const row=[document.getElementById('pr-id').value,client,document.getElementById('pr-month').value,document.getElementById('pr-rev').value||'0',document.getElementById('pr-orders').value||'0',document.getElementById('pr-comm').value||'0',document.getElementById('pr-perf').value,document.getElementById('pr-notes').value];
-    await gWrite('Progress',row);
-    closeModal('progressModal');
-    showToast('✅ Progress saved!','success');
+    await gAction({action:'write',sheet:'Progress',row:JSON.stringify(row)});
+    closeModal('progressModal');showToast('✅ Progress saved!','success');
     setTimeout(()=>loadAll(),3000);
   }catch(e){showToast('Error: '+e.message,'error');}
   btn.innerHTML='Save Record';btn.disabled=false;
