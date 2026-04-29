@@ -8,13 +8,13 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#f0f2f5;color:#1a1a1a}
 .crm-wrap{display:flex;height:100vh;overflow:hidden}
-.sidebar{width:210px;background:#0f2044;display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
-.sidebar-logo{padding:20px 16px 16px;border-bottom:1px solid rgba(255,255,255,0.1)}
+.sidebar{width:215px;background:#0f2044;display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sidebar-logo{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,0.1)}
 .sidebar-logo .co{font-size:13px;font-weight:700;color:#fff;line-height:1.3}
 .sidebar-logo .sub{font-size:10px;color:rgba(255,255,255,0.45);margin-top:3px}
-.nav-section{padding:12px 0 4px}
-.nav-label{font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);padding:0 16px 6px;letter-spacing:0.08em;text-transform:uppercase}
-.nav-item{display:flex;align-items:center;gap:9px;padding:9px 16px;font-size:12px;color:rgba(255,255,255,0.65);cursor:pointer;border-left:2px solid transparent;transition:all 0.15s}
+.nav-section{padding:10px 0 4px}
+.nav-label{font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);padding:0 16px 5px;letter-spacing:0.08em;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 16px;font-size:12px;color:rgba(255,255,255,0.65);cursor:pointer;border-left:2px solid transparent;transition:all 0.15s}
 .nav-item:hover{background:rgba(255,255,255,0.07);color:#fff}
 .nav-item.active{background:rgba(26,86,219,0.25);color:#fff;border-left:2px solid #4f8ef7}
 .nav-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
@@ -22,90 +22,125 @@ body{font-family:Arial,sans-serif;background:#f0f2f5;color:#1a1a1a}
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
 .topbar{background:#fff;border-bottom:1px solid #e5e7eb;padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .page-title{font-size:15px;font-weight:700;color:#0f2044}
-.topbar-right{display:flex;align-items:center;gap:12px}
+.topbar-right{display:flex;align-items:center;gap:10px}
 .badge-admin{font-size:10px;background:#e6f1fb;color:#185FA5;padding:3px 10px;border-radius:20px;font-weight:700}
 .avatar{width:32px;height:32px;border-radius:50%;background:#0f2044;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
-.content{flex:1;overflow-y:auto;padding:20px 24px;background:#f0f2f5}
+.content{flex:1;overflow-y:auto;padding:18px 22px;background:#f0f2f5}
 .section{display:none}.section.active{display:block}
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
 .kpi-card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px}
-.kpi-label{font-size:10px;color:#6b7280;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;font-weight:600}
-.kpi-val{font-size:24px;font-weight:700;color:#0f2044}
-.kpi-sub{font-size:10px;margin-top:3px}.kpi-up{color:#16a34a}.kpi-down{color:#dc2626}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
-.card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:16px 18px;margin-bottom:14px}
-.card-title{font-size:13px;font-weight:700;color:#0f2044;margin-bottom:12px}
-.dept-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:12px}
+.kpi-label{font-size:10px;color:#6b7280;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;font-weight:600}
+.kpi-val{font-size:22px;font-weight:700;color:#0f2044}
+.kpi-sub{font-size:10px;margin-top:2px}.kpi-up{color:#16a34a}.kpi-down{color:#dc2626}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;margin-bottom:12px}
+.card-title{font-size:13px;font-weight:700;color:#0f2044;margin-bottom:10px}
+.dept-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px}
 .dept-name{min-width:65px;color:#6b7280;font-weight:600}
-.bar-wrap{flex:1;height:8px;background:#f0f2f5;border-radius:4px;overflow:hidden}
+.bar-wrap{flex:1;height:7px;background:#f0f2f5;border-radius:4px;overflow:hidden}
 .bar-fill{height:100%;border-radius:4px}
 .bar-ebay{background:#4f8ef7}.bar-walmart{background:#EF9F27}.bar-tiktok{background:#ED93B1}
 .dept-pct{min-width:50px;text-align:right;color:#0f2044;font-weight:700;font-size:12px}
-.pay-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0f2f5;font-size:12px}
+.pay-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f0f2f5;font-size:12px}
 .pay-row:last-child{border-bottom:none}
 .pay-name{color:#0f2044;font-weight:600}.pay-dept{font-size:10px;color:#6b7280;margin-top:1px}
 .pay-amt{font-weight:700;color:#0f2044}
-.status-pill{font-size:9px;padding:3px 8px;border-radius:10px;font-weight:700}
-.pill-green{background:#dcfce7;color:#16a34a}.pill-amber{background:#fef3c7;color:#d97706}.pill-red{background:#fee2e2;color:#dc2626}
-.pill-blue{background:#e6f1fb;color:#185FA5}.pill-purple{background:#f3e8ff;color:#7c3aed}
-.search-bar{display:flex;gap:8px;margin-bottom:14px;align-items:center;flex-wrap:wrap}
-.search-bar input,.search-bar select{font-size:12px;padding:7px 11px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;color:#1a1a1a;outline:none}
-.search-bar input{flex:1;min-width:150px}
-.btn-add{font-size:11px;padding:7px 16px;background:#0f2044;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;white-space:nowrap}
+.status-pill{font-size:9px;padding:2px 8px;border-radius:10px;font-weight:700}
+.pill-green{background:#dcfce7;color:#16a34a}.pill-amber{background:#fef3c7;color:#d97706}
+.pill-red{background:#fee2e2;color:#dc2626}.pill-blue{background:#e6f1fb;color:#185FA5}
+.pill-purple{background:#f3e8ff;color:#7c3aed}.pill-gray{background:#f3f4f6;color:#6b7280}
+.pill-orange{background:#fff7ed;color:#c2410c}
+.search-bar{display:flex;gap:8px;margin-bottom:12px;align-items:center;flex-wrap:wrap}
+.search-bar input,.search-bar select{font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;color:#1a1a1a;outline:none}
+.search-bar input{flex:1;min-width:140px}
+.btn-add{font-size:11px;padding:7px 14px;background:#0f2044;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;white-space:nowrap}
 .btn-add:hover{background:#1a3570}
-.btn-sync{font-size:11px;padding:7px 14px;background:#16a34a;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700}
+.btn-sync{font-size:11px;padding:7px 12px;background:#16a34a;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700}
 .table-wrap{overflow-x:auto;border-radius:10px;border:1px solid #e5e7eb}
 table{width:100%;border-collapse:collapse;font-size:11px;background:#fff}
-th{background:#f8fafc;color:#6b7280;font-weight:700;padding:9px 12px;text-align:left;border-bottom:1px solid #e5e7eb;white-space:nowrap}
-td{padding:9px 12px;border-bottom:1px solid #f0f2f5;color:#1a1a1a;white-space:nowrap}
+th{background:#f8fafc;color:#6b7280;font-weight:700;padding:8px 11px;text-align:left;border-bottom:1px solid #e5e7eb;white-space:nowrap}
+td{padding:8px 11px;border-bottom:1px solid #f0f2f5;color:#1a1a1a;white-space:nowrap}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:#f8fafc}
-.dept-tag{font-size:9px;padding:2px 8px;border-radius:10px;font-weight:700}
+.dept-tag{font-size:9px;padding:2px 7px;border-radius:10px;font-weight:700}
 .tag-ebay{background:#e6f1fb;color:#185FA5}.tag-walmart{background:#fef3c7;color:#d97706}.tag-tiktok{background:#fce7f3;color:#be185d}
 .btn-view{font-size:10px;color:#185FA5;cursor:pointer;background:none;border:none;padding:0;font-weight:700}
-.btn-edit{font-size:10px;color:#d97706;cursor:pointer;background:none;border:none;padding:0;font-weight:700;margin-left:8px}
-.btn-del{font-size:10px;color:#dc2626;cursor:pointer;background:none;border:none;padding:0;font-weight:700;margin-left:8px}
-.profile-header{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:18px;margin-bottom:14px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.profile-avatar{width:50px;height:50px;border-radius:50%;background:#0f2044;color:#fff;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.profile-name{font-size:16px;font-weight:700;color:#0f2044}
-.profile-meta{font-size:11px;color:#6b7280;margin-top:4px}
-.profile-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
-.info-block{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:12px 14px}
-.info-label{font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;font-weight:700}
+.btn-edit{font-size:10px;color:#d97706;cursor:pointer;background:none;border:none;padding:0;font-weight:700;margin-left:7px}
+.btn-del{font-size:10px;color:#dc2626;cursor:pointer;background:none;border:none;padding:0;font-weight:700;margin-left:7px}
+.btn-done{font-size:10px;color:#16a34a;cursor:pointer;background:none;border:none;padding:0;font-weight:700;margin-left:7px}
+.back-btn{font-size:11px;color:#185FA5;cursor:pointer;margin-bottom:10px;display:inline-flex;align-items:center;gap:4px;background:none;border:none;padding:0;font-weight:700}
+.profile-header{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:16px;margin-bottom:12px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.profile-avatar{width:48px;height:48px;border-radius:50%;background:#0f2044;color:#fff;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.profile-avatar.green{background:#16a34a}.profile-avatar.orange{background:#d97706}.profile-avatar.purple{background:#7c3aed}
+.profile-name{font-size:15px;font-weight:700;color:#0f2044}
+.profile-meta{font-size:11px;color:#6b7280;margin-top:3px}
+.profile-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.info-block{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px}
+.info-label{font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;font-weight:700}
 .info-val{font-size:12px;font-weight:700;color:#0f2044}
-.back-btn{font-size:11px;color:#185FA5;cursor:pointer;margin-bottom:12px;display:inline-flex;align-items:center;gap:4px;background:none;border:none;padding:0;font-weight:700}
-.loading{text-align:center;padding:40px;color:#6b7280;font-size:13px}
-.toast{position:fixed;bottom:24px;right:24px;color:#fff;padding:12px 20px;border-radius:10px;font-size:12px;font-weight:700;z-index:9999;display:none;max-width:400px}
+.loading{text-align:center;padding:36px;color:#6b7280;font-size:12px}
+.toast{position:fixed;bottom:22px;right:22px;color:#fff;padding:10px 18px;border-radius:10px;font-size:12px;font-weight:700;z-index:9999;display:none;max-width:400px}
 .toast-success{background:#16a34a}.toast-error{background:#dc2626}.toast-info{background:#0f2044}
 .modal-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.45);z-index:1000;display:none;align-items:center;justify-content:center}
 .modal-bg.open{display:flex}
-.modal{background:#fff;border-radius:12px;padding:24px;width:500px;max-height:90vh;overflow-y:auto}
-.modal-title{font-size:15px;font-weight:700;color:#0f2044;margin-bottom:18px}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
-.form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+.modal{background:#fff;border-radius:12px;padding:22px;width:500px;max-height:90vh;overflow-y:auto}
+.modal-sm{background:#fff;border-radius:12px;padding:22px;width:380px;text-align:center}
+.modal-title{font-size:14px;font-weight:700;color:#0f2044;margin-bottom:16px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.form-group{display:flex;flex-direction:column;gap:4px;margin-bottom:8px}
 .form-group label{font-size:11px;color:#6b7280;font-weight:700}
-.form-group input,.form-group select,.form-group textarea{font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;color:#1a1a1a;outline:none}
-.form-group input:focus,.form-group select:focus{border-color:#4f8ef7}
-.form-section{font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.06em;margin:14px 0 8px;padding-bottom:6px;border-bottom:1px solid #f0f2f5}
-.client-type-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-.type-card{border:2px solid #e5e7eb;border-radius:10px;padding:12px;cursor:pointer;text-align:center;transition:all 0.15s}
-.type-card:hover{border-color:#4f8ef7;background:#f0f7ff}
-.type-card.selected{border-color:#0f2044;background:#e6f1fb}
-.type-card .icon{font-size:24px;margin-bottom:6px}
-.type-card .label{font-size:12px;font-weight:700;color:#0f2044}
-.type-card .desc{font-size:10px;color:#6b7280;margin-top:2px}
-.form-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
-.btn-cancel{font-size:11px;padding:7px 16px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;cursor:pointer;color:#6b7280;font-weight:700}
-.btn-save{font-size:11px;padding:7px 18px;background:#0f2044;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700}
-.btn-update{font-size:11px;padding:7px 18px;background:#d97706;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700}
-.btn-danger{font-size:11px;padding:7px 16px;background:#dc2626;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700}
-.spinner{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.3);border-top:2px solid #fff;border-radius:50%;animation:spin 0.8s linear infinite;margin-right:6px;vertical-align:middle}
+.form-group input,.form-group select,.form-group textarea{font-size:12px;padding:7px 9px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;color:#1a1a1a;outline:none}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:#4f8ef7}
+.form-section{font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.06em;margin:12px 0 6px;padding-bottom:5px;border-bottom:1px solid #f0f2f5}
+.form-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.btn-cancel{font-size:11px;padding:7px 14px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;cursor:pointer;color:#6b7280;font-weight:700}
+.btn-save{font-size:11px;padding:7px 16px;background:#0f2044;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700}
+.btn-update{font-size:11px;padding:7px 16px;background:#d97706;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700}
+.btn-danger{font-size:11px;padding:7px 14px;background:#dc2626;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700}
+.btn-success{font-size:11px;padding:7px 14px;background:#16a34a;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700}
+.spinner{display:inline-block;width:11px;height:11px;border:2px solid rgba(255,255,255,0.3);border-top:2px solid #fff;border-radius:50%;animation:spin 0.8s linear infinite;margin-right:5px;vertical-align:middle}
 @keyframes spin{to{transform:rotate(360deg)}}
-.empty-state{text-align:center;padding:40px 20px;color:#6b7280}
-.confirm-modal{background:#fff;border-radius:12px;padding:24px;width:380px;text-align:center}
-.confirm-modal h3{font-size:15px;font-weight:700;color:#0f2044;margin-bottom:8px}
-.confirm-modal p{font-size:12px;color:#6b7280;margin-bottom:20px}
-.confirm-btns{display:flex;gap:10px;justify-content:center}
+.empty-state{text-align:center;padding:36px 20px;color:#6b7280}
+.member-card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;cursor:pointer;transition:all 0.15s;position:relative}
+.member-card:hover{border-color:#4f8ef7;box-shadow:0 2px 8px rgba(79,142,247,0.15)}
+.member-card .name{font-size:13px;font-weight:700;color:#0f2044;margin:8px 0 3px}
+.member-card .role{font-size:10px;color:#6b7280}
+.member-card .stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+.member-card .stat{background:#f8fafc;border-radius:6px;padding:6px 8px;text-align:center}
+.member-card .stat-val{font-size:13px;font-weight:700;color:#0f2044}
+.member-card .stat-lbl{font-size:9px;color:#6b7280;margin-top:1px}
+.member-actions{position:absolute;top:10px;right:10px;display:flex;gap:5px}
+.task-card{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:12px 14px;margin-bottom:8px}
+.task-card.high{border-left:3px solid #dc2626}
+.task-card.medium{border-left:3px solid #d97706}
+.task-card.low{border-left:3px solid #16a34a}
+.task-card.overdue{background:#fff5f5}
+.task-title{font-size:12px;font-weight:700;color:#0f2044}
+.task-meta{font-size:10px;color:#6b7280;margin-top:3px}
+.task-footer{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.priority-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px}
+.dot-high{background:#dc2626}.dot-medium{background:#d97706}.dot-low{background:#16a34a}
+.tabs{display:flex;gap:0;margin-bottom:14px;border-bottom:2px solid #e5e7eb}
+.tab{padding:8px 16px;font-size:12px;font-weight:600;color:#6b7280;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px}
+.tab.active{color:#0f2044;border-bottom-color:#0f2044}
+.tab-content{display:none}.tab-content.active{display:block}
+.update-card{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:12px 14px;margin-bottom:8px}
+.update-date{font-size:10px;color:#6b7280;font-weight:700}
+.update-text{font-size:12px;color:#0f2044;margin-top:4px}
+.update-label{font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;margin-top:6px}
+.att-btn{padding:5px 12px;font-size:11px;font-weight:700;border:none;border-radius:6px;cursor:pointer;margin-right:4px}
+.att-present{background:#dcfce7;color:#16a34a}
+.att-absent{background:#fee2e2;color:#dc2626}
+.att-half{background:#fef3c7;color:#d97706}
+.att-remote{background:#e6f1fb;color:#185FA5}
+.client-type-wrap{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.type-card{border:2px solid #e5e7eb;border-radius:8px;padding:10px;cursor:pointer;text-align:center;transition:all 0.15s}
+.type-card:hover{border-color:#4f8ef7}
+.type-card.selected{border-color:#0f2044;background:#e6f1fb}
+.type-card .icon{font-size:20px;margin-bottom:4px}
+.type-card .label{font-size:11px;font-weight:700;color:#0f2044}
+.type-card .desc{font-size:9px;color:#6b7280;margin-top:1px}
 </style>
 </head>
 <body>
@@ -129,10 +164,18 @@ tr:hover td{background:#f8fafc}
       <div class="nav-item" onclick="nav('tiktok',this)"><span class="nav-dot dot-tiktok"></span> TikTok Dept</div>
     </div>
     <div class="nav-section">
+      <div class="nav-label">Team</div>
+      <div class="nav-item" onclick="nav('team',this)">&#128101; Team Members</div>
+      <div class="nav-item" onclick="nav('tasks',this)">&#9989; Task Board</div>
+      <div class="nav-item" onclick="nav('attendance',this)">&#128197; Attendance</div>
+      <div class="nav-item" onclick="nav('updates',this)">&#128203; Daily Updates</div>
+    </div>
+    <div class="nav-section">
       <div class="nav-label">Reports</div>
       <div class="nav-item" onclick="nav('growth',this)">&#8593; Growth Report</div>
     </div>
   </div>
+
   <div class="main">
     <div class="topbar">
       <div class="page-title" id="pageTitle">Dashboard</div>
@@ -143,20 +186,26 @@ tr:hover td{background:#f8fafc}
       </div>
     </div>
     <div class="content">
+
       <!-- DASHBOARD -->
       <div class="section active" id="sec-dashboard">
         <div class="kpi-grid">
           <div class="kpi-card"><div class="kpi-label">Total Clients</div><div class="kpi-val" id="kpi-total">—</div><div class="kpi-sub kpi-up" id="kpi-active"></div></div>
           <div class="kpi-card"><div class="kpi-label">Monthly Revenue</div><div class="kpi-val" id="kpi-rev">—</div><div class="kpi-sub">All departments</div></div>
-          <div class="kpi-card"><div class="kpi-label">Our Commission</div><div class="kpi-val" id="kpi-comm">—</div><div class="kpi-sub kpi-up">Total earned</div></div>
+          <div class="kpi-card"><div class="kpi-label">Our Commission</div><div class="kpi-val" id="kpi-comm">—</div></div>
           <div class="kpi-card"><div class="kpi-label">Pending Payments</div><div class="kpi-val" id="kpi-pend">—</div><div class="kpi-sub kpi-down">To collect</div></div>
         </div>
         <div class="grid-2">
           <div class="card"><div class="card-title">Department revenue share</div><div id="dept-bars"><div class="loading">Loading...</div></div></div>
           <div class="card"><div class="card-title">Recent payments</div><div id="dash-payments"><div class="loading">Loading...</div></div></div>
         </div>
+        <div class="grid-2">
+          <div class="card"><div class="card-title">&#9203; Overdue tasks</div><div id="dash-overdue-tasks"><div class="loading">Loading...</div></div></div>
+          <div class="card"><div class="card-title">&#128101; Team today</div><div id="dash-team-today"><div class="loading">Loading...</div></div></div>
+        </div>
         <div class="card"><div class="card-title">All clients overview</div><div class="table-wrap"><table><thead><tr><th>ID</th><th>Client</th><th>Type</th><th>Dept</th><th>Store</th><th>Revenue</th><th>Commission</th><th>Status</th></tr></thead><tbody id="dash-clients"><tr><td colspan="8" class="loading">Loading...</td></tr></tbody></table></div></div>
       </div>
+
       <!-- MASTER -->
       <div class="section" id="sec-master">
         <div class="search-bar">
@@ -165,8 +214,9 @@ tr:hover td{background:#f8fafc}
           <select id="master-status-filter" onchange="filterMaster()"><option value="">All Status</option><option>Active</option><option>Inactive</option><option>Hold</option></select>
           <button class="btn-add" onclick="openClientForm()">+ Add Client</button>
         </div>
-        <div class="table-wrap"><table><thead><tr><th>ID</th><th>Client Name</th><th>Client Type</th><th>Dept</th><th>Country</th><th>City</th><th>Phone</th><th>Store Name</th><th>Deal Type</th><th>Deal %/Amt</th><th>Revenue</th><th>Commission</th><th>Manager</th><th>Status</th><th>Actions</th></tr></thead><tbody id="master-body"><tr><td colspan="15" class="loading">Loading...</td></tr></tbody></table></div>
+        <div class="table-wrap"><table><thead><tr><th>ID</th><th>Client Name</th><th>Type</th><th>Dept</th><th>Country</th><th>City</th><th>Phone</th><th>Store Name</th><th>Deal Type</th><th>Deal %/Amt</th><th>Revenue</th><th>Commission</th><th>Manager</th><th>Status</th><th>Actions</th></tr></thead><tbody id="master-body"><tr><td colspan="15" class="loading">Loading...</td></tr></tbody></table></div>
       </div>
+
       <!-- PAYMENTS -->
       <div class="section" id="sec-payments">
         <div class="search-bar">
@@ -174,7 +224,7 @@ tr:hover td{background:#f8fafc}
           <select id="pay-status-filter" onchange="filterPayments()"><option value="">All Status</option><option>Received</option><option>Pending</option><option>Overdue</option></select>
           <button class="btn-add" onclick="openPaymentForm()">+ Add Payment</button>
         </div>
-        <div class="kpi-grid" style="margin-bottom:14px">
+        <div class="kpi-grid" style="margin-bottom:12px">
           <div class="kpi-card"><div class="kpi-label">Total Received</div><div class="kpi-val" id="pay-received">—</div></div>
           <div class="kpi-card"><div class="kpi-label">Pending</div><div class="kpi-val" id="pay-pending">—</div></div>
           <div class="kpi-card"><div class="kpi-label">Overdue</div><div class="kpi-val kpi-down" id="pay-overdue">—</div></div>
@@ -182,6 +232,7 @@ tr:hover td{background:#f8fafc}
         </div>
         <div class="table-wrap"><table><thead><tr><th>Invoice #</th><th>Client Name</th><th>Department</th><th>Month</th><th>Amount ($)</th><th>Commission ($)</th><th>Date Received</th><th>Status</th><th>Actions</th></tr></thead><tbody id="pay-body"><tr><td colspan="9" class="loading">Loading...</td></tr></tbody></table></div>
       </div>
+
       <!-- PROGRESS -->
       <div class="section" id="sec-progress">
         <div class="search-bar">
@@ -190,10 +241,89 @@ tr:hover td{background:#f8fafc}
         </div>
         <div class="table-wrap"><table><thead><tr><th>Client ID</th><th>Client Name</th><th>Month</th><th>Revenue ($)</th><th>Orders</th><th>Commission ($)</th><th>Performance</th><th>Notes</th><th>Actions</th></tr></thead><tbody id="prog-body"><tr><td colspan="9" class="loading">Loading...</td></tr></tbody></table></div>
       </div>
-      <!-- DEPT SECTIONS -->
+
+      <!-- DEPT -->
       <div class="section" id="sec-ebay"><div id="ebay-list"></div><div id="ebay-profile" style="display:none"></div></div>
       <div class="section" id="sec-walmart"><div id="walmart-list"></div><div id="walmart-profile" style="display:none"></div></div>
       <div class="section" id="sec-tiktok"><div id="tiktok-list"></div><div id="tiktok-profile" style="display:none"></div></div>
+
+      <!-- TEAM MEMBERS -->
+      <div class="section" id="sec-team">
+        <div id="team-list-view">
+          <div class="search-bar">
+            <input type="text" placeholder="Search team members..." id="team-search" oninput="filterTeam()">
+            <select id="team-role-filter" onchange="filterTeam()"><option value="">All Roles</option><option>Admin / Owner</option><option>Department Manager</option><option>Account Manager</option><option>Sales Staff</option></select>
+            <select id="team-dept-filter" onchange="filterTeam()"><option value="">All Departments</option><option>eBay</option><option>Walmart</option><option>TikTok</option><option>All</option></select>
+            <button class="btn-add" onclick="openMemberForm()">+ Add Member</button>
+          </div>
+          <div class="kpi-grid" style="margin-bottom:14px">
+            <div class="kpi-card"><div class="kpi-label">Total Members</div><div class="kpi-val" id="team-total">—</div><div class="kpi-sub kpi-up" id="team-active-count"></div></div>
+            <div class="kpi-card"><div class="kpi-label">Tasks Assigned</div><div class="kpi-val" id="team-tasks">—</div><div class="kpi-sub kpi-down" id="team-overdue"></div></div>
+            <div class="kpi-card"><div class="kpi-label">Present Today</div><div class="kpi-val" id="team-present">—</div></div>
+            <div class="kpi-card"><div class="kpi-label">Revenue Managed</div><div class="kpi-val" id="team-rev">—</div></div>
+          </div>
+          <div id="team-cards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px"></div>
+        </div>
+        <div id="team-profile-view" style="display:none"></div>
+      </div>
+
+      <!-- TASK BOARD -->
+      <div class="section" id="sec-tasks">
+        <div class="search-bar">
+          <input type="text" placeholder="Search tasks..." id="task-search" oninput="filterTasks()">
+          <select id="task-priority-filter" onchange="filterTasks()"><option value="">All Priority</option><option>High</option><option>Medium</option><option>Low</option></select>
+          <select id="task-status-filter" onchange="filterTasks()"><option value="">All Status</option><option>Pending</option><option>In Progress</option><option>Done</option></select>
+          <select id="task-member-filter" onchange="filterTasks()"><option value="">All Members</option></select>
+          <button class="btn-add" onclick="openTaskForm()">+ Assign Task</button>
+        </div>
+        <div class="kpi-grid" style="margin-bottom:14px">
+          <div class="kpi-card"><div class="kpi-label">Total Tasks</div><div class="kpi-val" id="task-total">—</div></div>
+          <div class="kpi-card"><div class="kpi-label">Pending</div><div class="kpi-val" id="task-pending">—</div></div>
+          <div class="kpi-card"><div class="kpi-label">In Progress</div><div class="kpi-val" id="task-inprog">—</div></div>
+          <div class="kpi-card"><div class="kpi-label">Overdue</div><div class="kpi-val kpi-down" id="task-overdue">—</div></div>
+        </div>
+        <div class="grid-3">
+          <div>
+            <div style="font-size:12px;font-weight:700;color:#6b7280;margin-bottom:8px;padding:6px 10px;background:#fee2e2;border-radius:8px;text-align:center">🔴 PENDING</div>
+            <div id="tasks-pending"></div>
+          </div>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:#6b7280;margin-bottom:8px;padding:6px 10px;background:#fef3c7;border-radius:8px;text-align:center">🟡 IN PROGRESS</div>
+            <div id="tasks-inprog"></div>
+          </div>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:#6b7280;margin-bottom:8px;padding:6px 10px;background:#dcfce7;border-radius:8px;text-align:center">🟢 DONE</div>
+            <div id="tasks-done"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ATTENDANCE -->
+      <div class="section" id="sec-attendance">
+        <div class="search-bar">
+          <input type="text" placeholder="Search member..." id="att-search" oninput="filterAttendance()">
+          <input type="date" id="att-date-filter" onchange="filterAttendance()" style="font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff">
+          <button class="btn-add" onclick="openAttForm()">+ Mark Attendance</button>
+        </div>
+        <div class="kpi-grid" style="margin-bottom:14px">
+          <div class="kpi-card"><div class="kpi-label">Present Today</div><div class="kpi-val kpi-up" id="att-present">—</div></div>
+          <div class="kpi-card"><div class="kpi-label">Absent Today</div><div class="kpi-val kpi-down" id="att-absent">—</div></div>
+          <div class="kpi-card"><div class="kpi-label">Half Day</div><div class="kpi-val" id="att-half">—</div></div>
+          <div class="kpi-card"><div class="kpi-label">Remote</div><div class="kpi-val pill-blue" id="att-remote">—</div></div>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Date</th><th>Member Name</th><th>Status</th><th>Check In</th><th>Check Out</th><th>Hours</th><th>Notes</th><th>Actions</th></tr></thead><tbody id="att-body"><tr><td colspan="8" class="loading">Loading...</td></tr></tbody></table></div>
+      </div>
+
+      <!-- DAILY UPDATES -->
+      <div class="section" id="sec-updates">
+        <div class="search-bar">
+          <input type="text" placeholder="Search updates..." id="upd-search" oninput="filterUpdates()">
+          <select id="upd-member-filter" onchange="filterUpdates()"><option value="">All Members</option></select>
+          <button class="btn-add" onclick="openUpdateForm()">+ Submit Update</button>
+        </div>
+        <div id="updates-list"><div class="loading">Loading...</div></div>
+      </div>
+
       <!-- GROWTH -->
       <div class="section" id="sec-growth">
         <div class="kpi-grid">
@@ -204,6 +334,7 @@ tr:hover td{background:#f8fafc}
         </div>
         <div class="card"><div class="card-title">Department breakdown</div><div id="growth-detail"></div></div>
       </div>
+
     </div>
   </div>
 </div>
@@ -214,16 +345,8 @@ tr:hover td{background:#f8fafc}
     <div class="modal-title" id="clientModalTitle">Add New Client</div>
     <div class="form-section">Client Type</div>
     <div class="client-type-wrap">
-      <div class="type-card selected" id="type-direct" onclick="selectType('Direct Client')">
-        <div class="icon">👤</div>
-        <div class="label">Direct Client</div>
-        <div class="desc">Client owns the store directly</div>
-      </div>
-      <div class="type-card" id="type-third" onclick="selectType('Third Party')">
-        <div class="icon">🤝</div>
-        <div class="label">Third Party</div>
-        <div class="desc">Managing on behalf of someone</div>
-      </div>
+      <div class="type-card selected" id="type-direct" onclick="selectType('Direct Client')"><div class="icon">👤</div><div class="label">Direct Client</div><div class="desc">Client owns the store</div></div>
+      <div class="type-card" id="type-third" onclick="selectType('Third Party')"><div class="icon">🤝</div><div class="label">Third Party</div><div class="desc">Managing on behalf</div></div>
     </div>
     <input type="hidden" id="f-client-type" value="Direct Client">
     <div class="form-section">Basic Info</div>
@@ -239,7 +362,7 @@ tr:hover td{background:#f8fafc}
       <div class="form-group"><label>Phone</label><input id="f-phone" placeholder="+92 300 0000000"></div>
       <div class="form-group"><label>Email</label><input id="f-email" placeholder="client@email.com"></div>
     </div>
-    <div class="form-section">Store & Deal Info</div>
+    <div class="form-section">Store & Deal</div>
     <div class="form-row">
       <div class="form-group"><label>Store Name</label><input id="f-store" placeholder="My Store"></div>
       <div class="form-group"><label>Deal Type</label><select id="f-deal"><option>% Commission</option><option>Fixed Monthly</option><option>Both</option><option>Milestone</option></select></div>
@@ -256,9 +379,8 @@ tr:hover td{background:#f8fafc}
       <div class="form-group"><label>Contract Start Date</label><input id="f-start" type="date"></div>
       <div class="form-group"><label>Status</label><select id="f-status"><option>Active</option><option>Inactive</option><option>Hold</option></select></div>
     </div>
-    <div class="form-group"><label>Notes</label><textarea id="f-notes" rows="2" placeholder="Any additional notes..."></textarea></div>
-    <input type="hidden" id="f-row-num">
-    <input type="hidden" id="f-client-id">
+    <div class="form-group"><label>Notes</label><textarea id="f-notes" rows="2" placeholder="Additional notes..."></textarea></div>
+    <input type="hidden" id="f-row-num"><input type="hidden" id="f-client-id">
     <div class="form-btns">
       <button class="btn-cancel" onclick="closeModal('clientModal')">Cancel</button>
       <button class="btn-save" id="clientSaveBtn" onclick="saveClient()">Save Client</button>
@@ -270,26 +392,11 @@ tr:hover td{background:#f8fafc}
 <div class="modal-bg" id="paymentModal">
   <div class="modal">
     <div class="modal-title">Add Payment Record</div>
-    <div class="form-row">
-      <div class="form-group"><label>Invoice #</label><input id="p-inv" placeholder="INV-001"></div>
-      <div class="form-group"><label>Client Name *</label><input id="p-client" placeholder="John Smith"></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>Department</label><select id="p-dept"><option>eBay</option><option>Walmart</option><option>TikTok</option></select></div>
-      <div class="form-group"><label>Month</label><input id="p-month" placeholder="Apr 2026"></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>Amount ($)</label><input id="p-amount" type="number" placeholder="5000"></div>
-      <div class="form-group"><label>Commission ($)</label><input id="p-comm" type="number" placeholder="750"></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>Date Received</label><input id="p-date" type="date"></div>
-      <div class="form-group"><label>Status</label><select id="p-status"><option>Received</option><option>Pending</option><option>Overdue</option></select></div>
-    </div>
-    <div class="form-btns">
-      <button class="btn-cancel" onclick="closeModal('paymentModal')">Cancel</button>
-      <button class="btn-save" id="paySaveBtn" onclick="savePayment()">Save Payment</button>
-    </div>
+    <div class="form-row"><div class="form-group"><label>Invoice #</label><input id="p-inv" placeholder="INV-001"></div><div class="form-group"><label>Client Name *</label><input id="p-client" placeholder="John Smith"></div></div>
+    <div class="form-row"><div class="form-group"><label>Department</label><select id="p-dept"><option>eBay</option><option>Walmart</option><option>TikTok</option></select></div><div class="form-group"><label>Month</label><input id="p-month" placeholder="Apr 2026"></div></div>
+    <div class="form-row"><div class="form-group"><label>Amount ($)</label><input id="p-amount" type="number" placeholder="5000"></div><div class="form-group"><label>Commission ($)</label><input id="p-comm" type="number" placeholder="750"></div></div>
+    <div class="form-row"><div class="form-group"><label>Date Received</label><input id="p-date" type="date"></div><div class="form-group"><label>Status</label><select id="p-status"><option>Received</option><option>Pending</option><option>Overdue</option></select></div></div>
+    <div class="form-btns"><button class="btn-cancel" onclick="closeModal('paymentModal')">Cancel</button><button class="btn-save" id="paySaveBtn" onclick="savePayment()">Save Payment</button></div>
   </div>
 </div>
 
@@ -297,35 +404,125 @@ tr:hover td{background:#f8fafc}
 <div class="modal-bg" id="progressModal">
   <div class="modal">
     <div class="modal-title">Add Progress Record</div>
+    <div class="form-row"><div class="form-group"><label>Client ID</label><input id="pr-id" placeholder="EB-001"></div><div class="form-group"><label>Client Name *</label><input id="pr-client" placeholder="John Smith"></div></div>
+    <div class="form-row"><div class="form-group"><label>Month</label><input id="pr-month" placeholder="Apr 2026"></div><div class="form-group"><label>Revenue ($)</label><input id="pr-rev" type="number" placeholder="5000"></div></div>
+    <div class="form-row"><div class="form-group"><label>Orders</label><input id="pr-orders" type="number" placeholder="50"></div><div class="form-group"><label>Commission ($)</label><input id="pr-comm" type="number" placeholder="750"></div></div>
+    <div class="form-row"><div class="form-group"><label>Performance</label><select id="pr-perf"><option>Good</option><option>Attention</option><option>Critical</option></select></div><div class="form-group"><label>Notes</label><input id="pr-notes" placeholder="On track / needs follow-up"></div></div>
+    <div class="form-btns"><button class="btn-cancel" onclick="closeModal('progressModal')">Cancel</button><button class="btn-save" id="progSaveBtn" onclick="saveProgress()">Save Record</button></div>
+  </div>
+</div>
+
+<!-- TEAM MEMBER MODAL -->
+<div class="modal-bg" id="memberModal">
+  <div class="modal">
+    <div class="modal-title" id="memberModalTitle">Add Team Member</div>
     <div class="form-row">
-      <div class="form-group"><label>Client ID</label><input id="pr-id" placeholder="EB-001"></div>
-      <div class="form-group"><label>Client Name *</label><input id="pr-client" placeholder="John Smith"></div>
+      <div class="form-group"><label>Full Name *</label><input id="m-name" placeholder="Ahmed Khan"></div>
+      <div class="form-group"><label>Role *</label><select id="m-role"><option>Admin / Owner</option><option>Department Manager</option><option>Account Manager</option><option>Sales Staff</option></select></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label>Month</label><input id="pr-month" placeholder="Apr 2026"></div>
-      <div class="form-group"><label>Revenue ($)</label><input id="pr-rev" type="number" placeholder="5000"></div>
+      <div class="form-group"><label>Department</label><select id="m-dept"><option>All</option><option>eBay</option><option>Walmart</option><option>TikTok</option></select></div>
+      <div class="form-group"><label>Phone</label><input id="m-phone" placeholder="+92 300 0000000"></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label>Orders</label><input id="pr-orders" type="number" placeholder="50"></div>
-      <div class="form-group"><label>Commission ($)</label><input id="pr-comm" type="number" placeholder="750"></div>
+      <div class="form-group"><label>Email</label><input id="m-email" placeholder="ahmed@pyb.com"></div>
+      <div class="form-group"><label>Join Date</label><input id="m-join" type="date"></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label>Performance</label><select id="pr-perf"><option>Good</option><option>Attention</option><option>Critical</option></select></div>
-      <div class="form-group"><label>Notes</label><input id="pr-notes" placeholder="On track / needs follow-up"></div>
+      <div class="form-group"><label>Status</label><select id="m-status"><option>Active</option><option>Inactive</option></select></div>
+      <div class="form-group"><label>Notes</label><input id="m-notes" placeholder="Any notes..."></div>
     </div>
+    <input type="hidden" id="m-row-num"><input type="hidden" id="m-id">
     <div class="form-btns">
-      <button class="btn-cancel" onclick="closeModal('progressModal')">Cancel</button>
-      <button class="btn-save" id="progSaveBtn" onclick="saveProgress()">Save Record</button>
+      <button class="btn-cancel" onclick="closeModal('memberModal')">Cancel</button>
+      <button class="btn-save" id="memberSaveBtn" onclick="saveMember()">Save Member</button>
     </div>
   </div>
 </div>
 
-<!-- CONFIRM DELETE MODAL -->
+<!-- TASK MODAL -->
+<div class="modal-bg" id="taskModal">
+  <div class="modal">
+    <div class="modal-title" id="taskModalTitle">Assign New Task</div>
+    <div class="form-group"><label>Task Title *</label><input id="t-title" placeholder="Optimize store listings"></div>
+    <div class="form-group"><label>Description</label><textarea id="t-desc" rows="2" placeholder="Detailed description of the task..."></textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label>Assigned To *</label><select id="t-assigned"><option value="">Select member...</option></select></div>
+      <div class="form-group"><label>Assigned By</label><input id="t-by" value="Admin" placeholder="Admin"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Linked Client</label><select id="t-client"><option value="">No client linked</option></select></div>
+      <div class="form-group"><label>Department</label><select id="t-dept"><option value="">—</option><option>eBay</option><option>Walmart</option><option>TikTok</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Priority</label><select id="t-priority"><option>High</option><option>Medium</option><option>Low</option></select></div>
+      <div class="form-group"><label>Due Date *</label><input id="t-due" type="date"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Status</label><select id="t-status"><option>Pending</option><option>In Progress</option><option>Done</option></select></div>
+      <div class="form-group"><label>Notes</label><input id="t-notes" placeholder="Additional notes..."></div>
+    </div>
+    <input type="hidden" id="t-row-num"><input type="hidden" id="t-id">
+    <div class="form-btns">
+      <button class="btn-cancel" onclick="closeModal('taskModal')">Cancel</button>
+      <button class="btn-save" id="taskSaveBtn" onclick="saveTask()">Assign Task</button>
+    </div>
+  </div>
+</div>
+
+<!-- ATTENDANCE MODAL -->
+<div class="modal-bg" id="attModal">
+  <div class="modal">
+    <div class="modal-title">Mark Attendance</div>
+    <div class="form-row">
+      <div class="form-group"><label>Date</label><input id="a-date" type="date"></div>
+      <div class="form-group"><label>Team Member *</label><select id="a-member"><option value="">Select member...</option></select></div>
+    </div>
+    <div class="form-group"><label>Member ID</label><input id="a-mid" placeholder="Auto-filled" readonly style="background:#f8fafc"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Status</label><select id="a-status"><option>Present</option><option>Absent</option><option>Half Day</option><option>Remote</option></select></div>
+      <div class="form-group"><label>Check In Time</label><input id="a-in" type="time"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Check Out Time</label><input id="a-out" type="time"></div>
+      <div class="form-group"><label>Hours Worked</label><input id="a-hours" type="number" placeholder="8" step="0.5"></div>
+    </div>
+    <div class="form-group"><label>Notes</label><input id="a-notes" placeholder="Any notes..."></div>
+    <div class="form-btns">
+      <button class="btn-cancel" onclick="closeModal('attModal')">Cancel</button>
+      <button class="btn-save" id="attSaveBtn" onclick="saveAttendance()">Save Attendance</button>
+    </div>
+  </div>
+</div>
+
+<!-- DAILY UPDATE MODAL -->
+<div class="modal-bg" id="updateModal">
+  <div class="modal">
+    <div class="modal-title">Submit Daily Update</div>
+    <div class="form-row">
+      <div class="form-group"><label>Date</label><input id="u-date" type="date"></div>
+      <div class="form-group"><label>Team Member *</label><select id="u-member"><option value="">Select member...</option></select></div>
+    </div>
+    <div class="form-group"><label>Member ID</label><input id="u-mid" readonly style="background:#f8fafc" placeholder="Auto-filled"></div>
+    <div class="form-group"><label>Work Done Today *</label><textarea id="u-work" rows="3" placeholder="Describe what you accomplished today..."></textarea></div>
+    <div class="form-group"><label>Clients Contacted</label><input id="u-clients" placeholder="e.g. Javeria, Ahmed Store..."></div>
+    <div class="form-group"><label>Issues Faced</label><textarea id="u-issues" rows="2" placeholder="Any problems or blockers..."></textarea></div>
+    <div class="form-group"><label>Tomorrow Plan</label><textarea id="u-plan" rows="2" placeholder="What will you do tomorrow..."></textarea></div>
+    <div class="form-group"><label>Hours Worked</label><input id="u-hours" type="number" placeholder="8" step="0.5"></div>
+    <div class="form-btns">
+      <button class="btn-cancel" onclick="closeModal('updateModal')">Cancel</button>
+      <button class="btn-save" id="updateSaveBtn" onclick="saveUpdate()">Submit Update</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE -->
 <div class="modal-bg" id="confirmModal">
-  <div class="confirm-modal">
-    <h3>⚠️ Confirm Delete</h3>
-    <p id="confirmText">Are you sure you want to delete this record? This cannot be undone.</p>
-    <div class="confirm-btns">
+  <div class="modal-sm">
+    <div style="font-size:28px;margin-bottom:8px">⚠️</div>
+    <h3 style="font-size:14px;font-weight:700;color:#0f2044;margin-bottom:6px">Confirm Delete</h3>
+    <p style="font-size:12px;color:#6b7280;margin-bottom:18px" id="confirmText">Are you sure?</p>
+    <div style="display:flex;gap:10px;justify-content:center">
       <button class="btn-cancel" onclick="closeModal('confirmModal')">Cancel</button>
       <button class="btn-danger" id="confirmBtn">Delete</button>
     </div>
@@ -335,10 +532,10 @@ tr:hover td{background:#f8fafc}
 <div class="toast" id="toast"></div>
 
 <script>
-const SCRIPT='https://script.google.com/macros/s/AKfycbygwV-51vrv3gU14BktBKF_1-yiSL3mVkqBGBVAPe2kGph3x1qIIcPZyUB5WypNhFLAYg/exec';
+const SCRIPT='https://script.google.com/macros/s/AKfycbyNV85AWtNEy5dd-HP0uKFMUEywZppuqifvYsTcJPbIL8YJdeXQF2EVshQf6afC5R0cZQ/exec';
 const SHEET_ID='1X6FaHYrSs96XYZMLkWBwzp23zCTjSDk13YAVp_TfYwg';
 const API_KEY='AIzaSyBevUeL-MqrlyKFxQ6VfbBDH19uAnma4nU';
-let allClients=[],allPayments=[],allProgress=[];
+let allClients=[],allPayments=[],allProgress=[],allTeam=[],allTasks=[],allAttendance=[],allUpdates=[];
 let editMode=false,editRowNum=null;
 
 async function gRead(range){
@@ -352,7 +549,7 @@ async function gAction(params){
   const r=await fetch(url);
   const text=await r.text();
   try{const d=JSON.parse(text);if(d.status==='error')throw new Error(d.msg);return d;}
-  catch(e){return {status:'success'};}
+  catch(e){return{status:'success'};}
 }
 
 function toObj(rows){
@@ -368,21 +565,79 @@ function toObj(rows){
 async function loadAll(){
   try{
     showToast('Loading...','info');
-    const[cr,pr,pgr]=await Promise.all([gRead('Clients!A:Q'),gRead('Payments!A:H'),gRead('Progress!A:H')]);
+    const[cr,pr,pgr,tm,tk,at,ud]=await Promise.all([
+      gRead('Clients!A:Q'),gRead('Payments!A:H'),gRead('Progress!A:H'),
+      gRead('Team!A:I'),gRead('Tasks!A:M'),gRead('Attendance!A:H'),gRead('DailyUpdates!A:H')
+    ]);
     allClients=toObj(cr);allPayments=toObj(pr);allProgress=toObj(pgr);
+    allTeam=toObj(tm);allTasks=toObj(tk);allAttendance=toObj(at);allUpdates=toObj(ud);
+    populateSelects();
     renderDashboard();renderMaster();renderPayments();renderProgress();
+    renderTeam();renderTasks();renderAttendance();renderUpdates();
     showToast('Data loaded!','success');
-  }catch(e){showToast('Error: '+e.message,'error');}
+  }catch(e){showToast('Error: '+e.message,'error');console.error(e);}
+}
+
+function populateSelects(){
+  const memberOpts=allTeam.filter(m=>m['Status']==='Active').map(m=>`<option value="${m['Full Name']}">${m['Full Name']} (${m['Role']})</option>`).join('');
+  ['task-member-filter','upd-member-filter'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.innerHTML='<option value="">All Members</option>'+memberOpts;
+  });
+  const memberSelects=allTeam.filter(m=>m['Status']==='Active').map(m=>`<option value="${m['Full Name']}">${m['Full Name']} (${m['Role']})</option>`).join('');
+  ['t-assigned','a-member','u-member'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.innerHTML='<option value="">Select member...</option>'+memberSelects;
+  });
+  const clientOpts=allClients.map(c=>`<option value="${c['Client Name']}" data-id="${c['ID']}" data-dept="${c['Department']}">${c['ID']} - ${c['Client Name']}</option>`).join('');
+  const tClient=document.getElementById('t-client');
+  if(tClient)tClient.innerHTML='<option value="">No client linked</option>'+clientOpts;
+
+  // Auto fill member ID on attendance/update
+  ['a-member'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.onchange=function(){
+      const m=allTeam.find(x=>x['Full Name']===this.value);
+      const midEl=document.getElementById('a-mid');
+      if(midEl&&m)midEl.value=m['Member ID']||'';
+    };
+  });
+  const uMember=document.getElementById('u-member');
+  if(uMember)uMember.onchange=function(){
+    const m=allTeam.find(x=>x['Full Name']===this.value);
+    const midEl=document.getElementById('u-mid');
+    if(midEl&&m)midEl.value=m['Member ID']||'';
+  };
+  const tClientEl=document.getElementById('t-client');
+  if(tClientEl)tClientEl.onchange=function(){
+    const opt=this.options[this.selectedIndex];
+    if(opt){
+      const dept=opt.dataset.dept;
+      if(dept)document.getElementById('t-dept').value=dept;
+    }
+  };
 }
 
 function clientTypePill(t){
-  if(t==='Third Party')return`<span class="status-pill pill-purple">🤝 Third Party</span>`;
+  if(t==='Third Party')return`<span class="status-pill pill-purple">🤝 3rd Party</span>`;
   return`<span class="status-pill pill-blue">👤 Direct</span>`;
 }
-function pill(s){const c=s==='Active'||s==='Received'||s==='Good'?'pill-green':s==='Pending'||s==='Hold'||s==='Attention'?'pill-amber':'pill-red';return`<span class="status-pill ${c}">${s||'—'}</span>`;}
+function pill(s){
+  const c=s==='Active'||s==='Received'||s==='Good'||s==='Present'||s==='Done'?'pill-green':
+    s==='Pending'||s==='Hold'||s==='Attention'||s==='Half Day'||s==='In Progress'?'pill-amber':
+    s==='Remote'?'pill-blue':'pill-red';
+  return`<span class="status-pill ${c}">${s||'—'}</span>`;
+}
 function tag(d){const c=d==='eBay'?'tag-ebay':d==='Walmart'?'tag-walmart':'tag-tiktok';return`<span class="dept-tag ${c}">${d||'—'}</span>`;}
 function ini(n){return(n||'?').split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();}
 function fmt(v){return'$'+(parseFloat(v)||0).toLocaleString();}
+function today(){return new Date().toISOString().split('T')[0];}
+function isOverdue(due){if(!due)return false;return new Date(due)<new Date();}
+function rolePill(r){
+  const map={'Admin / Owner':'pill-red','Department Manager':'pill-purple','Account Manager':'pill-blue','Sales Staff':'pill-green'};
+  return`<span class="status-pill ${map[r]||'pill-gray'}">${r||'—'}</span>`;
+}
+function avatarColor(i){const colors=['#0f2044','#16a34a','#d97706','#7c3aed','#dc2626','#185FA5'];return colors[i%colors.length];}
 
 function renderDashboard(){
   const active=allClients.filter(c=>c['Status']==='Active').length;
@@ -397,33 +652,23 @@ function renderDashboard(){
   const depts=['eBay','Walmart','TikTok'],bCls=['bar-ebay','bar-walmart','bar-tiktok'];
   const dRevs=depts.map(d=>allClients.filter(c=>c['Department']===d).reduce((a,c)=>a+(parseFloat(c['Monthly Revenue'])||0),0));
   const maxR=Math.max(...dRevs,1);
-  document.getElementById('dept-bars').innerHTML=allClients.length===0?'<div class="empty-state"><p>No clients yet.</p></div>':depts.map((d,i)=>`<div class="dept-row"><div class="dept-name">${d}</div><div class="bar-wrap"><div class="bar-fill ${bCls[i]}" style="width:${Math.round(dRevs[i]/maxR*100)}%"></div></div><div class="dept-pct">${fmt(dRevs[i])}</div></div>`).join('');
-  document.getElementById('dash-payments').innerHTML=allPayments.length===0?'<div class="empty-state"><p>No payments yet.</p></div>':allPayments.slice(-5).reverse().map(p=>`<div class="pay-row"><div><div class="pay-name">${p['Client Name']||'—'}</div><div class="pay-dept">${p['Department']||''} · ${p['Month']||''}</div></div><div style="text-align:right"><div class="pay-amt">${fmt(p['Amount ($)'])}</div><div style="margin-top:2px">${pill(p['Status'])}</div></div></div>`).join('');
+  document.getElementById('dept-bars').innerHTML=depts.map((d,i)=>`<div class="dept-row"><div class="dept-name">${d}</div><div class="bar-wrap"><div class="bar-fill ${bCls[i]}" style="width:${Math.round(dRevs[i]/maxR*100)}%"></div></div><div class="dept-pct">${fmt(dRevs[i])}</div></div>`).join('');
+  document.getElementById('dash-payments').innerHTML=allPayments.length===0?'<div class="empty-state"><p>No payments yet.</p></div>':allPayments.slice(-4).reverse().map(p=>`<div class="pay-row"><div><div class="pay-name">${p['Client Name']||'—'}</div><div class="pay-dept">${p['Department']||''} · ${p['Month']||''}</div></div><div style="text-align:right"><div class="pay-amt">${fmt(p['Amount ($)'])}</div><div style="margin-top:2px">${pill(p['Status'])}</div></div></div>`).join('');
+  const overdueTasks=allTasks.filter(t=>t['Status']!=='Done'&&isOverdue(t['Due Date']));
+  document.getElementById('dash-overdue-tasks').innerHTML=overdueTasks.length===0?'<div class="empty-state"><p>✅ No overdue tasks!</p></div>':overdueTasks.slice(0,4).map(t=>`<div class="pay-row"><div><div class="pay-name">${t['Task Title']||'—'}</div><div class="pay-dept">→ ${t['Assigned To']||'—'} · Due: ${t['Due Date']||'—'}</div></div><div>${pill(t['Priority'])}</div></div>`).join('');
+  const todayAtt=allAttendance.filter(a=>a['Date']===today());
+  const presentToday=todayAtt.filter(a=>a['Status']==='Present'||a['Status']==='Remote');
+  document.getElementById('dash-team-today').innerHTML=allTeam.length===0?'<div class="empty-state"><p>No team members yet.</p></div>':allTeam.filter(m=>m['Status']==='Active').map(m=>{
+    const att=todayAtt.find(a=>a['Member Name']===m['Full Name']);
+    return`<div class="pay-row"><div><div class="pay-name">${m['Full Name']}</div><div class="pay-dept">${m['Role']}</div></div><div>${att?pill(att['Status']):'<span class="status-pill pill-gray">Not marked</span>'}</div></div>`;
+  }).join('');
   document.getElementById('dash-clients').innerHTML=allClients.length===0?'<tr><td colspan="8"><div class="empty-state"><p>No clients yet.</p></div></td></tr>':allClients.map(c=>`<tr><td style="color:#6b7280;font-size:10px">${c['ID']||'—'}</td><td><b>${c['Client Name']||'—'}</b></td><td>${clientTypePill(c['Client Type'])}</td><td>${tag(c['Department'])}</td><td>${c['Store Name']||'—'}</td><td>${fmt(c['Monthly Revenue'])}</td><td>${fmt(c['Our Commission'])}</td><td>${pill(c['Status'])}</td></tr>`).join('');
 }
 
 function renderMaster(data){
   const list=data||allClients;
-  document.getElementById('master-body').innerHTML=list.length===0?'<tr><td colspan="15"><div class="empty-state"><p>No clients found.</p></div></td></tr>':list.map(c=>`<tr>
-    <td style="color:#6b7280;font-size:10px">${c['ID']||'—'}</td>
-    <td><b>${c['Client Name']||'—'}</b></td>
-    <td>${clientTypePill(c['Client Type'])}</td>
-    <td>${tag(c['Department'])}</td>
-    <td>${c['Country']||'—'}</td><td>${c['City']||'—'}</td><td>${c['Phone']||'—'}</td>
-    <td>${c['Store Name']||'—'}</td>
-    <td style="font-size:10px">${c['Deal Type']||'—'}</td>
-    <td>${c['Deal % or Amount']||'—'}</td>
-    <td>${fmt(c['Monthly Revenue'])}</td><td>${fmt(c['Our Commission'])}</td>
-    <td>${c['Account Manager']||'—'}</td>
-    <td>${pill(c['Status'])}</td>
-    <td>
-      <button class="btn-view" onclick="viewClient('${c['ID']}','${(c['Department']||'').toLowerCase()}')">View</button>
-      <button class="btn-edit" onclick="openEditForm('${c['ID']}')">✏️</button>
-      <button class="btn-del" onclick="confirmDelete('Clients',${c._row},'${c['Client Name']}')">🗑️</button>
-    </td>
-  </tr>`).join('');
+  document.getElementById('master-body').innerHTML=list.length===0?'<tr><td colspan="15"><div class="empty-state"><p>No clients found.</p></div></td></tr>':list.map(c=>`<tr><td style="color:#6b7280;font-size:10px">${c['ID']||'—'}</td><td><b>${c['Client Name']||'—'}</b></td><td>${clientTypePill(c['Client Type'])}</td><td>${tag(c['Department'])}</td><td>${c['Country']||'—'}</td><td>${c['City']||'—'}</td><td>${c['Phone']||'—'}</td><td>${c['Store Name']||'—'}</td><td style="font-size:10px">${c['Deal Type']||'—'}</td><td>${c['Deal % or Amount']||'—'}</td><td>${fmt(c['Monthly Revenue'])}</td><td>${fmt(c['Our Commission'])}</td><td>${c['Account Manager']||'—'}</td><td>${pill(c['Status'])}</td><td><button class="btn-view" onclick="viewClient('${c['ID']}','${(c['Department']||'').toLowerCase()}')">View</button><button class="btn-edit" onclick="openEditClientForm('${c['ID']}')">✏️</button><button class="btn-del" onclick="confirmDelete('Clients',${c._row},'${c['Client Name']}')">🗑️</button></td></tr>`).join('');
 }
-
 function filterMaster(){
   const s=document.getElementById('master-search').value.toLowerCase();
   const d=document.getElementById('master-dept-filter').value;
@@ -437,9 +682,8 @@ function renderPayments(data){
   document.getElementById('pay-pending').textContent=fmt(list.filter(p=>p['Status']==='Pending').reduce((a,p)=>a+(parseFloat(p['Amount ($)'])||0),0));
   document.getElementById('pay-overdue').textContent=fmt(list.filter(p=>p['Status']==='Overdue').reduce((a,p)=>a+(parseFloat(p['Amount ($)'])||0),0));
   document.getElementById('pay-count').textContent=list.length;
-  document.getElementById('pay-body').innerHTML=list.length===0?'<tr><td colspan="9"><div class="empty-state"><p>No payment records yet.</p></div></td></tr>':list.map(p=>`<tr><td style="color:#6b7280">${p['Invoice No']||'—'}</td><td><b>${p['Client Name']||'—'}</b></td><td>${tag(p['Department'])}</td><td>${p['Month']||'—'}</td><td>${fmt(p['Amount ($)'])}</td><td>${fmt(p['Commission ($)'])}</td><td>${p['Date Received']||'—'}</td><td>${pill(p['Status'])}</td><td><button class="btn-del" onclick="confirmDelete('Payments',${p._row},'payment ${p['Invoice No']||''}')">🗑️</button></td></tr>`).join('');
+  document.getElementById('pay-body').innerHTML=list.length===0?'<tr><td colspan="9"><div class="empty-state"><p>No payments yet.</p></div></td></tr>':list.map(p=>`<tr><td style="color:#6b7280">${p['Invoice No']||'—'}</td><td><b>${p['Client Name']||'—'}</b></td><td>${tag(p['Department'])}</td><td>${p['Month']||'—'}</td><td>${fmt(p['Amount ($)'])}</td><td>${fmt(p['Commission ($)'])}</td><td>${p['Date Received']||'—'}</td><td>${pill(p['Status'])}</td><td><button class="btn-del" onclick="confirmDelete('Payments',${p._row},'payment')">🗑️</button></td></tr>`).join('');
 }
-
 function filterPayments(){
   const s=document.getElementById('pay-search').value.toLowerCase();
   const st=document.getElementById('pay-status-filter').value;
@@ -450,12 +694,232 @@ function renderProgress(data){
   const list=data||allProgress;
   document.getElementById('prog-body').innerHTML=list.length===0?'<tr><td colspan="9"><div class="empty-state"><p>No progress records yet.</p></div></td></tr>':list.map(p=>`<tr><td style="color:#6b7280">${p['Client ID']||'—'}</td><td><b>${p['Client Name']||'—'}</b></td><td>${p['Month']||'—'}</td><td>${fmt(p['Revenue'])}</td><td>${p['Orders']||'—'}</td><td>${fmt(p['Commission'])}</td><td>${pill(p['Performance'])}</td><td style="color:#6b7280;font-size:10px">${p['Notes']||'—'}</td><td><button class="btn-del" onclick="confirmDelete('Progress',${p._row},'progress record')">🗑️</button></td></tr>`).join('');
 }
-
 function filterProgress(){
   const s=document.getElementById('prog-search').value.toLowerCase();
   renderProgress(allProgress.filter(p=>!s||Object.values(p).join(' ').toLowerCase().includes(s)));
 }
 
+// ===== TEAM =====
+function renderTeam(data){
+  const list=data||allTeam;
+  const activeTeam=list.filter(m=>m['Status']==='Active');
+  document.getElementById('team-total').textContent=list.length;
+  document.getElementById('team-active-count').textContent=activeTeam.length+' active';
+  const todayAtt=allAttendance.filter(a=>a['Date']===today());
+  const presentCount=todayAtt.filter(a=>a['Status']==='Present'||a['Status']==='Remote').length;
+  document.getElementById('team-present').textContent=presentCount;
+  const totalTasksAssigned=allTasks.filter(t=>t['Status']!=='Done').length;
+  const overdueCount=allTasks.filter(t=>t['Status']!=='Done'&&isOverdue(t['Due Date'])).length;
+  document.getElementById('team-tasks').textContent=totalTasksAssigned;
+  document.getElementById('team-overdue').textContent=overdueCount+' overdue';
+  const totalRev=allClients.reduce((a,c)=>a+(parseFloat(c['Monthly Revenue'])||0),0);
+  document.getElementById('team-rev').textContent=fmt(totalRev);
+  if(list.length===0){document.getElementById('team-cards').innerHTML='<div class="empty-state" style="grid-column:1/-1"><p>No team members yet. Add your first member!</p></div>';return;}
+  document.getElementById('team-cards').innerHTML=list.map((m,idx)=>{
+    const memberClients=allClients.filter(c=>c['Account Manager']===m['Full Name']);
+    const memberTasks=allTasks.filter(t=>t['Assigned To']===m['Full Name']&&t['Status']!=='Done');
+    const doneTasks=allTasks.filter(t=>t['Assigned To']===m['Full Name']&&t['Status']==='Done');
+    const memberRev=memberClients.reduce((a,c)=>a+(parseFloat(c['Monthly Revenue'])||0),0);
+    return`<div class="member-card">
+      <div class="member-actions">
+        <button class="btn-edit" onclick="openEditMemberForm('${m['Member ID']}');event.stopPropagation()">✏️</button>
+        <button class="btn-del" onclick="confirmDelete('Team',${m._row},'${m['Full Name']}');event.stopPropagation()">🗑️</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px" onclick="viewMember('${m['Member ID']}')">
+        <div class="profile-avatar" style="width:40px;height:40px;font-size:13px;background:${avatarColor(idx)};flex-shrink:0">${ini(m['Full Name'])}</div>
+        <div>
+          <div class="name">${m['Full Name']||'—'}</div>
+          <div class="role">${rolePill(m['Role'])} ${m['Department']&&m['Department']!=='All'?tag(m['Department']):''}</div>
+        </div>
+      </div>
+      <div class="stats" onclick="viewMember('${m['Member ID']}')">
+        <div class="stat"><div class="stat-val">${memberClients.length}</div><div class="stat-lbl">Clients</div></div>
+        <div class="stat"><div class="stat-val">${memberTasks.length}</div><div class="stat-lbl">Open Tasks</div></div>
+        <div class="stat"><div class="stat-val">${fmt(memberRev)}</div><div class="stat-lbl">Rev Managed</div></div>
+        <div class="stat"><div class="stat-val kpi-up">${doneTasks.length}</div><div class="stat-lbl">Tasks Done</div></div>
+      </div>
+      <div style="margin-top:8px;text-align:center">${pill(m['Status'])}</div>
+    </div>`;
+  }).join('');
+}
+
+function filterTeam(){
+  const s=document.getElementById('team-search').value.toLowerCase();
+  const role=document.getElementById('team-role-filter').value;
+  const dept=document.getElementById('team-dept-filter').value;
+  renderTeam(allTeam.filter(m=>(!s||Object.values(m).join(' ').toLowerCase().includes(s))&&(!role||m['Role']===role)&&(!dept||m['Department']===dept)));
+}
+
+function viewMember(id){
+  const m=allTeam.find(x=>x['Member ID']===id);
+  if(!m)return;
+  document.getElementById('team-list-view').style.display='none';
+  const profileView=document.getElementById('team-profile-view');
+  profileView.style.display='block';
+  const memberClients=allClients.filter(c=>c['Account Manager']===m['Full Name']);
+  const memberTasks=allTasks.filter(t=>t['Assigned To']===m['Full Name']);
+  const memberUpdates=allUpdates.filter(u=>u['Member Name']===m['Full Name']);
+  const memberAtt=allAttendance.filter(a=>a['Member Name']===m['Full Name']);
+  const pendingTasks=memberTasks.filter(t=>t['Status']==='Pending').length;
+  const inProgTasks=memberTasks.filter(t=>t['Status']==='In Progress').length;
+  const doneTasks=memberTasks.filter(t=>t['Status']==='Done').length;
+  const overdueTasks=memberTasks.filter(t=>t['Status']!=='Done'&&isOverdue(t['Due Date'])).length;
+  const memberRev=memberClients.reduce((a,c)=>a+(parseFloat(c['Monthly Revenue'])||0),0);
+  const presentDays=memberAtt.filter(a=>a['Status']==='Present'||a['Status']==='Remote').length;
+  const idx=allTeam.indexOf(m);
+  profileView.innerHTML=`
+    <button class="back-btn" onclick="backToTeamList()">← Back to Team</button>
+    <div class="profile-header">
+      <div class="profile-avatar" style="background:${avatarColor(idx)}">${ini(m['Full Name'])}</div>
+      <div style="flex:1">
+        <div class="profile-name">${m['Full Name']||'—'}</div>
+        <div class="profile-meta">${m['Role']||'—'} · ${m['Department']||'—'} · ${m['Phone']||''}</div>
+        <div class="profile-meta" style="margin-top:3px">${m['Email']||''} · Joined: ${m['Join Date']||'—'}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+        <button class="btn-update" onclick="openEditMemberForm('${m['Member ID']}')">✏️ Edit</button>
+        <button class="btn-add" onclick="openTaskFormForMember('${m['Full Name']}')">+ Assign Task</button>
+      </div>
+    </div>
+    <div class="kpi-grid" style="margin-bottom:14px">
+      <div class="kpi-card"><div class="kpi-label">Clients Managed</div><div class="kpi-val">${memberClients.length}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Revenue Managed</div><div class="kpi-val">${fmt(memberRev)}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Tasks Done</div><div class="kpi-val kpi-up">${doneTasks}</div><div class="kpi-sub kpi-down">${overdueTasks} overdue</div></div>
+      <div class="kpi-card"><div class="kpi-label">Days Present</div><div class="kpi-val">${presentDays}</div></div>
+    </div>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('member-tab','clients',this)">Clients (${memberClients.length})</div>
+      <div class="tab" onclick="switchTab('member-tab','tasks',this)">Tasks (${memberTasks.length})</div>
+      <div class="tab" onclick="switchTab('member-tab','updates',this)">Daily Updates (${memberUpdates.length})</div>
+      <div class="tab" onclick="switchTab('member-tab','attendance',this)">Attendance (${memberAtt.length})</div>
+    </div>
+    <div id="member-tab-clients" class="tab-content active">
+      ${memberClients.length===0?'<div class="empty-state"><p>No clients assigned yet.</p></div>':'<div class="table-wrap"><table><thead><tr><th>ID</th><th>Client Name</th><th>Dept</th><th>Store</th><th>Revenue</th><th>Commission</th><th>Status</th></tr></thead><tbody>'+memberClients.map(c=>`<tr><td style="color:#6b7280;font-size:10px">${c['ID']||'—'}</td><td><b>${c['Client Name']||'—'}</b></td><td>${tag(c['Department'])}</td><td>${c['Store Name']||'—'}</td><td>${fmt(c['Monthly Revenue'])}</td><td>${fmt(c['Our Commission'])}</td><td>${pill(c['Status'])}</td></tr>`).join('')+'</tbody></table></div>'}
+    </div>
+    <div id="member-tab-tasks" class="tab-content">
+      ${memberTasks.length===0?'<div class="empty-state"><p>No tasks assigned yet.</p></div>':memberTasks.map(t=>`<div class="task-card ${(t['Priority']||'').toLowerCase()} ${isOverdue(t['Due Date'])&&t['Status']!=='Done'?'overdue':''}">
+        <div class="task-title">${t['Task Title']||'—'} ${isOverdue(t['Due Date'])&&t['Status']!=='Done'?'<span class="status-pill pill-red">OVERDUE</span>':''}</div>
+        <div class="task-meta">${t['Description']||''}</div>
+        <div class="task-footer">
+          <div><span class="priority-dot dot-${(t['Priority']||'low').toLowerCase()}"></span>${t['Priority']||'—'} · Due: ${t['Due Date']||'—'} ${t['Client Name']?'· Client: '+t['Client Name']:''}</div>
+          <div>${pill(t['Status'])}</div>
+        </div>
+      </div>`).join('')}
+    </div>
+    <div id="member-tab-updates" class="tab-content">
+      ${memberUpdates.length===0?'<div class="empty-state"><p>No daily updates submitted yet.</p></div>':memberUpdates.slice().reverse().map(u=>`<div class="update-card">
+        <div class="update-date">📅 ${u['Date']||'—'} · ${u['Hours Worked']||'0'} hours</div>
+        <div class="update-label">Work Done</div><div class="update-text">${u['Work Done Today']||'—'}</div>
+        ${u['Clients Contacted']?`<div class="update-label">Clients Contacted</div><div class="update-text">${u['Clients Contacted']}</div>`:''}
+        ${u['Issues Faced']?`<div class="update-label">Issues</div><div class="update-text kpi-down">${u['Issues Faced']}</div>`:''}
+        ${u['Tomorrow Plan']?`<div class="update-label">Tomorrow Plan</div><div class="update-text">${u['Tomorrow Plan']}</div>`:''}
+      </div>`).join('')}
+    </div>
+    <div id="member-tab-attendance" class="tab-content">
+      ${memberAtt.length===0?'<div class="empty-state"><p>No attendance records yet.</p></div>':'<div class="table-wrap"><table><thead><tr><th>Date</th><th>Status</th><th>Check In</th><th>Check Out</th><th>Hours</th><th>Notes</th></tr></thead><tbody>'+memberAtt.slice().reverse().map(a=>`<tr><td>${a['Date']||'—'}</td><td>${pill(a['Status'])}</td><td>${a['Check In']||'—'}</td><td>${a['Check Out']||'—'}</td><td>${a['Hours Worked']||'—'}</td><td style="color:#6b7280;font-size:10px">${a['Notes']||'—'}</td></tr>`).join('')+'</tbody></table></div>'}
+    </div>`;
+}
+
+function backToTeamList(){
+  document.getElementById('team-list-view').style.display='block';
+  document.getElementById('team-profile-view').style.display='none';
+}
+
+function switchTab(prefix,tab,el){
+  document.querySelectorAll(`[id^="${prefix}-"]`).forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(`${prefix}-${tab}`).classList.add('active');
+  el.classList.add('active');
+}
+
+// ===== TASKS =====
+function renderTasks(data){
+  const list=data||allTasks;
+  const pending=list.filter(t=>t['Status']==='Pending');
+  const inProg=list.filter(t=>t['Status']==='In Progress');
+  const done=list.filter(t=>t['Status']==='Done');
+  const overdue=list.filter(t=>t['Status']!=='Done'&&isOverdue(t['Due Date']));
+  document.getElementById('task-total').textContent=list.length;
+  document.getElementById('task-pending').textContent=pending.length;
+  document.getElementById('task-inprog').textContent=inProg.length;
+  document.getElementById('task-overdue').textContent=overdue.length;
+  const taskCard=(t)=>`<div class="task-card ${(t['Priority']||'').toLowerCase()} ${isOverdue(t['Due Date'])&&t['Status']!=='Done'?'overdue':''}">
+    <div class="task-title">${t['Task Title']||'—'} ${isOverdue(t['Due Date'])&&t['Status']!=='Done'?'<span class="status-pill pill-red" style="font-size:8px">OVERDUE</span>':''}</div>
+    <div class="task-meta">→ <b>${t['Assigned To']||'—'}</b> ${t['Client Name']?'· '+t['Client Name']:''}</div>
+    <div class="task-meta">Due: ${t['Due Date']||'—'}</div>
+    ${t['Description']?`<div class="task-meta" style="margin-top:3px;color:#6b7280">${t['Description']}</div>`:''}
+    <div class="task-footer">
+      <div><span class="priority-dot dot-${(t['Priority']||'low').toLowerCase()}"></span>${t['Priority']||'—'}</div>
+      <div style="display:flex;gap:5px">
+        <button class="btn-edit" onclick="openEditTaskForm('${t['Task ID']}')">✏️</button>
+        ${t['Status']!=='Done'?`<button class="btn-done" onclick="markTaskDone('${t['Task ID']}',${t._row})">✅</button>`:''}
+        <button class="btn-del" onclick="confirmDelete('Tasks',${t._row},'task')">🗑️</button>
+      </div>
+    </div>
+  </div>`;
+  document.getElementById('tasks-pending').innerHTML=pending.length===0?'<div class="empty-state"><p>No pending tasks</p></div>':pending.map(taskCard).join('');
+  document.getElementById('tasks-inprog').innerHTML=inProg.length===0?'<div class="empty-state"><p>No tasks in progress</p></div>':inProg.map(taskCard).join('');
+  document.getElementById('tasks-done').innerHTML=done.length===0?'<div class="empty-state"><p>No completed tasks</p></div>':done.slice(-5).reverse().map(taskCard).join('');
+}
+
+function filterTasks(){
+  const s=document.getElementById('task-search').value.toLowerCase();
+  const pr=document.getElementById('task-priority-filter').value;
+  const st=document.getElementById('task-status-filter').value;
+  const mb=document.getElementById('task-member-filter').value;
+  renderTasks(allTasks.filter(t=>(!s||Object.values(t).join(' ').toLowerCase().includes(s))&&(!pr||t['Priority']===pr)&&(!st||t['Status']===st)&&(!mb||t['Assigned To']===mb)));
+}
+
+async function markTaskDone(taskId,rowNum){
+  showToast('Marking as done...','info');
+  const t=allTasks.find(x=>x['Task ID']===taskId);
+  if(!t)return;
+  const row=[t['Task ID'],t['Task Title'],t['Description'],t['Assigned To'],t['Assigned By'],t['Client ID'],t['Client Name'],t['Department'],t['Priority'],'Done',t['Due Date'],today(),t['Notes']];
+  try{
+    await gAction({action:'update',sheet:'Tasks',rowNum:rowNum,row:JSON.stringify(row)});
+    showToast('✅ Task marked as done!','success');
+    setTimeout(()=>loadAll(),3000);
+  }catch(e){showToast('Error: '+e.message,'error');}
+}
+
+// ===== ATTENDANCE =====
+function renderAttendance(data){
+  const list=data||allAttendance;
+  const todayList=list.filter(a=>a['Date']===today());
+  document.getElementById('att-present').textContent=todayList.filter(a=>a['Status']==='Present').length;
+  document.getElementById('att-absent').textContent=todayList.filter(a=>a['Status']==='Absent').length;
+  document.getElementById('att-half').textContent=todayList.filter(a=>a['Status']==='Half Day').length;
+  document.getElementById('att-remote').textContent=todayList.filter(a=>a['Status']==='Remote').length;
+  document.getElementById('att-body').innerHTML=list.length===0?'<tr><td colspan="8"><div class="empty-state"><p>No attendance records yet.</p></div></td></tr>':list.slice().reverse().map(a=>`<tr><td>${a['Date']||'—'}</td><td><b>${a['Member Name']||'—'}</b></td><td>${pill(a['Status'])}</td><td>${a['Check In']||'—'}</td><td>${a['Check Out']||'—'}</td><td>${a['Hours Worked']||'—'}</td><td style="color:#6b7280;font-size:10px">${a['Notes']||'—'}</td><td><button class="btn-del" onclick="confirmDelete('Attendance',${a._row},'attendance record')">🗑️</button></td></tr>`).join('');
+}
+function filterAttendance(){
+  const s=document.getElementById('att-search').value.toLowerCase();
+  const dt=document.getElementById('att-date-filter').value;
+  renderAttendance(allAttendance.filter(a=>(!s||Object.values(a).join(' ').toLowerCase().includes(s))&&(!dt||a['Date']===dt)));
+}
+
+// ===== DAILY UPDATES =====
+function renderUpdates(data){
+  const list=data||allUpdates;
+  if(list.length===0){document.getElementById('updates-list').innerHTML='<div class="empty-state"><p>No daily updates yet.</p></div>';return;}
+  document.getElementById('updates-list').innerHTML=list.slice().reverse().map(u=>`<div class="update-card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div><div style="font-size:12px;font-weight:700;color:#0f2044">${u['Member Name']||'—'}</div><div class="update-date">📅 ${u['Date']||'—'} · ⏱ ${u['Hours Worked']||'0'} hours</div></div>
+      <button class="btn-del" onclick="confirmDelete('DailyUpdates',${u._row},'update')">🗑️</button>
+    </div>
+    <div class="update-label">Work Done Today</div><div class="update-text">${u['Work Done Today']||'—'}</div>
+    ${u['Clients Contacted']?`<div class="update-label">Clients Contacted</div><div class="update-text">${u['Clients Contacted']}</div>`:''}
+    ${u['Issues Faced']?`<div class="update-label">⚠️ Issues</div><div class="update-text kpi-down">${u['Issues Faced']}</div>`:''}
+    ${u['Tomorrow Plan']?`<div class="update-label">Tomorrow Plan</div><div class="update-text">${u['Tomorrow Plan']}</div>`:''}
+  </div>`).join('');
+}
+function filterUpdates(){
+  const s=document.getElementById('upd-search').value.toLowerCase();
+  const mb=document.getElementById('upd-member-filter').value;
+  renderUpdates(allUpdates.filter(u=>(!s||Object.values(u).join(' ').toLowerCase().includes(s))&&(!mb||u['Member Name']===mb)));
+}
+
+// ===== DEPT =====
 function renderDept(dept){
   const dname=dept==='ebay'?'eBay':dept==='walmart'?'Walmart':'TikTok';
   const dc=allClients.filter(c=>c['Department']===dname);
@@ -463,50 +927,35 @@ function renderDept(dept){
   const tC=dc.reduce((a,c)=>a+(parseFloat(c['Our Commission'])||0),0);
   const act=dc.filter(c=>c['Status']==='Active').length;
   document.getElementById(dept+'-list').innerHTML=`
-    <div class="kpi-grid" style="margin-bottom:14px">
+    <div class="kpi-grid" style="margin-bottom:12px">
       <div class="kpi-card"><div class="kpi-label">Total Clients</div><div class="kpi-val">${dc.length}</div><div class="kpi-sub kpi-up">${act} active</div></div>
       <div class="kpi-card"><div class="kpi-label">Monthly Revenue</div><div class="kpi-val">${fmt(tR)}</div></div>
       <div class="kpi-card"><div class="kpi-label">Our Commission</div><div class="kpi-val">${fmt(tC)}</div></div>
       <div class="kpi-card"><div class="kpi-label">Inactive/Hold</div><div class="kpi-val kpi-down">${dc.length-act}</div></div>
     </div>
-    <div class="search-bar"><input type="text" placeholder="Search ${dname} clients...">
-    <button class="btn-add" onclick="openClientForm('${dname}')">+ Add Client</button></div>
-    <div class="table-wrap"><table><thead><tr><th>ID</th><th>Client Name</th><th>Type</th><th>Country</th><th>Store Name</th><th>Deal %/Amt</th><th>Revenue</th><th>Commission</th><th>Manager</th><th>Status</th><th>Actions</th></tr></thead>
-    <tbody>${dc.length===0?`<tr><td colspan="11"><div class="empty-state"><p>No ${dname} clients yet.</p></div></td></tr>`:dc.map(c=>`<tr>
-      <td style="color:#6b7280;font-size:10px">${c['ID']||'—'}</td>
-      <td><b>${c['Client Name']||'—'}</b></td>
-      <td>${clientTypePill(c['Client Type'])}</td>
-      <td>${c['Country']||'—'}</td><td>${c['Store Name']||'—'}</td>
-      <td>${c['Deal % or Amount']||'—'}</td>
-      <td>${fmt(c['Monthly Revenue'])}</td><td>${fmt(c['Our Commission'])}</td>
-      <td>${c['Account Manager']||'—'}</td><td>${pill(c['Status'])}</td>
-      <td>
-        <button class="btn-view" onclick="viewClient('${c['ID']}','${dept}')">View</button>
-        <button class="btn-edit" onclick="openEditForm('${c['ID']}')">✏️</button>
-        <button class="btn-del" onclick="confirmDelete('Clients',${c._row},'${c['Client Name']}')">🗑️</button>
-      </td>
-    </tr>`).join('')}</tbody></table></div>`;
+    <div class="search-bar"><input type="text" placeholder="Search ${dname} clients..."><button class="btn-add" onclick="openClientForm('${dname}')">+ Add Client</button></div>
+    <div class="table-wrap"><table><thead><tr><th>ID</th><th>Client Name</th><th>Type</th><th>Country</th><th>Store</th><th>Deal %/Amt</th><th>Revenue</th><th>Commission</th><th>Manager</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>${dc.length===0?`<tr><td colspan="11"><div class="empty-state"><p>No ${dname} clients yet.</p></div></td></tr>`:dc.map(c=>`<tr><td style="color:#6b7280;font-size:10px">${c['ID']||'—'}</td><td><b>${c['Client Name']||'—'}</b></td><td>${clientTypePill(c['Client Type'])}</td><td>${c['Country']||'—'}</td><td>${c['Store Name']||'—'}</td><td>${c['Deal % or Amount']||'—'}</td><td>${fmt(c['Monthly Revenue'])}</td><td>${fmt(c['Our Commission'])}</td><td>${c['Account Manager']||'—'}</td><td>${pill(c['Status'])}</td><td><button class="btn-view" onclick="viewClient('${c['ID']}','${dept}')">View</button><button class="btn-edit" onclick="openEditClientForm('${c['ID']}')">✏️</button><button class="btn-del" onclick="confirmDelete('Clients',${c._row},'${c['Client Name']}')">🗑️</button></td></tr>`).join('')}</tbody></table></div>`;
 }
 
 function viewClient(id,dept){
   const deptKey=(dept||'').toLowerCase();
   const c=allClients.find(x=>x['ID']===id);
-  if(!c){showToast('Client not found','error');return;}
+  if(!c)return;
   document.getElementById(deptKey+'-list').style.display='none';
   const profEl=document.getElementById(deptKey+'-profile');
   profEl.style.display='block';
   const cp=allProgress.filter(p=>p['Client ID']===id||p['Client Name']===c['Client Name']);
+  const idx=allClients.indexOf(c);
   profEl.innerHTML=`
     <button class="back-btn" onclick="backToDept('${deptKey}')">← Back to ${c['Department']} Department</button>
     <div class="profile-header">
-      <div class="profile-avatar">${ini(c['Client Name'])}</div>
-      <div style="flex:1">
-        <div class="profile-name">${c['Client Name']||'—'} ${clientTypePill(c['Client Type'])}</div>
-        <div class="profile-meta">${c['Store Name']||'—'} · ${tag(c['Department'])} · ${pill(c['Status'])}</div>
-        <div class="profile-meta" style="margin-top:4px">${c['Email']||''} · ${c['Phone']||''}</div>
-      </div>
+      <div class="profile-avatar" style="background:${avatarColor(idx)}">${ini(c['Client Name'])}</div>
+      <div style="flex:1"><div class="profile-name">${c['Client Name']||'—'} ${clientTypePill(c['Client Type'])}</div>
+      <div class="profile-meta">${c['Store Name']||'—'} · ${tag(c['Department'])} · ${pill(c['Status'])}</div>
+      <div class="profile-meta" style="margin-top:3px">${c['Email']||''} · ${c['Phone']||''}</div></div>
       <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
-        <button class="btn-update" onclick="openEditForm('${c['ID']}')">✏️ Edit</button>
+        <button class="btn-update" onclick="openEditClientForm('${c['ID']}')">✏️ Edit</button>
         <button class="btn-danger" onclick="confirmDelete('Clients',${c._row},'${c['Client Name']}')">🗑️ Delete</button>
       </div>
     </div>
@@ -518,27 +967,20 @@ function viewClient(id,dept){
       <div class="info-block"><div class="info-label">Our Commission</div><div class="info-val">${fmt(c['Our Commission'])}</div></div>
       <div class="info-block"><div class="info-label">Account Manager</div><div class="info-val">${c['Account Manager']||'—'}</div></div>
     </div>
-    ${c['Notes']?`<div class="card" style="margin-bottom:12px"><div class="info-label">Notes</div><div style="font-size:12px;margin-top:6px">${c['Notes']}</div></div>`:''}
+    ${c['Notes']?`<div class="card" style="margin-bottom:10px"><div class="info-label">Notes</div><div style="font-size:12px;margin-top:5px">${c['Notes']}</div></div>`:''}
     <div class="card"><div class="card-title">Monthly progress tracker</div>
     <div class="table-wrap"><table><thead><tr><th>Month</th><th>Revenue</th><th>Orders</th><th>Commission</th><th>Performance</th><th>Notes</th></tr></thead>
     <tbody>${cp.length===0?'<tr><td colspan="6"><div class="empty-state"><p>No progress records yet.</p></div></td></tr>':cp.map(p=>`<tr><td>${p['Month']||'—'}</td><td>${fmt(p['Revenue'])}</td><td>${p['Orders']||'—'}</td><td>${fmt(p['Commission'])}</td><td>${pill(p['Performance'])}</td><td style="color:#6b7280;font-size:10px">${p['Notes']||'—'}</td></tr>`).join('')}
     </tbody></table></div></div>`;
 }
-
-function backToDept(dept){
-  document.getElementById(dept+'-list').style.display='block';
-  document.getElementById(dept+'-profile').style.display='none';
-}
+function backToDept(dept){document.getElementById(dept+'-list').style.display='block';document.getElementById(dept+'-profile').style.display='none';}
 
 function renderGrowth(){
   const depts=['eBay','Walmart','TikTok'];
   const data=depts.map(d=>{const dc=allClients.filter(c=>c['Department']===d);return{dept:d,count:dc.length,rev:dc.reduce((a,c)=>a+(parseFloat(c['Monthly Revenue'])||0),0),comm:dc.reduce((a,c)=>a+(parseFloat(c['Our Commission'])||0),0),active:dc.filter(c=>c['Status']==='Active').length};});
-  document.getElementById('g-ebay').textContent=data[0].count;
-  document.getElementById('g-ebay-rev').textContent=fmt(data[0].rev)+' revenue';
-  document.getElementById('g-walmart').textContent=data[1].count;
-  document.getElementById('g-walmart-rev').textContent=fmt(data[1].rev)+' revenue';
-  document.getElementById('g-tiktok').textContent=data[2].count;
-  document.getElementById('g-tiktok-rev').textContent=fmt(data[2].rev)+' revenue';
+  document.getElementById('g-ebay').textContent=data[0].count;document.getElementById('g-ebay-rev').textContent=fmt(data[0].rev)+' revenue';
+  document.getElementById('g-walmart').textContent=data[1].count;document.getElementById('g-walmart-rev').textContent=fmt(data[1].rev)+' revenue';
+  document.getElementById('g-tiktok').textContent=data[2].count;document.getElementById('g-tiktok-rev').textContent=fmt(data[2].rev)+' revenue';
   document.getElementById('g-total').textContent=fmt(data.reduce((a,d)=>a+d.rev,0));
   document.getElementById('growth-detail').innerHTML=data.map(d=>`<div class="pay-row"><div><div class="pay-name">${d.dept} Department</div><div class="pay-dept">${d.count} clients · ${d.active} active · Commission: ${fmt(d.comm)}</div></div><div style="text-align:right"><div class="pay-amt">${fmt(d.rev)}</div></div></div>`).join('');
 }
@@ -548,12 +990,13 @@ function nav(id,el){
   el.classList.add('active');
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.getElementById('sec-'+id).classList.add('active');
-  const titles={dashboard:'Dashboard',master:'Master Record',payments:'Payments',progress:'Progress Tracker',ebay:'eBay Department',walmart:'Walmart Department',tiktok:'TikTok Department',growth:'Growth Report'};
+  const titles={dashboard:'Dashboard',master:'Master Record',payments:'Payments',progress:'Progress Tracker',ebay:'eBay Department',walmart:'Walmart Department',tiktok:'TikTok Department',team:'Team Members',tasks:'Task Board',attendance:'Attendance',updates:'Daily Updates',growth:'Growth Report'};
   document.getElementById('pageTitle').textContent=titles[id]||id;
   if(['ebay','walmart','tiktok'].includes(id)){document.getElementById(id+'-list').style.display='block';document.getElementById(id+'-profile').style.display='none';renderDept(id);}
   if(id==='growth')renderGrowth();
 }
 
+// ===== MODALS =====
 function selectType(type){
   document.getElementById('f-client-type').value=type;
   document.getElementById('type-direct').classList.toggle('selected',type==='Direct Client');
@@ -565,65 +1008,134 @@ function openClientForm(dept){
   document.getElementById('clientModalTitle').textContent='Add New Client';
   document.getElementById('clientSaveBtn').textContent='Save Client';
   document.getElementById('clientSaveBtn').className='btn-save';
-  clearClientForm();
-  if(dept)document.getElementById('f-dept').value=dept;
-  selectType('Direct Client');
-  document.getElementById('clientModal').classList.add('open');
+  clearClientForm();if(dept)document.getElementById('f-dept').value=dept;
+  selectType('Direct Client');document.getElementById('clientModal').classList.add('open');
 }
-
-function openEditForm(id){
-  const c=allClients.find(x=>x['ID']===id);
-  if(!c){showToast('Client not found','error');return;}
+function openEditClientForm(id){
+  const c=allClients.find(x=>x['ID']===id);if(!c)return;
   editMode=true;editRowNum=c._row;
   document.getElementById('clientModalTitle').textContent='✏️ Edit Client';
   document.getElementById('clientSaveBtn').textContent='Update Client';
   document.getElementById('clientSaveBtn').className='btn-update';
   selectType(c['Client Type']||'Direct Client');
-  document.getElementById('f-name').value=c['Client Name']||'';
+  ['f-name','f-country','f-city','f-phone','f-email','f-store','f-pct','f-rev','f-comm','f-mgr','f-notes'].forEach(fid=>{
+    const key={'f-name':'Client Name','f-country':'Country','f-city':'City','f-phone':'Phone','f-email':'Email','f-store':'Store Name','f-pct':'Deal % or Amount','f-rev':'Monthly Revenue','f-comm':'Our Commission','f-mgr':'Account Manager','f-notes':'Notes'}[fid];
+    document.getElementById(fid).value=c[key]||'';
+  });
   document.getElementById('f-dept').value=c['Department']||'eBay';
-  document.getElementById('f-country').value=c['Country']||'';
-  document.getElementById('f-city').value=c['City']||'';
-  document.getElementById('f-phone').value=c['Phone']||'';
-  document.getElementById('f-email').value=c['Email']||'';
-  document.getElementById('f-store').value=c['Store Name']||'';
   document.getElementById('f-deal').value=c['Deal Type']||'% Commission';
-  document.getElementById('f-pct').value=c['Deal % or Amount']||'';
-  document.getElementById('f-rev').value=c['Monthly Revenue']||'';
-  document.getElementById('f-comm').value=c['Our Commission']||'';
-  document.getElementById('f-mgr').value=c['Account Manager']||'';
   document.getElementById('f-start').value=c['Contract Start']||'';
   document.getElementById('f-status').value=c['Status']||'Active';
-  document.getElementById('f-notes').value=c['Notes']||'';
   document.getElementById('f-client-id').value=c['ID']||'';
   document.getElementById('clientModal').classList.add('open');
 }
+function clearClientForm(){['f-name','f-country','f-city','f-phone','f-email','f-store','f-pct','f-rev','f-comm','f-mgr','f-notes','f-client-id'].forEach(id=>document.getElementById(id).value='');document.getElementById('f-status').value='Active';document.getElementById('f-start').value='';}
 
-function clearClientForm(){
-  ['f-name','f-country','f-city','f-phone','f-email','f-store','f-pct','f-rev','f-comm','f-mgr','f-notes','f-client-id'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('f-status').value='Active';
-  document.getElementById('f-start').value='';
+function openMemberForm(){
+  editMode=false;editRowNum=null;
+  document.getElementById('memberModalTitle').textContent='Add Team Member';
+  document.getElementById('memberSaveBtn').textContent='Save Member';
+  document.getElementById('memberSaveBtn').className='btn-save';
+  ['m-name','m-phone','m-email','m-notes','m-id'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('m-join').value=today();
+  document.getElementById('m-status').value='Active';
+  document.getElementById('memberModal').classList.add('open');
+}
+function openEditMemberForm(id){
+  const m=allTeam.find(x=>x['Member ID']===id);if(!m)return;
+  editMode=true;editRowNum=m._row;
+  document.getElementById('memberModalTitle').textContent='✏️ Edit Team Member';
+  document.getElementById('memberSaveBtn').textContent='Update Member';
+  document.getElementById('memberSaveBtn').className='btn-update';
+  document.getElementById('m-name').value=m['Full Name']||'';
+  document.getElementById('m-role').value=m['Role']||'Account Manager';
+  document.getElementById('m-dept').value=m['Department']||'All';
+  document.getElementById('m-phone').value=m['Phone']||'';
+  document.getElementById('m-email').value=m['Email']||'';
+  document.getElementById('m-join').value=m['Join Date']||'';
+  document.getElementById('m-status').value=m['Status']||'Active';
+  document.getElementById('m-notes').value=m['Notes']||'';
+  document.getElementById('m-id').value=m['Member ID']||'';
+  document.getElementById('memberModal').classList.add('open');
+}
+
+function openTaskForm(){
+  editMode=false;editRowNum=null;
+  document.getElementById('taskModalTitle').textContent='Assign New Task';
+  document.getElementById('taskSaveBtn').textContent='Assign Task';
+  document.getElementById('taskSaveBtn').className='btn-save';
+  ['t-title','t-desc','t-notes','t-id'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('t-by').value='Admin';
+  document.getElementById('t-assigned').value='';
+  document.getElementById('t-client').value='';
+  document.getElementById('t-dept').value='';
+  document.getElementById('t-priority').value='Medium';
+  document.getElementById('t-status').value='Pending';
+  document.getElementById('t-due').value='';
+  document.getElementById('taskModal').classList.add('open');
+}
+function openTaskFormForMember(memberName){
+  openTaskForm();
+  document.getElementById('t-assigned').value=memberName;
+}
+function openEditTaskForm(id){
+  const t=allTasks.find(x=>x['Task ID']===id);if(!t)return;
+  editMode=true;editRowNum=t._row;
+  document.getElementById('taskModalTitle').textContent='✏️ Edit Task';
+  document.getElementById('taskSaveBtn').textContent='Update Task';
+  document.getElementById('taskSaveBtn').className='btn-update';
+  document.getElementById('t-title').value=t['Task Title']||'';
+  document.getElementById('t-desc').value=t['Description']||'';
+  document.getElementById('t-assigned').value=t['Assigned To']||'';
+  document.getElementById('t-by').value=t['Assigned By']||'Admin';
+  document.getElementById('t-client').value=t['Client Name']||'';
+  document.getElementById('t-dept').value=t['Department']||'';
+  document.getElementById('t-priority').value=t['Priority']||'Medium';
+  document.getElementById('t-status').value=t['Status']||'Pending';
+  document.getElementById('t-due').value=t['Due Date']||'';
+  document.getElementById('t-notes').value=t['Notes']||'';
+  document.getElementById('t-id').value=t['Task ID']||'';
+  document.getElementById('taskModal').classList.add('open');
+}
+
+function openAttForm(){
+  document.getElementById('a-date').value=today();
+  document.getElementById('a-member').value='';
+  document.getElementById('a-mid').value='';
+  document.getElementById('a-status').value='Present';
+  document.getElementById('a-in').value='';
+  document.getElementById('a-out').value='';
+  document.getElementById('a-hours').value='';
+  document.getElementById('a-notes').value='';
+  document.getElementById('attModal').classList.add('open');
+}
+
+function openUpdateForm(){
+  document.getElementById('u-date').value=today();
+  document.getElementById('u-member').value='';
+  document.getElementById('u-mid').value='';
+  ['u-work','u-clients','u-issues','u-plan'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('u-hours').value='';
+  document.getElementById('updateModal').classList.add('open');
 }
 
 function openPaymentForm(){document.getElementById('paymentModal').classList.add('open');}
 function openProgressForm(){document.getElementById('progressModal').classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
-function genId(dept){const pre=dept==='eBay'?'EB':dept==='Walmart'?'WM':'TT';return`${pre}-${String(allClients.filter(c=>c['Department']===dept).length+1).padStart(3,'0')}`;}
 
-// Confirm Delete
+function genId(dept){const pre=dept==='eBay'?'EB':dept==='Walmart'?'WM':'TT';return`${pre}-${String(allClients.filter(c=>c['Department']===dept).length+1).padStart(3,'0')}`;}
+function genMemberId(){return`MB-${String(allTeam.length+1).padStart(3,'0')}`;}
+function genTaskId(){return`TK-${String(allTasks.length+1).padStart(3,'0')}`;}
+
 function confirmDelete(sheet,rowNum,name){
   document.getElementById('confirmText').textContent=`Delete "${name}"? This cannot be undone.`;
   document.getElementById('confirmBtn').onclick=()=>deleteRecord(sheet,rowNum);
   document.getElementById('confirmModal').classList.add('open');
 }
-
 async function deleteRecord(sheet,rowNum){
-  closeModal('confirmModal');
-  showToast('Deleting...','info');
-  try{
-    await gAction({action:'delete',sheet:sheet,rowNum:rowNum});
-    showToast('✅ Deleted successfully!','success');
-    setTimeout(()=>loadAll(),3000);
-  }catch(e){showToast('Delete error: '+e.message,'error');}
+  closeModal('confirmModal');showToast('Deleting...','info');
+  try{await gAction({action:'delete',sheet:sheet,rowNum:rowNum});showToast('✅ Deleted!','success');setTimeout(()=>loadAll(),3000);}
+  catch(e){showToast('Error: '+e.message,'error');}
 }
 
 async function saveClient(){
@@ -632,74 +1144,100 @@ async function saveClient(){
   const dept=document.getElementById('f-dept').value;
   const clientType=document.getElementById('f-client-type').value;
   const btn=document.getElementById('clientSaveBtn');
-  const origText=btn.textContent;
-  btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
+  const origText=btn.textContent;btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
   const clientId=editMode?(document.getElementById('f-client-id').value||genId(dept)):genId(dept);
-  const row=[
-    clientId,name,dept,
-    document.getElementById('f-country').value,
-    document.getElementById('f-city').value,
-    document.getElementById('f-phone').value,
-    document.getElementById('f-email').value,
-    document.getElementById('f-store').value,
-    document.getElementById('f-deal').value,
-    document.getElementById('f-pct').value,
-    document.getElementById('f-rev').value||'0',
-    document.getElementById('f-comm').value||'0',
-    document.getElementById('f-mgr').value,
-    document.getElementById('f-start').value,
-    document.getElementById('f-status').value,
-    document.getElementById('f-notes').value,
-    clientType
-  ];
+  const row=[clientId,name,dept,document.getElementById('f-country').value,document.getElementById('f-city').value,document.getElementById('f-phone').value,document.getElementById('f-email').value,document.getElementById('f-store').value,document.getElementById('f-deal').value,document.getElementById('f-pct').value,document.getElementById('f-rev').value||'0',document.getElementById('f-comm').value||'0',document.getElementById('f-mgr').value,document.getElementById('f-start').value,document.getElementById('f-status').value,document.getElementById('f-notes').value,clientType];
   try{
-    if(editMode&&editRowNum){
-      await gAction({action:'update',sheet:'Clients',rowNum:editRowNum,row:JSON.stringify(row)});
-      showToast('✅ Client updated!','success');
-    }else{
-      await gAction({action:'write',sheet:'Clients',row:JSON.stringify(row)});
-      showToast('✅ Client saved!','success');
-    }
-    closeModal('clientModal');clearClientForm();
-    setTimeout(()=>loadAll(),3000);
+    if(editMode&&editRowNum)await gAction({action:'update',sheet:'Clients',rowNum:editRowNum,row:JSON.stringify(row)});
+    else await gAction({action:'write',sheet:'Clients',row:JSON.stringify(row)});
+    closeModal('clientModal');clearClientForm();showToast('✅ Client saved!','success');setTimeout(()=>loadAll(),3000);
   }catch(e){showToast('Error: '+e.message,'error');}
   btn.innerHTML=origText;btn.disabled=false;
 }
 
+async function saveMember(){
+  const name=document.getElementById('m-name').value.trim();
+  if(!name){showToast('Name is required!','error');return;}
+  const btn=document.getElementById('memberSaveBtn');
+  const origText=btn.textContent;btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
+  const memberId=editMode?(document.getElementById('m-id').value||genMemberId()):genMemberId();
+  const row=[memberId,name,document.getElementById('m-role').value,document.getElementById('m-dept').value,document.getElementById('m-phone').value,document.getElementById('m-email').value,document.getElementById('m-join').value,document.getElementById('m-status').value,document.getElementById('m-notes').value];
+  try{
+    if(editMode&&editRowNum)await gAction({action:'update',sheet:'Team',rowNum:editRowNum,row:JSON.stringify(row)});
+    else await gAction({action:'write',sheet:'Team',row:JSON.stringify(row)});
+    closeModal('memberModal');showToast('✅ Team member saved!','success');setTimeout(()=>loadAll(),3000);
+  }catch(e){showToast('Error: '+e.message,'error');}
+  btn.innerHTML=origText;btn.disabled=false;
+}
+
+async function saveTask(){
+  const title=document.getElementById('t-title').value.trim();
+  const assigned=document.getElementById('t-assigned').value;
+  if(!title||!assigned){showToast('Title and assigned member required!','error');return;}
+  const btn=document.getElementById('taskSaveBtn');
+  const origText=btn.textContent;btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
+  const taskId=editMode?(document.getElementById('t-id').value||genTaskId()):genTaskId();
+  const clientOpt=document.getElementById('t-client');
+  const selectedClient=allClients.find(c=>c['Client Name']===clientOpt.value);
+  const row=[taskId,title,document.getElementById('t-desc').value,assigned,document.getElementById('t-by').value,selectedClient?selectedClient['ID']:'',clientOpt.value,document.getElementById('t-dept').value,document.getElementById('t-priority').value,document.getElementById('t-status').value,document.getElementById('t-due').value,document.getElementById('t-status').value==='Done'?today():'',document.getElementById('t-notes').value];
+  try{
+    if(editMode&&editRowNum)await gAction({action:'update',sheet:'Tasks',rowNum:editRowNum,row:JSON.stringify(row)});
+    else await gAction({action:'write',sheet:'Tasks',row:JSON.stringify(row)});
+    closeModal('taskModal');showToast('✅ Task saved!','success');setTimeout(()=>loadAll(),3000);
+  }catch(e){showToast('Error: '+e.message,'error');}
+  btn.innerHTML=origText;btn.disabled=false;
+}
+
+async function saveAttendance(){
+  const member=document.getElementById('a-member').value;
+  if(!member){showToast('Select a team member!','error');return;}
+  const btn=document.getElementById('attSaveBtn');
+  btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
+  const m=allTeam.find(x=>x['Full Name']===member);
+  const row=[document.getElementById('a-date').value,m?m['Member ID']:'',member,document.getElementById('a-status').value,document.getElementById('a-in').value,document.getElementById('a-out').value,document.getElementById('a-hours').value,document.getElementById('a-notes').value];
+  try{
+    await gAction({action:'write',sheet:'Attendance',row:JSON.stringify(row)});
+    closeModal('attModal');showToast('✅ Attendance saved!','success');setTimeout(()=>loadAll(),3000);
+  }catch(e){showToast('Error: '+e.message,'error');}
+  btn.innerHTML='Save Attendance';btn.disabled=false;
+}
+
+async function saveUpdate(){
+  const member=document.getElementById('u-member').value;
+  const work=document.getElementById('u-work').value.trim();
+  if(!member||!work){showToast('Member and work description required!','error');return;}
+  const btn=document.getElementById('updateSaveBtn');
+  btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
+  const m=allTeam.find(x=>x['Full Name']===member);
+  const row=[document.getElementById('u-date').value,m?m['Member ID']:'',member,work,document.getElementById('u-clients').value,document.getElementById('u-issues').value,document.getElementById('u-plan').value,document.getElementById('u-hours').value];
+  try{
+    await gAction({action:'write',sheet:'DailyUpdates',row:JSON.stringify(row)});
+    closeModal('updateModal');showToast('✅ Update submitted!','success');setTimeout(()=>loadAll(),3000);
+  }catch(e){showToast('Error: '+e.message,'error');}
+  btn.innerHTML='Submit Update';btn.disabled=false;
+}
+
 async function savePayment(){
   const client=document.getElementById('p-client').value.trim();
-  if(!client){showToast('Client name is required!','error');return;}
-  const btn=document.getElementById('paySaveBtn');
-  btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
-  try{
-    const row=[document.getElementById('p-inv').value||'INV-'+Date.now(),client,document.getElementById('p-dept').value,document.getElementById('p-month').value,document.getElementById('p-amount').value||'0',document.getElementById('p-comm').value||'0',document.getElementById('p-date').value,document.getElementById('p-status').value];
-    await gAction({action:'write',sheet:'Payments',row:JSON.stringify(row)});
-    closeModal('paymentModal');showToast('✅ Payment saved!','success');
-    setTimeout(()=>loadAll(),3000);
-  }catch(e){showToast('Error: '+e.message,'error');}
+  if(!client){showToast('Client name required!','error');return;}
+  const btn=document.getElementById('paySaveBtn');btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
+  const row=[document.getElementById('p-inv').value||'INV-'+Date.now(),client,document.getElementById('p-dept').value,document.getElementById('p-month').value,document.getElementById('p-amount').value||'0',document.getElementById('p-comm').value||'0',document.getElementById('p-date').value,document.getElementById('p-status').value];
+  try{await gAction({action:'write',sheet:'Payments',row:JSON.stringify(row)});closeModal('paymentModal');showToast('✅ Payment saved!','success');setTimeout(()=>loadAll(),3000);}
+  catch(e){showToast('Error: '+e.message,'error');}
   btn.innerHTML='Save Payment';btn.disabled=false;
 }
 
 async function saveProgress(){
   const client=document.getElementById('pr-client').value.trim();
-  if(!client){showToast('Client name is required!','error');return;}
-  const btn=document.getElementById('progSaveBtn');
-  btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
-  try{
-    const row=[document.getElementById('pr-id').value,client,document.getElementById('pr-month').value,document.getElementById('pr-rev').value||'0',document.getElementById('pr-orders').value||'0',document.getElementById('pr-comm').value||'0',document.getElementById('pr-perf').value,document.getElementById('pr-notes').value];
-    await gAction({action:'write',sheet:'Progress',row:JSON.stringify(row)});
-    closeModal('progressModal');showToast('✅ Progress saved!','success');
-    setTimeout(()=>loadAll(),3000);
-  }catch(e){showToast('Error: '+e.message,'error');}
+  if(!client){showToast('Client name required!','error');return;}
+  const btn=document.getElementById('progSaveBtn');btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
+  const row=[document.getElementById('pr-id').value,client,document.getElementById('pr-month').value,document.getElementById('pr-rev').value||'0',document.getElementById('pr-orders').value||'0',document.getElementById('pr-comm').value||'0',document.getElementById('pr-perf').value,document.getElementById('pr-notes').value];
+  try{await gAction({action:'write',sheet:'Progress',row:JSON.stringify(row)});closeModal('progressModal');showToast('✅ Progress saved!','success');setTimeout(()=>loadAll(),3000);}
+  catch(e){showToast('Error: '+e.message,'error');}
   btn.innerHTML='Save Record';btn.disabled=false;
 }
 
-function showToast(msg,type='info'){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.className='toast toast-'+type;t.style.display='block';
-  setTimeout(()=>t.style.display='none',4000);
-}
-
+function showToast(msg,type='info'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast toast-'+type;t.style.display='block';setTimeout(()=>t.style.display='none',4000);}
 window.addEventListener('click',e=>{if(e.target.classList.contains('modal-bg'))e.target.classList.remove('open');});
 loadAll();
 </script>
