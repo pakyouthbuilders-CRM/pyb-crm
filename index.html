@@ -166,7 +166,7 @@ tr:hover td{background:#f8fafc}
     <div class="login-field"><label>Username</label><input type="text" id="loginUser" placeholder="Enter username" onkeypress="if(event.key==='Enter')doLogin()"></div>
     <div class="login-field"><label>Password</label><input type="password" id="loginPass" placeholder="Enter password" onkeypress="if(event.key==='Enter')doLogin()"></div>
     <button class="login-btn" onclick="doLogin()">Login →</button>
-    <div class="login-hint">Admin: admin / admin123</div>
+    
   </div>
 </div>
 
@@ -1429,15 +1429,33 @@ function openEditTaskForm(id){
 }
 function openAttForm(){
   document.getElementById('a-date').value=today();
-  if(currentUser&&!currentUser.isAdmin){document.getElementById('a-member').value=currentUser.name;if(currentUser.memberData)document.getElementById('a-mid').value=currentUser.memberData['Member ID']||'';}
-  else{document.getElementById('a-member').value='';document.getElementById('a-mid').value='';}
+  if(currentUser&&!currentUser.isAdmin){
+    const aSel=document.getElementById('a-member');
+    aSel.innerHTML='<option value="'+currentUser.name+'">'+currentUser.name+'</option>';
+    aSel.disabled=true;
+    if(currentUser.memberData)document.getElementById('a-mid').value=currentUser.memberData['Member ID']||'';
+  } else {
+    const aSel=document.getElementById('a-member');
+    aSel.disabled=false;
+    aSel.innerHTML='<option value="">Select...</option>'+allTeam.filter(m=>m['Status']==='Active').map(m=>'<option value="'+m['Full Name']+'">'+m['Full Name']+' ('+m['Role']+')</option>').join('');
+    document.getElementById('a-mid').value='';
+  }
   document.getElementById('a-status').value='Present';document.getElementById('a-in').value='';document.getElementById('a-out').value='';document.getElementById('a-hours').value='';document.getElementById('a-notes').value='';
   document.getElementById('attModal').classList.add('open');
 }
 function openUpdateForm(){
   document.getElementById('u-date').value=today();
-  if(currentUser&&!currentUser.isAdmin){document.getElementById('u-member').value=currentUser.name;if(currentUser.memberData)document.getElementById('u-mid').value=currentUser.memberData['Member ID']||'';}
-  else{document.getElementById('u-member').value='';document.getElementById('u-mid').value='';}
+  if(currentUser&&!currentUser.isAdmin){
+    const uSel=document.getElementById('u-member');
+    uSel.innerHTML='<option value="'+currentUser.name+'">'+currentUser.name+'</option>';
+    uSel.disabled=true;
+    if(currentUser.memberData)document.getElementById('u-mid').value=currentUser.memberData['Member ID']||'';
+  } else {
+    const uSel=document.getElementById('u-member');
+    uSel.disabled=false;
+    uSel.innerHTML='<option value="">Select...</option>'+allTeam.filter(m=>m['Status']==='Active').map(m=>'<option value="'+m['Full Name']+'">'+m['Full Name']+' ('+m['Role']+')</option>').join('');
+    document.getElementById('u-mid').value='';
+  }
   ['u-work','u-clients','u-issues','u-plan'].forEach(id=>document.getElementById(id).value='');document.getElementById('u-hours').value='';
   document.getElementById('updateModal').classList.add('open');
 }
