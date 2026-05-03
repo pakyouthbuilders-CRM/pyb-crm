@@ -895,15 +895,35 @@ function openEditTaskForm(id){
 }
 function openAttForm(){
   document.getElementById('a-date').value=today();
-  if(currentUser&&!currentUser.isAdmin){document.getElementById('a-member').value=currentUser.name;const m=currentUser.memberData;if(m)document.getElementById('a-mid').value=m['Member ID']||'';}
-  else{document.getElementById('a-member').value='';document.getElementById('a-mid').value='';}
+  const aSel=document.getElementById('a-member');
+  if(currentUser&&!currentUser.isAdmin){
+    aSel.innerHTML='<option value="'+currentUser.name+'">'+currentUser.name+'</option>';
+    aSel.disabled=true;
+    aSel.style.background='#f8fafc';
+    const m=currentUser.memberData;if(m)document.getElementById('a-mid').value=m['Member ID']||'';
+  } else {
+    aSel.disabled=false;
+    aSel.style.background='#fff';
+    aSel.innerHTML='<option value="">Select...</option>'+allTeam.filter(m=>m['Status']==='Active').map(m=>'<option value="'+m['Full Name']+'">'+m['Full Name']+' ('+m['Role']+')</option>').join('');
+    document.getElementById('a-mid').value='';
+  }
   document.getElementById('a-status').value='Present';document.getElementById('a-in').value='';document.getElementById('a-out').value='';document.getElementById('a-hours').value='';document.getElementById('a-notes').value='';
   document.getElementById('attModal').classList.add('open');
 }
 function openUpdateForm(){
   document.getElementById('u-date').value=today();
-  if(currentUser&&!currentUser.isAdmin){document.getElementById('u-member').value=currentUser.name;const m=currentUser.memberData;if(m)document.getElementById('u-mid').value=m['Member ID']||'';}
-  else{document.getElementById('u-member').value='';document.getElementById('u-mid').value='';}
+  const uSel=document.getElementById('u-member');
+  if(currentUser&&!currentUser.isAdmin){
+    uSel.innerHTML='<option value="'+currentUser.name+'">'+currentUser.name+'</option>';
+    uSel.disabled=true;
+    uSel.style.background='#f8fafc';
+    const m=currentUser.memberData;if(m)document.getElementById('u-mid').value=m['Member ID']||'';
+  } else {
+    uSel.disabled=false;
+    uSel.style.background='#fff';
+    uSel.innerHTML='<option value="">Select...</option>'+allTeam.filter(m=>m['Status']==='Active').map(m=>'<option value="'+m['Full Name']+'">'+m['Full Name']+' ('+m['Role']+')</option>').join('');
+    document.getElementById('u-mid').value='';
+  }
   ['u-work','u-clients','u-issues','u-plan'].forEach(id=>document.getElementById(id).value='');document.getElementById('u-hours').value='';
   document.getElementById('updateModal').classList.add('open');
 }
