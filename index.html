@@ -557,7 +557,7 @@ tr:hover td{background:#f8fafc}
 </div></div>
 <div class="toast" id="toast"></div>
 <script>
-const SCRIPT='https://script.google.com/macros/s/AKfycbyNV85AWtNEy5dd-HP0uKFMUEywZppuqifvYsTcJPbIL8YJdeXQF2EVshQf6afC5R0cZQ/exec';
+const SCRIPT='https://script.google.com/macros/s/AKfycbwrfxVlXshZxtrOIX_IL5CXLPm2RWk5AX8oKzr2JVNZcwoaXPyWkFeSx53wos4C4yQy8Q/exec';
 const SHEET_ID='1X6FaHYrSs96XYZMLkWBwzp23zCTjSDk13YAVp_TfYwg';
 const API_KEY='AIzaSyBevUeL-MqrlyKFxQ6VfbBDH19uAnma4nU';
 const ADMIN_USER='admin',ADMIN_PASS='admin123';
@@ -1188,7 +1188,18 @@ async function saveTask(){
   const tid=editMode?(document.getElementById('t-id').value||genTID()):genTID();
   const cv=document.getElementById('t-client').value,sc=allClients.find(c=>c['Client Name']===cv);
   const row=[tid,title,document.getElementById('t-desc').value,assigned,document.getElementById('t-by').value,sc?sc['ID']:'',cv,document.getElementById('t-dept').value,document.getElementById('t-priority').value,document.getElementById('t-status').value,document.getElementById('t-due').value,document.getElementById('t-status').value==='Done'?today():'',document.getElementById('t-notes').value];
-  try{if(editMode&&editRowNum)await gAction({action:'update',sheet:'Tasks',rowNum:editRowNum,row:JSON.stringify(row)});else await gAction({action:'write',sheet:'Tasks',row:JSON.stringify(row)});closeModal('taskModal');showToast('✅ Task saved!','success');setTimeout(()=>loadAll(),3000);}catch(e){showToast('Error: '+e.message,'error');}
+  try{
+    if(editMode&&editRowNum){
+      await gAction({action:'update',sheet:'Tasks',rowNum:editRowNum,row:JSON.stringify(row)});
+      // Send notification on update too - use a separate notify action
+      await gAction({action:'notify',sheet:'Tasks',row:JSON.stringify(row)});
+    } else {
+      await gAction({action:'write',sheet:'Tasks',row:JSON.stringify(row)});
+    }
+    closeModal('taskModal');
+    showToast('✅ Task saved! Notification sent to '+assigned,'success');
+    setTimeout(()=>loadAll(),3000);
+  }catch(e){showToast('Error: '+e.message,'error');}
   btn.innerHTML=orig;btn.disabled=false;
 }
 async function saveAttendance(){
@@ -1278,7 +1289,7 @@ loadAll();
 </body>
 </html>
 <script>
-const SCRIPT='https://script.google.com/macros/s/AKfycbyNV85AWtNEy5dd-HP0uKFMUEywZppuqifvYsTcJPbIL8YJdeXQF2EVshQf6afC5R0cZQ/exec';
+const SCRIPT='https://script.google.com/macros/s/AKfycbwrfxVlXshZxtrOIX_IL5CXLPm2RWk5AX8oKzr2JVNZcwoaXPyWkFeSx53wos4C4yQy8Q/exec';
 const SHEET_ID='1X6FaHYrSs96XYZMLkWBwzp23zCTjSDk13YAVp_TfYwg';
 const API_KEY='AIzaSyBevUeL-MqrlyKFxQ6VfbBDH19uAnma4nU';
 const ADMIN_USER='admin',ADMIN_PASS='admin123';
