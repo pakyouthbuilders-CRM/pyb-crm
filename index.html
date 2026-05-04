@@ -231,8 +231,8 @@ tr:hover td{background:#f8fafc}
       <div class="section" id="sec-dashboard">
         <div class="kpi-grid">
           <div class="kpi-card"><div class="kpi-label">Total Clients</div><div class="kpi-val" id="kpi-total">—</div><div class="kpi-sub kpi-up" id="kpi-active"></div></div>
-          <div class="kpi-card"><div class="kpi-label">Monthly Revenue</div><div class="kpi-val" id="kpi-rev">—</div></div>
-          <div class="kpi-card"><div class="kpi-label">Commission</div><div class="kpi-val" id="kpi-comm">—</div></div>
+          <div class="kpi-card"><div class="kpi-label">Total Gross Revenue Generated</div><div class="kpi-val" id="kpi-rev">—</div><div class="kpi-sub">All time · from Progress</div></div>
+          <div class="kpi-card"><div class="kpi-label">PYB Commission Earned</div><div class="kpi-val" id="kpi-comm">—</div><div class="kpi-sub kpi-up">All time · from Progress</div></div>
           <div class="kpi-card"><div class="kpi-label">Pending Payments</div><div class="kpi-val" id="kpi-pend">—</div><div class="kpi-sub kpi-down">To collect</div></div>
         </div>
         <div class="grid-2">
@@ -254,7 +254,7 @@ tr:hover td{background:#f8fafc}
           <select id="master-status-filter" onchange="filterMaster()"><option value="">All Status</option><option>Active</option><option>Inactive</option><option>Hold</option></select>
           <button class="btn-add" onclick="openClientForm()">+ Add Client</button>
         </div>
-        <div class="table-wrap"><table><thead><tr><th>ID</th><th>Name</th><th>Type</th><th>Dept</th><th>Country</th><th>Phone</th><th>Store</th><th>Deal</th><th>%/Amt</th><th>Revenue</th><th>Commission</th><th>Manager</th><th>Status</th><th>Actions</th></tr></thead><tbody id="master-body"></tbody></table></div>
+        <div class="table-wrap"><table><thead><tr><th>ID</th><th>Name</th><th>Type</th><th>Dept</th><th>Country</th><th>Phone</th><th>Store</th><th>Deal Type</th><th>Deal %</th><th>Manager</th><th>Contract Start</th><th>Status</th><th>Actions</th></tr></thead><tbody id="master-body"></tbody></table></div>
       </div>
 
       <!-- PAYMENTS -->
@@ -270,16 +270,24 @@ tr:hover td{background:#f8fafc}
           <div class="kpi-card"><div class="kpi-label">Overdue</div><div class="kpi-val kpi-down" id="pay-overdue">—</div></div>
           <div class="kpi-card"><div class="kpi-label">Total Invoices</div><div class="kpi-val" id="pay-count">—</div></div>
         </div>
-        <div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Client</th><th>Dept</th><th>Month</th><th>Amount</th><th>Commission</th><th>Date</th><th>Status</th><th>Del</th></tr></thead><tbody id="pay-body"></tbody></table></div>
+        <div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Client</th><th>Dept</th><th>Month</th><th>Amount ($)</th><th>Commission ($)</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody id="pay-body"></tbody></table></div>
       </div>
 
       <!-- PROGRESS -->
       <div class="section" id="sec-progress">
         <div class="search-bar">
           <input type="text" placeholder="Search..." id="prog-search" oninput="filterProgress()">
+          <select id="prog-month-filter" onchange="filterProgress()" style="font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;outline:none"><option value="">All Months</option></select>
+          <select id="prog-dept-filter" onchange="filterProgress()" style="font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;outline:none"><option value="">All Depts</option><option>eBay</option><option>Walmart</option><option>TikTok</option></select>
           <button class="btn-add" onclick="openProgressForm()">+ Add Progress</button>
         </div>
-        <div class="table-wrap"><table><thead><tr><th>Client ID</th><th>Client</th><th>Month</th><th>Revenue</th><th>Orders</th><th>Commission</th><th>Performance</th><th>Notes</th><th>Del</th></tr></thead><tbody id="prog-body"></tbody></table></div>
+        <div class="kpi-grid" style="margin-bottom:12px">
+          <div class="kpi-card"><div class="kpi-label">Total Gross Revenue</div><div class="kpi-val" id="prog-gross">—</div></div>
+          <div class="kpi-card"><div class="kpi-label">Total Net Profit</div><div class="kpi-val" id="prog-net">—</div></div>
+          <div class="kpi-card"><div class="kpi-label">PYB Commission</div><div class="kpi-val kpi-up" id="prog-comm">—</div></div>
+          <div class="kpi-card"><div class="kpi-label">Total Records</div><div class="kpi-val" id="prog-count">—</div></div>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Client ID</th><th>Client</th><th>Dept</th><th>Month</th><th>Gross Revenue</th><th>Cost of Goods</th><th>Net Profit</th><th>Deal %</th><th>PYB Commission</th><th>Orders</th><th>Performance</th><th>Notes</th><th>Actions</th></tr></thead><tbody id="prog-body"></tbody></table></div>
       </div>
 
       <!-- DEPTS -->
@@ -426,8 +434,7 @@ tr:hover td{background:#f8fafc}
   <div class="form-row"><div class="form-group"><label>Country</label><input id="f-country" placeholder="USA"></div><div class="form-group"><label>City</label><input id="f-city" placeholder="New York"></div></div>
   <div class="form-row"><div class="form-group"><label>Phone</label><input id="f-phone" placeholder="+92 300 0000000"></div><div class="form-group"><label>Email</label><input id="f-email" placeholder="client@email.com"></div></div>
   <div class="form-row"><div class="form-group"><label>Store Name</label><input id="f-store" placeholder="My Store"></div><div class="form-group"><label>Deal Type</label><select id="f-deal"><option>% Commission</option><option>Fixed Monthly</option><option>Both</option><option>Milestone</option></select></div></div>
-  <div class="form-row"><div class="form-group"><label>Deal % or Amount</label><input id="f-pct" placeholder="15% or $500"></div><div class="form-group"><label>Monthly Revenue ($)</label><input id="f-rev" type="number" placeholder="5000"></div></div>
-  <div class="form-row"><div class="form-group"><label>Our Commission ($)</label><input id="f-comm" type="number" placeholder="750"></div><div class="form-group"><label>Account Manager</label><input id="f-mgr" placeholder="Ahmed Khan"></div></div>
+  <div class="form-row"><div class="form-group"><label>Deal % (of Net Profit)</label><input id="f-pct" placeholder="e.g. 32%"></div><div class="form-group"><label>Account Manager</label><input id="f-mgr" placeholder="Ahmed Khan"></div></div>
   <div class="form-row"><div class="form-group"><label>Contract Start</label><input id="f-start" type="date"></div><div class="form-group"><label>Status</label><select id="f-status"><option>Active</option><option>Inactive</option><option>Hold</option></select></div></div>
   <div class="form-group"><label>Notes</label><textarea id="f-notes" rows="2" placeholder="Notes..."></textarea></div>
   <input type="hidden" id="f-row-num"><input type="hidden" id="f-client-id">
@@ -435,21 +442,62 @@ tr:hover td{background:#f8fafc}
 </div></div>
 
 <div class="modal-bg" id="paymentModal"><div class="modal">
-  <div class="modal-title">Add Payment</div>
-  <div class="form-row"><div class="form-group"><label>Invoice #</label><input id="p-inv" placeholder="INV-001"></div><div class="form-group"><label>Client Name *</label><input id="p-client"></div></div>
-  <div class="form-row"><div class="form-group"><label>Department</label><select id="p-dept"><option>eBay</option><option>Walmart</option><option>TikTok</option></select></div><div class="form-group"><label>Month</label><input id="p-month" placeholder="Apr 2026"></div></div>
-  <div class="form-row"><div class="form-group"><label>Amount ($)</label><input id="p-amount" type="number"></div><div class="form-group"><label>Commission ($)</label><input id="p-comm" type="number"></div></div>
-  <div class="form-row"><div class="form-group"><label>Date Received</label><input id="p-date" type="date"></div><div class="form-group"><label>Status</label><select id="p-status"><option>Received</option><option>Pending</option><option>Overdue</option></select></div></div>
-  <div class="form-btns"><button class="btn-cancel" onclick="closeModal('paymentModal')">Cancel</button><button class="btn-save" id="paySaveBtn" onclick="savePayment()">Save</button></div>
+  <div class="modal-title" id="payModalTitle">Add Payment</div>
+  <div class="form-row">
+    <div class="form-group"><label>Invoice #</label><input id="p-inv" placeholder="INV-001"></div>
+    <div class="form-group"><label>Client *</label><select id="p-client-select" onchange="fillPaymentClient()"><option value="">Select client...</option></select></div>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label>Client Name</label><input id="p-client" placeholder="Auto-filled" readonly style="background:#f8fafc"></div>
+    <div class="form-group"><label>Department</label><input id="p-dept-text" placeholder="Auto-filled" readonly style="background:#f8fafc"></div>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label>Month *</label><input id="p-month" placeholder="May 2026"></div>
+    <div class="form-group"><label>Date Received</label><input id="p-date" type="date"></div>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label>Amount ($) *</label><input id="p-amount" type="number" placeholder="5000"></div>
+    <div class="form-group"><label>Commission ($) *</label><input id="p-comm" type="number" placeholder="1600"></div>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label>Status</label><select id="p-status"><option>Received</option><option>Pending</option><option>Overdue</option></select></div>
+    <div class="form-group"><label>Notes</label><input id="p-notes" placeholder="Any notes..."></div>
+  </div>
+  <input type="hidden" id="p-row-num"><input type="hidden" id="p-dept">
+  <div class="form-btns"><button class="btn-cancel" onclick="closeModal('paymentModal')">Cancel</button><button class="btn-save" id="paySaveBtn" onclick="savePayment()">Save Payment</button></div>
 </div></div>
 
 <div class="modal-bg" id="progressModal"><div class="modal">
-  <div class="modal-title">Add Progress Record</div>
-  <div class="form-row"><div class="form-group"><label>Client ID</label><input id="pr-id"></div><div class="form-group"><label>Client Name *</label><input id="pr-client"></div></div>
-  <div class="form-row"><div class="form-group"><label>Month</label><input id="pr-month" placeholder="Apr 2026"></div><div class="form-group"><label>Revenue ($)</label><input id="pr-rev" type="number"></div></div>
-  <div class="form-row"><div class="form-group"><label>Orders</label><input id="pr-orders" type="number"></div><div class="form-group"><label>Commission ($)</label><input id="pr-comm" type="number"></div></div>
-  <div class="form-row"><div class="form-group"><label>Performance</label><select id="pr-perf"><option>Good</option><option>Attention</option><option>Critical</option></select></div><div class="form-group"><label>Notes</label><input id="pr-notes"></div></div>
-  <div class="form-btns"><button class="btn-cancel" onclick="closeModal('progressModal')">Cancel</button><button class="btn-save" id="progSaveBtn" onclick="saveProgress()">Save</button></div>
+  <div class="modal-title" id="progModalTitle">Add Progress Record</div>
+  <div class="form-row">
+    <div class="form-group"><label>Client *</label><select id="pr-client-select" onchange="fillProgressClient()"><option value="">Select client...</option></select></div>
+    <div class="form-group"><label>Month *</label><input id="pr-month" placeholder="May 2026"></div>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label>Client ID</label><input id="pr-id" readonly style="background:#f8fafc"></div>
+    <div class="form-group"><label>Department</label><input id="pr-dept" readonly style="background:#f8fafc"></div>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label>Deal %</label><input id="pr-deal" readonly style="background:#f8fafc" placeholder="Auto-filled"></div>
+    <div class="form-group"><label>Orders</label><input id="pr-orders" type="number" placeholder="0"></div>
+  </div>
+  <div style="background:#f0f7ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px;margin-bottom:10px">
+    <div style="font-size:11px;font-weight:700;color:#185FA5;margin-bottom:8px">💰 Revenue & Commission (Auto-calculates)</div>
+    <div class="form-row" style="margin-bottom:8px">
+      <div class="form-group"><label>Gross Revenue ($) *</label><input id="pr-gross" type="number" placeholder="50000" oninput="calcProgress()"></div>
+      <div class="form-group"><label>Cost of Goods ($) *</label><input id="pr-cogs" type="number" placeholder="35000" oninput="calcProgress()"></div>
+    </div>
+    <div class="form-row" style="margin-bottom:0">
+      <div class="form-group"><label>Net Profit ($)</label><input id="pr-net" readonly style="background:#f0fff4;font-weight:700;color:#16a34a"></div>
+      <div class="form-group"><label>PYB Commission ($)</label><input id="pr-comm" readonly style="background:#f0fff4;font-weight:700;color:#16a34a"></div>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label>Performance</label><select id="pr-perf"><option>Good</option><option>Attention</option><option>Critical</option></select></div>
+    <div class="form-group"><label>Notes</label><input id="pr-notes" placeholder="Any notes..."></div>
+  </div>
+  <input type="hidden" id="pr-row-num">
+  <div class="form-btns"><button class="btn-cancel" onclick="closeModal('progressModal')">Cancel</button><button class="btn-save" id="progSaveBtn" onclick="saveProgress()">Save Record</button></div>
 </div></div>
 
 <div class="modal-bg" id="memberModal"><div class="modal">
@@ -535,7 +583,7 @@ function toObj(rows){
 async function loadAll(){
   try{
     showToast('Loading...','info');
-    const[cr,pr,pgr,tm,tk,at,ud]=await Promise.all([gRead('Clients!A:Q'),gRead('Payments!A:H'),gRead('Progress!A:H'),gRead('Team!A:K'),gRead('Tasks!A:M'),gRead('Attendance!A:H'),gRead('DailyUpdates!A:H')]);
+    const[cr,pr,pgr,tm,tk,at,ud]=await Promise.all([gRead('Clients!A:Q'),gRead('Payments!A:H'),gRead('Progress!A:L'),gRead('Team!A:K'),gRead('Tasks!A:M'),gRead('Attendance!A:H'),gRead('DailyUpdates!A:H')]);
     allClients=toObj(cr);allPayments=toObj(pr);allProgress=toObj(pgr);allTeam=toObj(tm);allTasks=toObj(tk);allAttendance=toObj(at);allUpdates=toObj(ud);
     populateSelects();
     if(currentUser){if(currentUser.isAdmin){renderDashboard();renderMaster();renderPayments();renderProgress();renderTeam();renderTasks();renderAttendance();renderUpdates();}else{renderMemberDashboard();}}
@@ -639,13 +687,20 @@ function filterMyTasks(){
 // ADMIN RENDERS
 function renderDashboard(){
   const active=allClients.filter(c=>c['Status']==='Active').length;
-  const tRev=allClients.reduce((a,c)=>a+(parseFloat(c['Monthly Revenue'])||0),0);
-  const tComm=allClients.reduce((a,c)=>a+(parseFloat(c['Our Commission'])||0),0);
+  // Dashboard now pulls REAL numbers from Progress sheet (current month)
+  const curMonth=new Date().toLocaleString('default',{month:'short'})+' '+new Date().getFullYear();
+  const thisMonthProg=allProgress.filter(p=>p['Month']&&p['Month'].trim()===curMonth);
+  const allTimeProg=allProgress;
+  const tGross=allTimeProg.reduce((a,p)=>a+(parseFloat(p['Gross Revenue'])||0),0);
+  const tNet=allTimeProg.reduce((a,p)=>a+(parseFloat(p['Net Profit'])||0),0);
+  const tComm=allTimeProg.reduce((a,p)=>a+(parseFloat(p['PYB Commission'])||0),0);
+  const thisGross=thisMonthProg.reduce((a,p)=>a+(parseFloat(p['Gross Revenue'])||0),0);
+  const thisComm=thisMonthProg.reduce((a,p)=>a+(parseFloat(p['PYB Commission'])||0),0);
   const pend=allPayments.filter(p=>p['Status']==='Pending'||p['Status']==='Overdue').reduce((a,p)=>a+(parseFloat(p['Amount ($)'])||0),0);
   document.getElementById('kpi-total').textContent=allClients.length||'0';
   document.getElementById('kpi-active').textContent=active+' active';
-  document.getElementById('kpi-rev').textContent=fmt(tRev);
-  document.getElementById('kpi-comm').textContent=fmt(tComm);
+  document.getElementById('kpi-rev').textContent=allTimeProg.length>0?fmt(tGross):'No progress data yet';
+  document.getElementById('kpi-comm').textContent=allTimeProg.length>0?fmt(tComm):'No progress data yet';
   document.getElementById('kpi-pend').textContent=fmt(pend);
   const depts=['eBay','Walmart','TikTok'],bCls=['bar-ebay','bar-walmart','bar-tiktok'];
   const dRevs=depts.map(d=>allClients.filter(c=>c['Department']===d).reduce((a,c)=>a+(parseFloat(c['Monthly Revenue'])||0),0));
@@ -665,18 +720,67 @@ function renderMaster(data){
 function filterMaster(){const s=document.getElementById('master-search').value.toLowerCase();const d=document.getElementById('master-dept-filter').value;const st=document.getElementById('master-status-filter').value;renderMaster(allClients.filter(c=>(!s||Object.values(c).join(' ').toLowerCase().includes(s))&&(!d||c['Department']===d)&&(!st||c['Status']===st)));}
 function renderPayments(data){
   const list=data||allPayments;
-  document.getElementById('pay-received').textContent=fmt(list.filter(p=>p['Status']==='Received').reduce((a,p)=>a+(parseFloat(p['Amount ($)'])||0),0));
-  document.getElementById('pay-pending').textContent=fmt(list.filter(p=>p['Status']==='Pending').reduce((a,p)=>a+(parseFloat(p['Amount ($)'])||0),0));
-  document.getElementById('pay-overdue').textContent=fmt(list.filter(p=>p['Status']==='Overdue').reduce((a,p)=>a+(parseFloat(p['Amount ($)'])||0),0));
+  // Support both 'Amount ($)' and 'Amount' column names
+  const getAmt=(p)=>parseFloat(p['Amount ($)']||p['Amount']||0)||0;
+  const getComm=(p)=>parseFloat(p['Commission ($)']||p['Commission']||0)||0;
+  document.getElementById('pay-received').textContent=fmt(list.filter(p=>p['Status']==='Received').reduce((a,p)=>a+getAmt(p),0));
+  document.getElementById('pay-pending').textContent=fmt(list.filter(p=>p['Status']==='Pending').reduce((a,p)=>a+getAmt(p),0));
+  document.getElementById('pay-overdue').textContent=fmt(list.filter(p=>p['Status']==='Overdue').reduce((a,p)=>a+getAmt(p),0));
   document.getElementById('pay-count').textContent=list.length;
-  document.getElementById('pay-body').innerHTML=list.length===0?'<tr><td colspan="9"><div class="empty-state"><p>No payments.</p></div></td></tr>':list.map(p=>`<tr><td style="color:#6b7280">${p['Invoice No']||'—'}</td><td><b>${p['Client Name']||'—'}</b></td><td>${tag(p['Department'])}</td><td>${p['Month']||'—'}</td><td>${fmt(p['Amount ($)'])}</td><td>${fmt(p['Commission ($)'])}</td><td>${p['Date Received']||'—'}</td><td>${pill(p['Status'])}</td><td><button class="btn-del" onclick="confirmDelete('Payments',${p._row},'payment')">🗑️</button></td></tr>`).join('');
+  document.getElementById('pay-body').innerHTML=list.length===0?'<tr><td colspan="9"><div class="empty-state"><p>No payments yet.</p></div></td></tr>':list.map(p=>`<tr>
+    <td style="color:#6b7280">${p['Invoice No']||p['Invoice']||'—'}</td>
+    <td><b>${p['Client Name']||p['Client']||'—'}</b></td>
+    <td>${tag(p['Department']||p['Dept'])}</td>
+    <td>${p['Month']||'—'}</td>
+    <td style="font-weight:700">${fmt(getAmt(p))}</td>
+    <td style="color:#16a34a;font-weight:700">${fmt(getComm(p))}</td>
+    <td>${p['Date Received']||p['Date']||'—'}</td>
+    <td>${pill(p['Status'])}</td>
+    <td>
+      <button class="btn-edit" onclick="openEditPaymentForm(${p._row})">✏️</button>
+      <button class="btn-del" onclick="confirmDelete('Payments',${p._row},'payment')">🗑️</button>
+    </td>
+  </tr>`).join('');
 }
 function filterPayments(){const s=document.getElementById('pay-search').value.toLowerCase();const st=document.getElementById('pay-status-filter').value;renderPayments(allPayments.filter(p=>(!s||Object.values(p).join(' ').toLowerCase().includes(s))&&(!st||p['Status']===st)));}
 function renderProgress(data){
   const list=data||allProgress;
-  document.getElementById('prog-body').innerHTML=list.length===0?'<tr><td colspan="9"><div class="empty-state"><p>No records.</p></div></td></tr>':list.map(p=>`<tr><td style="color:#6b7280">${p['Client ID']||'—'}</td><td><b>${p['Client Name']||'—'}</b></td><td>${p['Month']||'—'}</td><td>${fmt(p['Revenue'])}</td><td>${p['Orders']||'—'}</td><td>${fmt(p['Commission'])}</td><td>${pill(p['Performance'])}</td><td style="color:#6b7280;font-size:10px">${p['Notes']||'—'}</td><td><button class="btn-del" onclick="confirmDelete('Progress',${p._row},'record')">🗑️</button></td></tr>`).join('');
+  // Update summary cards
+  const gross=list.reduce((a,p)=>a+(parseFloat(p['Gross Revenue'])||0),0);
+  const net=list.reduce((a,p)=>a+(parseFloat(p['Net Profit'])||0),0);
+  const comm=list.reduce((a,p)=>a+(parseFloat(p['PYB Commission'])||0),0);
+  const pgEl=document.getElementById('prog-gross');if(pgEl)pgEl.textContent=fmt(gross);
+  const pnEl=document.getElementById('prog-net');if(pnEl)pnEl.textContent=fmt(net);
+  const pcEl=document.getElementById('prog-comm');if(pcEl)pcEl.textContent=fmt(comm);
+  const pctEl=document.getElementById('prog-count');if(pctEl)pctEl.textContent=list.length;
+  // Update month filter options
+  const mf=document.getElementById('prog-month-filter');
+  if(mf){const months=[...new Set(allProgress.map(p=>p['Month']).filter(Boolean))];const cur=mf.value;mf.innerHTML='<option value="">All Months</option>'+months.map(m=>`<option value="${m}" ${m===cur?'selected':''}>${m}</option>`).join('');}
+  document.getElementById('prog-body').innerHTML=list.length===0?'<tr><td colspan="13"><div class="empty-state"><p>No records yet. Add your first progress record.</p></div></td></tr>':list.map(p=>`<tr>
+    <td style="color:#6b7280;font-size:10px">${p['Client ID']||'—'}</td>
+    <td><b>${p['Client Name']||'—'}</b></td>
+    <td>${tag(p['Department'])}</td>
+    <td>${p['Month']||'—'}</td>
+    <td>${fmt(p['Gross Revenue'])}</td>
+    <td>${fmt(p['Cost of Goods'])}</td>
+    <td style="color:#16a34a;font-weight:700">${fmt(p['Net Profit'])}</td>
+    <td style="color:#185FA5;font-weight:700">${p['Deal %']||'—'}</td>
+    <td style="color:#d97706;font-weight:700">${fmt(p['PYB Commission'])}</td>
+    <td>${p['Orders']||'—'}</td>
+    <td>${pill(p['Performance'])}</td>
+    <td style="color:#6b7280;font-size:10px">${p['Notes']||'—'}</td>
+    <td>
+      <button class="btn-edit" onclick="openEditProgressForm(${p._row})">✏️</button>
+      <button class="btn-del" onclick="confirmDelete('Progress',${p._row},'record')">🗑️</button>
+    </td>
+  </tr>`).join('');
 }
-function filterProgress(){const s=document.getElementById('prog-search').value.toLowerCase();renderProgress(allProgress.filter(p=>!s||Object.values(p).join(' ').toLowerCase().includes(s)));}
+function filterProgress(){
+  const s=document.getElementById('prog-search').value.toLowerCase();
+  const m=document.getElementById('prog-month-filter')?document.getElementById('prog-month-filter').value:'';
+  const d=document.getElementById('prog-dept-filter')?document.getElementById('prog-dept-filter').value:'';
+  renderProgress(allProgress.filter(p=>(!s||Object.values(p).join(' ').toLowerCase().includes(s))&&(!m||p['Month']===m)&&(!d||p['Department']===d)));
+}
 function renderTeam(data){
   const list=data||allTeam;
   document.getElementById('team-total').textContent=list.length;
@@ -830,8 +934,8 @@ function viewClient(id,dept){
       <div class="info-block"><div class="info-label">Location</div><div class="info-val">${c['City']||'—'}, ${c['Country']||'—'}</div></div>
       <div class="info-block"><div class="info-label">Deal Type</div><div class="info-val">${c['Deal Type']||'—'}</div></div>
       <div class="info-block"><div class="info-label">Deal Value</div><div class="info-val">${c['Deal % or Amount']||'—'}</div></div>
-      <div class="info-block"><div class="info-label">Revenue</div><div class="info-val">${fmt(c['Monthly Revenue'])}</div></div>
-      <div class="info-block"><div class="info-label">Commission</div><div class="info-val">${fmt(c['Our Commission'])}</div></div>
+      <div class="info-block"><div class="info-label">Deal %</div><div class="info-val">${c['Deal %']||'—'}</div></div>
+      <div class="info-block"><div class="info-label">Contract Since</div><div class="info-val">${c['Contract Start']||'—'}</div></div>
       <div class="info-block"><div class="info-label">Manager</div><div class="info-val">${c['Account Manager']||'—'}</div></div>
     </div>
     ${c['Notes']?`<div class="card" style="margin-bottom:10px"><div class="info-label">Notes</div><div style="font-size:12px;margin-top:5px">${c['Notes']}</div></div>`:''}
@@ -843,12 +947,22 @@ function viewClient(id,dept){
 function backToDept(dept){document.getElementById(dept+'-list').style.display='block';document.getElementById(dept+'-profile').style.display='none';}
 function renderGrowth(){
   const depts=['eBay','Walmart','TikTok'];
-  const data=depts.map(d=>{const dc=allClients.filter(c=>c['Department']===d);return{dept:d,count:dc.length,rev:dc.reduce((a,c)=>a+(parseFloat(c['Monthly Revenue'])||0),0),comm:dc.reduce((a,c)=>a+(parseFloat(c['Our Commission'])||0),0),active:dc.filter(c=>c['Status']==='Active').length};});
-  document.getElementById('g-ebay').textContent=data[0].count;document.getElementById('g-ebay-rev').textContent=fmt(data[0].rev)+' revenue';
-  document.getElementById('g-walmart').textContent=data[1].count;document.getElementById('g-walmart-rev').textContent=fmt(data[1].rev)+' revenue';
-  document.getElementById('g-tiktok').textContent=data[2].count;document.getElementById('g-tiktok-rev').textContent=fmt(data[2].rev)+' revenue';
-  document.getElementById('g-total').textContent=fmt(data.reduce((a,d)=>a+d.rev,0));
-  document.getElementById('growth-detail').innerHTML=data.map(d=>`<div class="pay-row"><div><div class="pay-name">${d.dept}</div><div class="pay-dept">${d.count} clients · ${d.active} active · Commission: ${fmt(d.comm)}</div></div><div class="pay-amt">${fmt(d.rev)}</div></div>`).join('');
+  const data=depts.map(d=>{
+    const dc=allClients.filter(c=>c['Department']===d);
+    const dp=allProgress.filter(p=>p['Department']===d);
+    return{
+      dept:d,count:dc.length,
+      gross:dp.reduce((a,p)=>a+(parseFloat(p['Gross Revenue'])||0),0),
+      net:dp.reduce((a,p)=>a+(parseFloat(p['Net Profit'])||0),0),
+      comm:dp.reduce((a,p)=>a+(parseFloat(p['PYB Commission'])||0),0),
+      active:dc.filter(c=>c['Status']==='Active').length
+    };
+  });
+  document.getElementById('g-ebay').textContent=data[0].count;document.getElementById('g-ebay-rev').textContent=fmt(data[0].gross)+' gross';
+  document.getElementById('g-walmart').textContent=data[1].count;document.getElementById('g-walmart-rev').textContent=fmt(data[1].gross)+' gross';
+  document.getElementById('g-tiktok').textContent=data[2].count;document.getElementById('g-tiktok-rev').textContent=fmt(data[2].gross)+' gross';
+  document.getElementById('g-total').textContent=fmt(data.reduce((a,d)=>a+d.gross,0));
+  document.getElementById('growth-detail').innerHTML=data.map(d=>`<div class="pay-row"><div><div class="pay-name">${d.dept} Department</div><div class="pay-dept">${d.count} clients · ${d.active} active · Net Profit: ${fmt(d.net)} · Commission: ${fmt(d.comm)}</div></div><div class="pay-amt">${fmt(d.gross)}</div></div>`).join('');
 }
 
 // NAV
@@ -872,7 +986,7 @@ function openEditClientForm(id){
   editMode=true;editRowNum=c._row;
   document.getElementById('clientModalTitle').textContent='✏️ Edit Client';document.getElementById('clientSaveBtn').textContent='Update';document.getElementById('clientSaveBtn').className='btn-update';
   selectType(c['Client Type']||'Direct Client');
-  document.getElementById('f-name').value=c['Client Name']||'';document.getElementById('f-dept').value=c['Department']||'eBay';document.getElementById('f-country').value=c['Country']||'';document.getElementById('f-city').value=c['City']||'';document.getElementById('f-phone').value=c['Phone']||'';document.getElementById('f-email').value=c['Email']||'';document.getElementById('f-store').value=c['Store Name']||'';document.getElementById('f-deal').value=c['Deal Type']||'% Commission';document.getElementById('f-pct').value=c['Deal % or Amount']||'';document.getElementById('f-rev').value=c['Monthly Revenue']||'';document.getElementById('f-comm').value=c['Our Commission']||'';document.getElementById('f-mgr').value=c['Account Manager']||'';document.getElementById('f-start').value=c['Contract Start']||'';document.getElementById('f-status').value=c['Status']||'Active';document.getElementById('f-notes').value=c['Notes']||'';document.getElementById('f-client-id').value=c['ID']||'';
+  document.getElementById('f-name').value=c['Client Name']||'';document.getElementById('f-dept').value=c['Department']||'eBay';document.getElementById('f-country').value=c['Country']||'';document.getElementById('f-city').value=c['City']||'';document.getElementById('f-phone').value=c['Phone']||'';document.getElementById('f-email').value=c['Email']||'';document.getElementById('f-store').value=c['Store Name']||'';document.getElementById('f-deal').value=c['Deal Type']||'% Commission';document.getElementById('f-pct').value=c['Deal %']||'';document.getElementById('f-mgr').value=c['Account Manager']||'';document.getElementById('f-start').value=c['Contract Start']||'';document.getElementById('f-status').value=c['Status']||'Active';document.getElementById('f-notes').value=c['Notes']||'';document.getElementById('f-client-id').value=c['ID']||'';
   document.getElementById('clientModal').classList.add('open');
 }
 function clearCF(){['f-name','f-country','f-city','f-phone','f-email','f-store','f-pct','f-rev','f-comm','f-mgr','f-notes','f-client-id'].forEach(id=>document.getElementById(id).value='');document.getElementById('f-status').value='Active';document.getElementById('f-start').value='';}
@@ -927,8 +1041,121 @@ function openUpdateForm(){
   ['u-work','u-clients','u-issues','u-plan'].forEach(id=>document.getElementById(id).value='');document.getElementById('u-hours').value='';
   document.getElementById('updateModal').classList.add('open');
 }
-function openPaymentForm(){document.getElementById('paymentModal').classList.add('open');}
-function openProgressForm(){document.getElementById('progressModal').classList.add('open');}
+function openPaymentForm(){
+  editMode=false;editRowNum=null;
+  document.getElementById('payModalTitle').textContent='Add Payment';
+  document.getElementById('paySaveBtn').textContent='Save Payment';
+  document.getElementById('paySaveBtn').className='btn-save';
+  // Populate client dropdown
+  const pcs=document.getElementById('p-client-select');
+  pcs.innerHTML='<option value="">Select client...</option>'+allClients.map(c=>`<option value="${c['ID']}">${c['ID']} - ${c['Client Name']}</option>`).join('');
+  document.getElementById('p-client').value='';
+  document.getElementById('p-dept-text').value='';
+  document.getElementById('p-dept').value='';
+  document.getElementById('p-inv').value='';
+  document.getElementById('p-month').value='';
+  document.getElementById('p-amount').value='';
+  document.getElementById('p-comm').value='';
+  document.getElementById('p-date').value=today();
+  document.getElementById('p-status').value='Pending';
+  document.getElementById('p-notes').value='';
+  document.getElementById('p-row-num').value='';
+  document.getElementById('paymentModal').classList.add('open');
+}
+
+function fillPaymentClient(){
+  const sel=document.getElementById('p-client-select');
+  const cid=sel.value;
+  const c=allClients.find(x=>x['ID']===cid);
+  if(c){
+    document.getElementById('p-client').value=c['Client Name']||'';
+    document.getElementById('p-dept-text').value=c['Department']||'';
+    document.getElementById('p-dept').value=c['Department']||'';
+  }
+}
+
+function openEditPaymentForm(rowNum){
+  const p=allPayments.find(x=>x._row===rowNum);if(!p)return;
+  editMode=true;editRowNum=rowNum;
+  document.getElementById('payModalTitle').textContent='✏️ Edit Payment';
+  document.getElementById('paySaveBtn').textContent='Update Payment';
+  document.getElementById('paySaveBtn').className='btn-update';
+  const pcs=document.getElementById('p-client-select');
+  pcs.innerHTML='<option value="">Select client...</option>'+allClients.map(c=>`<option value="${c['ID']}">${c['ID']} - ${c['Client Name']}</option>`).join('');
+  document.getElementById('p-client').value=p['Client Name']||p['Client']||'';
+  document.getElementById('p-dept-text').value=p['Department']||p['Dept']||'';
+  document.getElementById('p-dept').value=p['Department']||p['Dept']||'';
+  document.getElementById('p-inv').value=p['Invoice No']||p['Invoice']||'';
+  document.getElementById('p-month').value=p['Month']||'';
+  document.getElementById('p-amount').value=p['Amount ($)']||p['Amount']||'';
+  document.getElementById('p-comm').value=p['Commission ($)']||p['Commission']||'';
+  document.getElementById('p-date').value=p['Date Received']||p['Date']||'';
+  document.getElementById('p-status').value=p['Status']||'Pending';
+  document.getElementById('p-notes').value=p['Notes']||'';
+  document.getElementById('p-row-num').value=rowNum;
+  document.getElementById('paymentModal').classList.add('open');
+}
+
+function openProgressForm(){
+  editMode=false;editRowNum=null;
+  document.getElementById('progModalTitle').textContent='Add Progress Record';
+  document.getElementById('progSaveBtn').textContent='Save Record';
+  document.getElementById('progSaveBtn').className='btn-save';
+  // Populate client dropdown
+  const pcs=document.getElementById('pr-client-select');
+  pcs.innerHTML='<option value="">Select client...</option>'+allClients.map(c=>`<option value="${c['ID']}">${c['ID']} - ${c['Client Name']}</option>`).join('');
+  ['pr-id','pr-dept','pr-deal','pr-gross','pr-cogs','pr-net','pr-comm','pr-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('pr-orders').value='';
+  document.getElementById('pr-month').value='';
+  document.getElementById('pr-perf').value='Good';
+  document.getElementById('pr-row-num').value='';
+  document.getElementById('progressModal').classList.add('open');
+}
+
+function openEditProgressForm(rowNum){
+  const p=allProgress.find(x=>x._row===rowNum);if(!p)return;
+  editMode=true;editRowNum=rowNum;
+  document.getElementById('progModalTitle').textContent='✏️ Edit Progress Record';
+  document.getElementById('progSaveBtn').textContent='Update Record';
+  document.getElementById('progSaveBtn').className='btn-update';
+  const pcs=document.getElementById('pr-client-select');
+  pcs.innerHTML='<option value="">Select client...</option>'+allClients.map(c=>`<option value="${c['ID']}">${c['ID']} - ${c['Client Name']}</option>`).join('');
+  document.getElementById('pr-client-select').value=p['Client ID']||'';
+  document.getElementById('pr-id').value=p['Client ID']||'';
+  document.getElementById('pr-dept').value=p['Department']||'';
+  document.getElementById('pr-deal').value=p['Deal %']||'';
+  document.getElementById('pr-month').value=p['Month']||'';
+  document.getElementById('pr-gross').value=p['Gross Revenue']||'';
+  document.getElementById('pr-cogs').value=p['Cost of Goods']||'';
+  document.getElementById('pr-net').value=p['Net Profit']||'';
+  document.getElementById('pr-comm').value=p['PYB Commission']||'';
+  document.getElementById('pr-orders').value=p['Orders']||'';
+  document.getElementById('pr-perf').value=p['Performance']||'Good';
+  document.getElementById('pr-notes').value=p['Notes']||'';
+  document.getElementById('pr-row-num').value=rowNum;
+  document.getElementById('progressModal').classList.add('open');
+}
+
+function fillProgressClient(){
+  const sel=document.getElementById('pr-client-select');
+  const cid=sel.value;
+  const c=allClients.find(x=>x['ID']===cid);
+  if(c){
+    document.getElementById('pr-id').value=c['ID']||'';
+    document.getElementById('pr-dept').value=c['Department']||'';
+    document.getElementById('pr-deal').value=c['Deal %']||'';
+  }
+}
+
+function calcProgress(){
+  const gross=parseFloat(document.getElementById('pr-gross').value)||0;
+  const cogs=parseFloat(document.getElementById('pr-cogs').value)||0;
+  const dealPct=parseFloat((document.getElementById('pr-deal').value||'0').replace('%',''))||0;
+  const net=gross-cogs;
+  const comm=(net*dealPct)/100;
+  document.getElementById('pr-net').value=net>0?net.toFixed(2):'0';
+  document.getElementById('pr-comm').value=comm>0?comm.toFixed(2):'0';
+}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 function genId(dept){const pre=dept==='eBay'?'EB':dept==='Walmart'?'WM':'TT';return`${pre}-${String(allClients.filter(c=>c['Department']===dept).length+1).padStart(3,'0')}`;}
 function genMID(){return`MB-${String(allTeam.length+1).padStart(3,'0')}`;}
@@ -942,7 +1169,7 @@ async function saveClient(){
   const dept=document.getElementById('f-dept').value,ct=document.getElementById('f-client-type').value;
   const btn=document.getElementById('clientSaveBtn'),orig=btn.textContent;btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
   const cid=editMode?(document.getElementById('f-client-id').value||genId(dept)):genId(dept);
-  const row=[cid,name,dept,document.getElementById('f-country').value,document.getElementById('f-city').value,document.getElementById('f-phone').value,document.getElementById('f-email').value,document.getElementById('f-store').value,document.getElementById('f-deal').value,document.getElementById('f-pct').value,document.getElementById('f-rev').value||'0',document.getElementById('f-comm').value||'0',document.getElementById('f-mgr').value,document.getElementById('f-start').value,document.getElementById('f-status').value,document.getElementById('f-notes').value,ct];
+  const row=[cid,name,dept,document.getElementById('f-country').value,document.getElementById('f-city').value,document.getElementById('f-phone').value,document.getElementById('f-email').value,document.getElementById('f-store').value,document.getElementById('f-deal').value,document.getElementById('f-pct').value,document.getElementById('f-mgr').value,document.getElementById('f-start').value,document.getElementById('f-status').value,document.getElementById('f-notes').value,ct];
   try{if(editMode&&editRowNum)await gAction({action:'update',sheet:'Clients',rowNum:editRowNum,row:JSON.stringify(row)});else await gAction({action:'write',sheet:'Clients',row:JSON.stringify(row)});closeModal('clientModal');clearCF();showToast('✅ Client saved!','success');setTimeout(()=>loadAll(),3000);}catch(e){showToast('Error: '+e.message,'error');}
   btn.innerHTML=orig;btn.disabled=false;
 }
@@ -982,18 +1209,64 @@ async function saveUpdate(){
   btn.innerHTML='Submit';btn.disabled=false;
 }
 async function savePayment(){
-  const client=document.getElementById('p-client').value.trim();if(!client){showToast('Client name required!','error');return;}
-  const btn=document.getElementById('paySaveBtn');btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
-  const row=[document.getElementById('p-inv').value||'INV-'+Date.now(),client,document.getElementById('p-dept').value,document.getElementById('p-month').value,document.getElementById('p-amount').value||'0',document.getElementById('p-comm').value||'0',document.getElementById('p-date').value,document.getElementById('p-status').value];
-  try{await gAction({action:'write',sheet:'Payments',row:JSON.stringify(row)});closeModal('paymentModal');showToast('✅ Payment saved!','success');setTimeout(()=>loadAll(),3000);}catch(e){showToast('Error: '+e.message,'error');}
-  btn.innerHTML='Save';btn.disabled=false;
+  const client=document.getElementById('p-client').value.trim();
+  const amount=document.getElementById('p-amount').value;
+  if(!client){showToast('Please select a client!','error');return;}
+  if(!amount){showToast('Amount is required!','error');return;}
+  const btn=document.getElementById('paySaveBtn');const orig=btn.textContent;btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
+  const row=[
+    document.getElementById('p-inv').value||'INV-'+Date.now(),
+    client,
+    document.getElementById('p-dept').value||document.getElementById('p-dept-text').value,
+    document.getElementById('p-month').value,
+    amount||'0',
+    document.getElementById('p-comm').value||'0',
+    document.getElementById('p-date').value,
+    document.getElementById('p-status').value,
+    document.getElementById('p-notes').value
+  ];
+  try{
+    if(editMode&&editRowNum)await gAction({action:'update',sheet:'Payments',rowNum:editRowNum,row:JSON.stringify(row)});
+    else await gAction({action:'write',sheet:'Payments',row:JSON.stringify(row)});
+    closeModal('paymentModal');showToast('✅ Payment saved!','success');setTimeout(()=>loadAll(),3000);
+  }catch(e){showToast('Error: '+e.message,'error');}
+  btn.innerHTML=orig;btn.disabled=false;
 }
 async function saveProgress(){
-  const client=document.getElementById('pr-client').value.trim();if(!client){showToast('Client name required!','error');return;}
-  const btn=document.getElementById('progSaveBtn');btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
-  const row=[document.getElementById('pr-id').value,client,document.getElementById('pr-month').value,document.getElementById('pr-rev').value||'0',document.getElementById('pr-orders').value||'0',document.getElementById('pr-comm').value||'0',document.getElementById('pr-perf').value,document.getElementById('pr-notes').value];
-  try{await gAction({action:'write',sheet:'Progress',row:JSON.stringify(row)});closeModal('progressModal');showToast('✅ Progress saved!','success');setTimeout(()=>loadAll(),3000);}catch(e){showToast('Error: '+e.message,'error');}
-  btn.innerHTML='Save';btn.disabled=false;
+  const clientSel=document.getElementById('pr-client-select').value;
+  const month=document.getElementById('pr-month').value.trim();
+  const gross=document.getElementById('pr-gross').value;
+  if(!clientSel){showToast('Please select a client!','error');return;}
+  if(!month){showToast('Month is required!','error');return;}
+  if(!gross){showToast('Gross Revenue is required!','error');return;}
+  const c=allClients.find(x=>x['ID']===clientSel);
+  const btn=document.getElementById('progSaveBtn');const orig=btn.textContent;btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
+  // Recalculate to make sure values are correct
+  const grossVal=parseFloat(gross)||0;
+  const cogsVal=parseFloat(document.getElementById('pr-cogs').value)||0;
+  const netVal=grossVal-cogsVal;
+  const dealPct=parseFloat((document.getElementById('pr-deal').value||'0').replace('%',''))||0;
+  const commVal=(netVal*dealPct)/100;
+  const row=[
+    document.getElementById('pr-id').value,
+    c?c['Client Name']:'',
+    document.getElementById('pr-dept').value,
+    month,
+    grossVal.toFixed(2),
+    cogsVal.toFixed(2),
+    netVal.toFixed(2),
+    document.getElementById('pr-deal').value,
+    commVal.toFixed(2),
+    document.getElementById('pr-orders').value||'0',
+    document.getElementById('pr-perf').value,
+    document.getElementById('pr-notes').value
+  ];
+  try{
+    if(editMode&&editRowNum)await gAction({action:'update',sheet:'Progress',rowNum:editRowNum,row:JSON.stringify(row)});
+    else await gAction({action:'write',sheet:'Progress',row:JSON.stringify(row)});
+    closeModal('progressModal');showToast('✅ Progress saved!','success');setTimeout(()=>loadAll(),3000);
+  }catch(e){showToast('Error: '+e.message,'error');}
+  btn.innerHTML=orig;btn.disabled=false;
 }
 function showToast(msg,type='info'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast toast-'+type;t.style.display='block';setTimeout(()=>t.style.display='none',4000);}
 window.addEventListener('click',e=>{if(e.target.classList.contains('modal-bg'))e.target.classList.remove('open');});
@@ -1083,7 +1356,7 @@ async function loadAll(){
   try{
     showToast('Loading...','info');
     const[cr,pr,pgr,tm,tk,at,ud]=await Promise.all([
-      gRead('Clients!A:Q'),gRead('Payments!A:H'),gRead('Progress!A:H'),
+      gRead('Clients!A:Q'),gRead('Payments!A:H'),gRead('Progress!A:L'),
       gRead('Team!A:K'),gRead('Tasks!A:M'),gRead('Attendance!A:H'),gRead('DailyUpdates!A:H')
     ]);
     allClients=toObj(cr);allPayments=toObj(pr);allProgress=toObj(pgr);
@@ -1171,13 +1444,20 @@ function filterMyTasks(){
 
 function renderDashboard(){
   const active=allClients.filter(c=>c['Status']==='Active').length;
-  const tRev=allClients.reduce((a,c)=>a+(parseFloat(c['Monthly Revenue'])||0),0);
-  const tComm=allClients.reduce((a,c)=>a+(parseFloat(c['Our Commission'])||0),0);
+  // Dashboard now pulls REAL numbers from Progress sheet (current month)
+  const curMonth=new Date().toLocaleString('default',{month:'short'})+' '+new Date().getFullYear();
+  const thisMonthProg=allProgress.filter(p=>p['Month']&&p['Month'].trim()===curMonth);
+  const allTimeProg=allProgress;
+  const tGross=allTimeProg.reduce((a,p)=>a+(parseFloat(p['Gross Revenue'])||0),0);
+  const tNet=allTimeProg.reduce((a,p)=>a+(parseFloat(p['Net Profit'])||0),0);
+  const tComm=allTimeProg.reduce((a,p)=>a+(parseFloat(p['PYB Commission'])||0),0);
+  const thisGross=thisMonthProg.reduce((a,p)=>a+(parseFloat(p['Gross Revenue'])||0),0);
+  const thisComm=thisMonthProg.reduce((a,p)=>a+(parseFloat(p['PYB Commission'])||0),0);
   const pend=allPayments.filter(p=>p['Status']==='Pending'||p['Status']==='Overdue').reduce((a,p)=>a+(parseFloat(p['Amount ($)'])||0),0);
   document.getElementById('kpi-total').textContent=allClients.length||'0';
   document.getElementById('kpi-active').textContent=active+' active';
-  document.getElementById('kpi-rev').textContent=fmt(tRev);
-  document.getElementById('kpi-comm').textContent=fmt(tComm);
+  document.getElementById('kpi-rev').textContent=allTimeProg.length>0?fmt(tGross):'No progress data yet';
+  document.getElementById('kpi-comm').textContent=allTimeProg.length>0?fmt(tComm):'No progress data yet';
   document.getElementById('kpi-pend').textContent=fmt(pend);
   const depts=['eBay','Walmart','TikTok'],bCls=['bar-ebay','bar-walmart','bar-tiktok'];
   const dRevs=depts.map(d=>allClients.filter(c=>c['Department']===d).reduce((a,c)=>a+(parseFloat(c['Monthly Revenue'])||0),0));
@@ -1193,25 +1473,74 @@ function renderDashboard(){
 
 function renderMaster(data){
   const list=data||allClients;
-  document.getElementById('master-body').innerHTML=list.length===0?'<tr><td colspan="14"><div class="empty-state"><p>No clients.</p></div></td></tr>':list.map(c=>`<tr><td style="color:#6b7280;font-size:10px">${c['ID']||'—'}</td><td><b>${c['Client Name']||'—'}</b></td><td>${ctp(c['Client Type'])}</td><td>${tag(c['Department'])}</td><td>${c['Country']||'—'}</td><td>${c['Phone']||'—'}</td><td>${c['Store Name']||'—'}</td><td style="font-size:10px">${c['Deal Type']||'—'}</td><td>${c['Deal % or Amount']||'—'}</td><td>${fmt(c['Monthly Revenue'])}</td><td>${fmt(c['Our Commission'])}</td><td>${c['Account Manager']||'—'}</td><td>${pill(c['Status'])}</td><td><button class="btn-view" onclick="viewClient('${c['ID']}','${(c['Department']||'').toLowerCase()}')">View</button><button class="btn-edit" onclick="openEditClientForm('${c['ID']}')">✏️</button><button class="btn-del" onclick="confirmDelete('Clients',${c._row},'${c['Client Name']}')">🗑️</button></td></tr>`).join('');
+  document.getElementById('master-body').innerHTML=list.length===0?'<tr><td colspan="13"><div class="empty-state"><p>No clients.</p></div></td></tr>':list.map(c=>`<tr><td style="color:#6b7280;font-size:10px">${c['ID']||'—'}</td><td><b>${c['Client Name']||'—'}</b></td><td>${ctp(c['Client Type'])}</td><td>${tag(c['Department'])}</td><td>${c['Country']||'—'}</td><td>${c['Phone']||'—'}</td><td>${c['Store Name']||'—'}</td><td style="font-size:10px">${c['Deal Type']||'—'}</td><td style="color:#185FA5;font-weight:700">${c['Deal %']||'—'}</td><td>${c['Account Manager']||'—'}</td><td>${c['Contract Start']||'—'}</td><td>${pill(c['Status'])}</td><td><button class="btn-view" onclick="viewClient('${c['ID']}','${(c['Department']||'').toLowerCase()}')">View</button><button class="btn-edit" onclick="openEditClientForm('${c['ID']}')">✏️</button><button class="btn-del" onclick="confirmDelete('Clients',${c._row},'${c['Client Name']}')">🗑️</button></td></tr>`).join('');
 }
 function filterMaster(){const s=document.getElementById('master-search').value.toLowerCase();const d=document.getElementById('master-dept-filter').value;const st=document.getElementById('master-status-filter').value;renderMaster(allClients.filter(c=>(!s||Object.values(c).join(' ').toLowerCase().includes(s))&&(!d||c['Department']===d)&&(!st||c['Status']===st)));}
 
 function renderPayments(data){
   const list=data||allPayments;
-  document.getElementById('pay-received').textContent=fmt(list.filter(p=>p['Status']==='Received').reduce((a,p)=>a+(parseFloat(p['Amount ($)'])||0),0));
-  document.getElementById('pay-pending').textContent=fmt(list.filter(p=>p['Status']==='Pending').reduce((a,p)=>a+(parseFloat(p['Amount ($)'])||0),0));
-  document.getElementById('pay-overdue').textContent=fmt(list.filter(p=>p['Status']==='Overdue').reduce((a,p)=>a+(parseFloat(p['Amount ($)'])||0),0));
+  // Support both 'Amount ($)' and 'Amount' column names
+  const getAmt=(p)=>parseFloat(p['Amount ($)']||p['Amount']||0)||0;
+  const getComm=(p)=>parseFloat(p['Commission ($)']||p['Commission']||0)||0;
+  document.getElementById('pay-received').textContent=fmt(list.filter(p=>p['Status']==='Received').reduce((a,p)=>a+getAmt(p),0));
+  document.getElementById('pay-pending').textContent=fmt(list.filter(p=>p['Status']==='Pending').reduce((a,p)=>a+getAmt(p),0));
+  document.getElementById('pay-overdue').textContent=fmt(list.filter(p=>p['Status']==='Overdue').reduce((a,p)=>a+getAmt(p),0));
   document.getElementById('pay-count').textContent=list.length;
-  document.getElementById('pay-body').innerHTML=list.length===0?'<tr><td colspan="9"><div class="empty-state"><p>No payments.</p></div></td></tr>':list.map(p=>`<tr><td style="color:#6b7280">${p['Invoice No']||'—'}</td><td><b>${p['Client Name']||'—'}</b></td><td>${tag(p['Department'])}</td><td>${p['Month']||'—'}</td><td>${fmt(p['Amount ($)'])}</td><td>${fmt(p['Commission ($)'])}</td><td>${p['Date Received']||'—'}</td><td>${pill(p['Status'])}</td><td><button class="btn-del" onclick="confirmDelete('Payments',${p._row},'payment')">🗑️</button></td></tr>`).join('');
+  document.getElementById('pay-body').innerHTML=list.length===0?'<tr><td colspan="9"><div class="empty-state"><p>No payments yet.</p></div></td></tr>':list.map(p=>`<tr>
+    <td style="color:#6b7280">${p['Invoice No']||p['Invoice']||'—'}</td>
+    <td><b>${p['Client Name']||p['Client']||'—'}</b></td>
+    <td>${tag(p['Department']||p['Dept'])}</td>
+    <td>${p['Month']||'—'}</td>
+    <td style="font-weight:700">${fmt(getAmt(p))}</td>
+    <td style="color:#16a34a;font-weight:700">${fmt(getComm(p))}</td>
+    <td>${p['Date Received']||p['Date']||'—'}</td>
+    <td>${pill(p['Status'])}</td>
+    <td>
+      <button class="btn-edit" onclick="openEditPaymentForm(${p._row})">✏️</button>
+      <button class="btn-del" onclick="confirmDelete('Payments',${p._row},'payment')">🗑️</button>
+    </td>
+  </tr>`).join('');
 }
 function filterPayments(){const s=document.getElementById('pay-search').value.toLowerCase();const st=document.getElementById('pay-status-filter').value;renderPayments(allPayments.filter(p=>(!s||Object.values(p).join(' ').toLowerCase().includes(s))&&(!st||p['Status']===st)));}
 
 function renderProgress(data){
   const list=data||allProgress;
-  document.getElementById('prog-body').innerHTML=list.length===0?'<tr><td colspan="9"><div class="empty-state"><p>No records.</p></div></td></tr>':list.map(p=>`<tr><td style="color:#6b7280">${p['Client ID']||'—'}</td><td><b>${p['Client Name']||'—'}</b></td><td>${p['Month']||'—'}</td><td>${fmt(p['Revenue'])}</td><td>${p['Orders']||'—'}</td><td>${fmt(p['Commission'])}</td><td>${pill(p['Performance'])}</td><td style="color:#6b7280;font-size:10px">${p['Notes']||'—'}</td><td><button class="btn-del" onclick="confirmDelete('Progress',${p._row},'record')">🗑️</button></td></tr>`).join('');
+  // Update summary cards
+  const gross=list.reduce((a,p)=>a+(parseFloat(p['Gross Revenue'])||0),0);
+  const net=list.reduce((a,p)=>a+(parseFloat(p['Net Profit'])||0),0);
+  const comm=list.reduce((a,p)=>a+(parseFloat(p['PYB Commission'])||0),0);
+  const pgEl=document.getElementById('prog-gross');if(pgEl)pgEl.textContent=fmt(gross);
+  const pnEl=document.getElementById('prog-net');if(pnEl)pnEl.textContent=fmt(net);
+  const pcEl=document.getElementById('prog-comm');if(pcEl)pcEl.textContent=fmt(comm);
+  const pctEl=document.getElementById('prog-count');if(pctEl)pctEl.textContent=list.length;
+  // Update month filter options
+  const mf=document.getElementById('prog-month-filter');
+  if(mf){const months=[...new Set(allProgress.map(p=>p['Month']).filter(Boolean))];const cur=mf.value;mf.innerHTML='<option value="">All Months</option>'+months.map(m=>`<option value="${m}" ${m===cur?'selected':''}>${m}</option>`).join('');}
+  document.getElementById('prog-body').innerHTML=list.length===0?'<tr><td colspan="13"><div class="empty-state"><p>No records yet. Add your first progress record.</p></div></td></tr>':list.map(p=>`<tr>
+    <td style="color:#6b7280;font-size:10px">${p['Client ID']||'—'}</td>
+    <td><b>${p['Client Name']||'—'}</b></td>
+    <td>${tag(p['Department'])}</td>
+    <td>${p['Month']||'—'}</td>
+    <td>${fmt(p['Gross Revenue'])}</td>
+    <td>${fmt(p['Cost of Goods'])}</td>
+    <td style="color:#16a34a;font-weight:700">${fmt(p['Net Profit'])}</td>
+    <td style="color:#185FA5;font-weight:700">${p['Deal %']||'—'}</td>
+    <td style="color:#d97706;font-weight:700">${fmt(p['PYB Commission'])}</td>
+    <td>${p['Orders']||'—'}</td>
+    <td>${pill(p['Performance'])}</td>
+    <td style="color:#6b7280;font-size:10px">${p['Notes']||'—'}</td>
+    <td>
+      <button class="btn-edit" onclick="openEditProgressForm(${p._row})">✏️</button>
+      <button class="btn-del" onclick="confirmDelete('Progress',${p._row},'record')">🗑️</button>
+    </td>
+  </tr>`).join('');
 }
-function filterProgress(){const s=document.getElementById('prog-search').value.toLowerCase();renderProgress(allProgress.filter(p=>!s||Object.values(p).join(' ').toLowerCase().includes(s)));}
+function filterProgress(){
+  const s=document.getElementById('prog-search').value.toLowerCase();
+  const m=document.getElementById('prog-month-filter')?document.getElementById('prog-month-filter').value:'';
+  const d=document.getElementById('prog-dept-filter')?document.getElementById('prog-dept-filter').value:'';
+  renderProgress(allProgress.filter(p=>(!s||Object.values(p).join(' ').toLowerCase().includes(s))&&(!m||p['Month']===m)&&(!d||p['Department']===d)));
+}
 
 function renderTeam(data){
   const list=data||allTeam;
@@ -1345,19 +1674,22 @@ function filterUpdates(){const s=document.getElementById('upd-search').value.toL
 function renderDept(dept){
   const dn=dept==='ebay'?'eBay':dept==='walmart'?'Walmart':'TikTok';
   const dc=allClients.filter(c=>c['Department']===dn);
-  const tR=dc.reduce((a,c)=>a+(parseFloat(c['Monthly Revenue'])||0),0);
-  const tC=dc.reduce((a,c)=>a+(parseFloat(c['Our Commission'])||0),0);
   const act=dc.filter(c=>c['Status']==='Active').length;
+  // Get progress data for this department
+  const deptProg=allProgress.filter(p=>p['Department']===dn);
+  const dGross=deptProg.reduce((a,p)=>a+(parseFloat(p['Gross Revenue'])||0),0);
+  const dNet=deptProg.reduce((a,p)=>a+(parseFloat(p['Net Profit'])||0),0);
+  const dComm=deptProg.reduce((a,p)=>a+(parseFloat(p['PYB Commission'])||0),0);
   document.getElementById(dept+'-list').innerHTML=`
     <div class="kpi-grid" style="margin-bottom:12px">
       <div class="kpi-card"><div class="kpi-label">Total Clients</div><div class="kpi-val">${dc.length}</div><div class="kpi-sub kpi-up">${act} active</div></div>
-      <div class="kpi-card"><div class="kpi-label">Revenue</div><div class="kpi-val">${fmt(tR)}</div></div>
-      <div class="kpi-card"><div class="kpi-label">Commission</div><div class="kpi-val">${fmt(tC)}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Gross Revenue Generated</div><div class="kpi-val">${fmt(dGross)}</div><div class="kpi-sub">From progress records</div></div>
+      <div class="kpi-card"><div class="kpi-label">PYB Commission</div><div class="kpi-val kpi-up">${fmt(dComm)}</div><div class="kpi-sub">Net: ${fmt(dNet)}</div></div>
       <div class="kpi-card"><div class="kpi-label">Inactive/Hold</div><div class="kpi-val kpi-down">${dc.length-act}</div></div>
     </div>
     <div class="search-bar"><input type="text" placeholder="Search..."><button class="btn-add" onclick="openClientForm('${dn}')">+ Add Client</button></div>
-    <div class="table-wrap"><table><thead><tr><th>ID</th><th>Client</th><th>Type</th><th>Country</th><th>Store</th><th>Deal</th><th>Revenue</th><th>Commission</th><th>Manager</th><th>Status</th><th>Actions</th></tr></thead>
-    <tbody>${dc.length===0?`<tr><td colspan="11"><div class="empty-state"><p>No ${dn} clients yet.</p></div></td></tr>`:dc.map(c=>`<tr><td style="color:#6b7280;font-size:10px">${c['ID']||'—'}</td><td><b>${c['Client Name']||'—'}</b></td><td>${ctp(c['Client Type'])}</td><td>${c['Country']||'—'}</td><td>${c['Store Name']||'—'}</td><td>${c['Deal % or Amount']||'—'}</td><td>${fmt(c['Monthly Revenue'])}</td><td>${fmt(c['Our Commission'])}</td><td>${c['Account Manager']||'—'}</td><td>${pill(c['Status'])}</td><td><button class="btn-view" onclick="viewClient('${c['ID']}','${dept}')">View</button><button class="btn-edit" onclick="openEditClientForm('${c['ID']}')">✏️</button><button class="btn-del" onclick="confirmDelete('Clients',${c._row},'${c['Client Name']}')">🗑️</button></td></tr>`).join('')}</tbody></table></div>`;
+    <div class="table-wrap"><table><thead><tr><th>ID</th><th>Client</th><th>Type</th><th>Country</th><th>Store</th><th>Deal Type</th><th>Deal %</th><th>Manager</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>${dc.length===0?`<tr><td colspan="11"><div class="empty-state"><p>No ${dn} clients yet.</p></div></td></tr>`:dc.map(c=>`<tr><td style="color:#6b7280;font-size:10px">${c['ID']||'—'}</td><td><b>${c['Client Name']||'—'}</b></td><td>${ctp(c['Client Type'])}</td><td>${c['Country']||'—'}</td><td>${c['Store Name']||'—'}</td><td style="font-size:10px">${c['Deal Type']||'—'}</td><td style="color:#185FA5;font-weight:700">${c['Deal %']||'—'}</td><td>${c['Account Manager']||'—'}</td><td>${pill(c['Status'])}</td><td><button class="btn-view" onclick="viewClient('${c['ID']}','${dept}')">View</button><button class="btn-edit" onclick="openEditClientForm('${c['ID']}')">✏️</button><button class="btn-del" onclick="confirmDelete('Clients',${c._row},'${c['Client Name']}')">🗑️</button></td></tr>`).join('')}</tbody></table></div>`;
 }
 
 function viewClient(id,dept){
@@ -1383,8 +1715,8 @@ function viewClient(id,dept){
       <div class="info-block"><div class="info-label">Location</div><div class="info-val">${c['City']||'—'}, ${c['Country']||'—'}</div></div>
       <div class="info-block"><div class="info-label">Deal Type</div><div class="info-val">${c['Deal Type']||'—'}</div></div>
       <div class="info-block"><div class="info-label">Deal Value</div><div class="info-val">${c['Deal % or Amount']||'—'}</div></div>
-      <div class="info-block"><div class="info-label">Revenue</div><div class="info-val">${fmt(c['Monthly Revenue'])}</div></div>
-      <div class="info-block"><div class="info-label">Commission</div><div class="info-val">${fmt(c['Our Commission'])}</div></div>
+      <div class="info-block"><div class="info-label">Deal %</div><div class="info-val">${c['Deal %']||'—'}</div></div>
+      <div class="info-block"><div class="info-label">Contract Since</div><div class="info-val">${c['Contract Start']||'—'}</div></div>
       <div class="info-block"><div class="info-label">Manager</div><div class="info-val">${c['Account Manager']||'—'}</div></div>
     </div>
     ${c['Notes']?`<div class="card" style="margin-bottom:10px"><div class="info-label">Notes</div><div style="font-size:12px;margin-top:5px">${c['Notes']}</div></div>`:''}
@@ -1397,12 +1729,22 @@ function backToDept(dept){document.getElementById(dept+'-list').style.display='b
 
 function renderGrowth(){
   const depts=['eBay','Walmart','TikTok'];
-  const data=depts.map(d=>{const dc=allClients.filter(c=>c['Department']===d);return{dept:d,count:dc.length,rev:dc.reduce((a,c)=>a+(parseFloat(c['Monthly Revenue'])||0),0),comm:dc.reduce((a,c)=>a+(parseFloat(c['Our Commission'])||0),0),active:dc.filter(c=>c['Status']==='Active').length};});
-  document.getElementById('g-ebay').textContent=data[0].count;document.getElementById('g-ebay-rev').textContent=fmt(data[0].rev)+' revenue';
-  document.getElementById('g-walmart').textContent=data[1].count;document.getElementById('g-walmart-rev').textContent=fmt(data[1].rev)+' revenue';
-  document.getElementById('g-tiktok').textContent=data[2].count;document.getElementById('g-tiktok-rev').textContent=fmt(data[2].rev)+' revenue';
-  document.getElementById('g-total').textContent=fmt(data.reduce((a,d)=>a+d.rev,0));
-  document.getElementById('growth-detail').innerHTML=data.map(d=>`<div class="pay-row"><div><div class="pay-name">${d.dept}</div><div class="pay-dept">${d.count} clients · ${d.active} active · Commission: ${fmt(d.comm)}</div></div><div class="pay-amt">${fmt(d.rev)}</div></div>`).join('');
+  const data=depts.map(d=>{
+    const dc=allClients.filter(c=>c['Department']===d);
+    const dp=allProgress.filter(p=>p['Department']===d);
+    return{
+      dept:d,count:dc.length,
+      gross:dp.reduce((a,p)=>a+(parseFloat(p['Gross Revenue'])||0),0),
+      net:dp.reduce((a,p)=>a+(parseFloat(p['Net Profit'])||0),0),
+      comm:dp.reduce((a,p)=>a+(parseFloat(p['PYB Commission'])||0),0),
+      active:dc.filter(c=>c['Status']==='Active').length
+    };
+  });
+  document.getElementById('g-ebay').textContent=data[0].count;document.getElementById('g-ebay-rev').textContent=fmt(data[0].gross)+' gross';
+  document.getElementById('g-walmart').textContent=data[1].count;document.getElementById('g-walmart-rev').textContent=fmt(data[1].gross)+' gross';
+  document.getElementById('g-tiktok').textContent=data[2].count;document.getElementById('g-tiktok-rev').textContent=fmt(data[2].gross)+' gross';
+  document.getElementById('g-total').textContent=fmt(data.reduce((a,d)=>a+d.gross,0));
+  document.getElementById('growth-detail').innerHTML=data.map(d=>`<div class="pay-row"><div><div class="pay-name">${d.dept} Department</div><div class="pay-dept">${d.count} clients · ${d.active} active · Net Profit: ${fmt(d.net)} · Commission: ${fmt(d.comm)}</div></div><div class="pay-amt">${fmt(d.gross)}</div></div>`).join('');
 }
 
 function nav(id,el){
@@ -1426,10 +1768,10 @@ function openEditClientForm(id){
   document.getElementById('clientModalTitle').textContent='✏️ Edit Client';
   document.getElementById('clientSaveBtn').textContent='Update';document.getElementById('clientSaveBtn').className='btn-update';
   selectType(c['Client Type']||'Direct Client');
-  document.getElementById('f-name').value=c['Client Name']||'';document.getElementById('f-dept').value=c['Department']||'eBay';document.getElementById('f-country').value=c['Country']||'';document.getElementById('f-city').value=c['City']||'';document.getElementById('f-phone').value=c['Phone']||'';document.getElementById('f-email').value=c['Email']||'';document.getElementById('f-store').value=c['Store Name']||'';document.getElementById('f-deal').value=c['Deal Type']||'% Commission';document.getElementById('f-pct').value=c['Deal % or Amount']||'';document.getElementById('f-rev').value=c['Monthly Revenue']||'';document.getElementById('f-comm').value=c['Our Commission']||'';document.getElementById('f-mgr').value=c['Account Manager']||'';document.getElementById('f-start').value=c['Contract Start']||'';document.getElementById('f-status').value=c['Status']||'Active';document.getElementById('f-notes').value=c['Notes']||'';document.getElementById('f-client-id').value=c['ID']||'';
+  document.getElementById('f-name').value=c['Client Name']||'';document.getElementById('f-dept').value=c['Department']||'eBay';document.getElementById('f-country').value=c['Country']||'';document.getElementById('f-city').value=c['City']||'';document.getElementById('f-phone').value=c['Phone']||'';document.getElementById('f-email').value=c['Email']||'';document.getElementById('f-store').value=c['Store Name']||'';document.getElementById('f-deal').value=c['Deal Type']||'% Commission';document.getElementById('f-pct').value=c['Deal %']||'';document.getElementById('f-mgr').value=c['Account Manager']||'';document.getElementById('f-start').value=c['Contract Start']||'';document.getElementById('f-status').value=c['Status']||'Active';document.getElementById('f-notes').value=c['Notes']||'';document.getElementById('f-client-id').value=c['ID']||'';
   document.getElementById('clientModal').classList.add('open');
 }
-function clearClientForm(){['f-name','f-country','f-city','f-phone','f-email','f-store','f-pct','f-rev','f-comm','f-mgr','f-notes','f-client-id'].forEach(id=>document.getElementById(id).value='');document.getElementById('f-status').value='Active';document.getElementById('f-start').value='';}
+function clearClientForm(){['f-name','f-country','f-city','f-phone','f-email','f-store','f-pct','f-mgr','f-notes','f-client-id'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});document.getElementById('f-status').value='Active';document.getElementById('f-start').value='';}
 function openMemberForm(){editMode=false;editRowNum=null;document.getElementById('memberModalTitle').textContent='Add Team Member';document.getElementById('memberSaveBtn').textContent='Save';document.getElementById('memberSaveBtn').className='btn-save';['m-name','m-phone','m-email','m-notes','m-id','m-username','m-password'].forEach(id=>document.getElementById(id).value='');document.getElementById('m-join').value=today();document.getElementById('m-status').value='Active';document.getElementById('memberModal').classList.add('open');}
 function openEditMemberForm(id){
   const m=allTeam.find(x=>x['Member ID']===id);if(!m)return;
@@ -1479,8 +1821,121 @@ function openUpdateForm(){
   ['u-work','u-clients','u-issues','u-plan'].forEach(id=>document.getElementById(id).value='');document.getElementById('u-hours').value='';
   document.getElementById('updateModal').classList.add('open');
 }
-function openPaymentForm(){document.getElementById('paymentModal').classList.add('open');}
-function openProgressForm(){document.getElementById('progressModal').classList.add('open');}
+function openPaymentForm(){
+  editMode=false;editRowNum=null;
+  document.getElementById('payModalTitle').textContent='Add Payment';
+  document.getElementById('paySaveBtn').textContent='Save Payment';
+  document.getElementById('paySaveBtn').className='btn-save';
+  // Populate client dropdown
+  const pcs=document.getElementById('p-client-select');
+  pcs.innerHTML='<option value="">Select client...</option>'+allClients.map(c=>`<option value="${c['ID']}">${c['ID']} - ${c['Client Name']}</option>`).join('');
+  document.getElementById('p-client').value='';
+  document.getElementById('p-dept-text').value='';
+  document.getElementById('p-dept').value='';
+  document.getElementById('p-inv').value='';
+  document.getElementById('p-month').value='';
+  document.getElementById('p-amount').value='';
+  document.getElementById('p-comm').value='';
+  document.getElementById('p-date').value=today();
+  document.getElementById('p-status').value='Pending';
+  document.getElementById('p-notes').value='';
+  document.getElementById('p-row-num').value='';
+  document.getElementById('paymentModal').classList.add('open');
+}
+
+function fillPaymentClient(){
+  const sel=document.getElementById('p-client-select');
+  const cid=sel.value;
+  const c=allClients.find(x=>x['ID']===cid);
+  if(c){
+    document.getElementById('p-client').value=c['Client Name']||'';
+    document.getElementById('p-dept-text').value=c['Department']||'';
+    document.getElementById('p-dept').value=c['Department']||'';
+  }
+}
+
+function openEditPaymentForm(rowNum){
+  const p=allPayments.find(x=>x._row===rowNum);if(!p)return;
+  editMode=true;editRowNum=rowNum;
+  document.getElementById('payModalTitle').textContent='✏️ Edit Payment';
+  document.getElementById('paySaveBtn').textContent='Update Payment';
+  document.getElementById('paySaveBtn').className='btn-update';
+  const pcs=document.getElementById('p-client-select');
+  pcs.innerHTML='<option value="">Select client...</option>'+allClients.map(c=>`<option value="${c['ID']}">${c['ID']} - ${c['Client Name']}</option>`).join('');
+  document.getElementById('p-client').value=p['Client Name']||p['Client']||'';
+  document.getElementById('p-dept-text').value=p['Department']||p['Dept']||'';
+  document.getElementById('p-dept').value=p['Department']||p['Dept']||'';
+  document.getElementById('p-inv').value=p['Invoice No']||p['Invoice']||'';
+  document.getElementById('p-month').value=p['Month']||'';
+  document.getElementById('p-amount').value=p['Amount ($)']||p['Amount']||'';
+  document.getElementById('p-comm').value=p['Commission ($)']||p['Commission']||'';
+  document.getElementById('p-date').value=p['Date Received']||p['Date']||'';
+  document.getElementById('p-status').value=p['Status']||'Pending';
+  document.getElementById('p-notes').value=p['Notes']||'';
+  document.getElementById('p-row-num').value=rowNum;
+  document.getElementById('paymentModal').classList.add('open');
+}
+
+function openProgressForm(){
+  editMode=false;editRowNum=null;
+  document.getElementById('progModalTitle').textContent='Add Progress Record';
+  document.getElementById('progSaveBtn').textContent='Save Record';
+  document.getElementById('progSaveBtn').className='btn-save';
+  // Populate client dropdown
+  const pcs=document.getElementById('pr-client-select');
+  pcs.innerHTML='<option value="">Select client...</option>'+allClients.map(c=>`<option value="${c['ID']}">${c['ID']} - ${c['Client Name']}</option>`).join('');
+  ['pr-id','pr-dept','pr-deal','pr-gross','pr-cogs','pr-net','pr-comm','pr-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('pr-orders').value='';
+  document.getElementById('pr-month').value='';
+  document.getElementById('pr-perf').value='Good';
+  document.getElementById('pr-row-num').value='';
+  document.getElementById('progressModal').classList.add('open');
+}
+
+function openEditProgressForm(rowNum){
+  const p=allProgress.find(x=>x._row===rowNum);if(!p)return;
+  editMode=true;editRowNum=rowNum;
+  document.getElementById('progModalTitle').textContent='✏️ Edit Progress Record';
+  document.getElementById('progSaveBtn').textContent='Update Record';
+  document.getElementById('progSaveBtn').className='btn-update';
+  const pcs=document.getElementById('pr-client-select');
+  pcs.innerHTML='<option value="">Select client...</option>'+allClients.map(c=>`<option value="${c['ID']}">${c['ID']} - ${c['Client Name']}</option>`).join('');
+  document.getElementById('pr-client-select').value=p['Client ID']||'';
+  document.getElementById('pr-id').value=p['Client ID']||'';
+  document.getElementById('pr-dept').value=p['Department']||'';
+  document.getElementById('pr-deal').value=p['Deal %']||'';
+  document.getElementById('pr-month').value=p['Month']||'';
+  document.getElementById('pr-gross').value=p['Gross Revenue']||'';
+  document.getElementById('pr-cogs').value=p['Cost of Goods']||'';
+  document.getElementById('pr-net').value=p['Net Profit']||'';
+  document.getElementById('pr-comm').value=p['PYB Commission']||'';
+  document.getElementById('pr-orders').value=p['Orders']||'';
+  document.getElementById('pr-perf').value=p['Performance']||'Good';
+  document.getElementById('pr-notes').value=p['Notes']||'';
+  document.getElementById('pr-row-num').value=rowNum;
+  document.getElementById('progressModal').classList.add('open');
+}
+
+function fillProgressClient(){
+  const sel=document.getElementById('pr-client-select');
+  const cid=sel.value;
+  const c=allClients.find(x=>x['ID']===cid);
+  if(c){
+    document.getElementById('pr-id').value=c['ID']||'';
+    document.getElementById('pr-dept').value=c['Department']||'';
+    document.getElementById('pr-deal').value=c['Deal %']||'';
+  }
+}
+
+function calcProgress(){
+  const gross=parseFloat(document.getElementById('pr-gross').value)||0;
+  const cogs=parseFloat(document.getElementById('pr-cogs').value)||0;
+  const dealPct=parseFloat((document.getElementById('pr-deal').value||'0').replace('%',''))||0;
+  const net=gross-cogs;
+  const comm=(net*dealPct)/100;
+  document.getElementById('pr-net').value=net>0?net.toFixed(2):'0';
+  document.getElementById('pr-comm').value=comm>0?comm.toFixed(2):'0';
+}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 function genId(dept){const pre=dept==='eBay'?'EB':dept==='Walmart'?'WM':'TT';return`${pre}-${String(allClients.filter(c=>c['Department']===dept).length+1).padStart(3,'0')}`;}
 function genMemberId(){return`MB-${String(allTeam.length+1).padStart(3,'0')}`;}
@@ -1493,7 +1948,7 @@ async function saveClient(){
   const dept=document.getElementById('f-dept').value;const ct=document.getElementById('f-client-type').value;
   const btn=document.getElementById('clientSaveBtn');const orig=btn.textContent;btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
   const cid=editMode?(document.getElementById('f-client-id').value||genId(dept)):genId(dept);
-  const row=[cid,name,dept,document.getElementById('f-country').value,document.getElementById('f-city').value,document.getElementById('f-phone').value,document.getElementById('f-email').value,document.getElementById('f-store').value,document.getElementById('f-deal').value,document.getElementById('f-pct').value,document.getElementById('f-rev').value||'0',document.getElementById('f-comm').value||'0',document.getElementById('f-mgr').value,document.getElementById('f-start').value,document.getElementById('f-status').value,document.getElementById('f-notes').value,ct];
+  const row=[cid,name,dept,document.getElementById('f-country').value,document.getElementById('f-city').value,document.getElementById('f-phone').value,document.getElementById('f-email').value,document.getElementById('f-store').value,document.getElementById('f-deal').value,document.getElementById('f-pct').value,document.getElementById('f-mgr').value,document.getElementById('f-start').value,document.getElementById('f-status').value,document.getElementById('f-notes').value,ct];
   try{if(editMode&&editRowNum)await gAction({action:'update',sheet:'Clients',rowNum:editRowNum,row:JSON.stringify(row)});else await gAction({action:'write',sheet:'Clients',row:JSON.stringify(row)});closeModal('clientModal');clearClientForm();showToast('✅ Client saved!','success');setTimeout(()=>loadAll(),3000);}catch(e){showToast('Error: '+e.message,'error');}
   btn.innerHTML=orig;btn.disabled=false;
 }
@@ -1538,19 +1993,65 @@ async function saveUpdate(){
 }
 
 async function savePayment(){
-  const client=document.getElementById('p-client').value.trim();if(!client){showToast('Client name required!','error');return;}
-  const btn=document.getElementById('paySaveBtn');btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
-  const row=[document.getElementById('p-inv').value||'INV-'+Date.now(),client,document.getElementById('p-dept').value,document.getElementById('p-month').value,document.getElementById('p-amount').value||'0',document.getElementById('p-comm').value||'0',document.getElementById('p-date').value,document.getElementById('p-status').value];
-  try{await gAction({action:'write',sheet:'Payments',row:JSON.stringify(row)});closeModal('paymentModal');showToast('✅ Payment saved!','success');setTimeout(()=>loadAll(),3000);}catch(e){showToast('Error: '+e.message,'error');}
-  btn.innerHTML='Save';btn.disabled=false;
+  const client=document.getElementById('p-client').value.trim();
+  const amount=document.getElementById('p-amount').value;
+  if(!client){showToast('Please select a client!','error');return;}
+  if(!amount){showToast('Amount is required!','error');return;}
+  const btn=document.getElementById('paySaveBtn');const orig=btn.textContent;btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
+  const row=[
+    document.getElementById('p-inv').value||'INV-'+Date.now(),
+    client,
+    document.getElementById('p-dept').value||document.getElementById('p-dept-text').value,
+    document.getElementById('p-month').value,
+    amount||'0',
+    document.getElementById('p-comm').value||'0',
+    document.getElementById('p-date').value,
+    document.getElementById('p-status').value,
+    document.getElementById('p-notes').value
+  ];
+  try{
+    if(editMode&&editRowNum)await gAction({action:'update',sheet:'Payments',rowNum:editRowNum,row:JSON.stringify(row)});
+    else await gAction({action:'write',sheet:'Payments',row:JSON.stringify(row)});
+    closeModal('paymentModal');showToast('✅ Payment saved!','success');setTimeout(()=>loadAll(),3000);
+  }catch(e){showToast('Error: '+e.message,'error');}
+  btn.innerHTML=orig;btn.disabled=false;
 }
 
 async function saveProgress(){
-  const client=document.getElementById('pr-client').value.trim();if(!client){showToast('Client name required!','error');return;}
-  const btn=document.getElementById('progSaveBtn');btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
-  const row=[document.getElementById('pr-id').value,client,document.getElementById('pr-month').value,document.getElementById('pr-rev').value||'0',document.getElementById('pr-orders').value||'0',document.getElementById('pr-comm').value||'0',document.getElementById('pr-perf').value,document.getElementById('pr-notes').value];
-  try{await gAction({action:'write',sheet:'Progress',row:JSON.stringify(row)});closeModal('progressModal');showToast('✅ Progress saved!','success');setTimeout(()=>loadAll(),3000);}catch(e){showToast('Error: '+e.message,'error');}
-  btn.innerHTML='Save';btn.disabled=false;
+  const clientSel=document.getElementById('pr-client-select').value;
+  const month=document.getElementById('pr-month').value.trim();
+  const gross=document.getElementById('pr-gross').value;
+  if(!clientSel){showToast('Please select a client!','error');return;}
+  if(!month){showToast('Month is required!','error');return;}
+  if(!gross){showToast('Gross Revenue is required!','error');return;}
+  const c=allClients.find(x=>x['ID']===clientSel);
+  const btn=document.getElementById('progSaveBtn');const orig=btn.textContent;btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
+  // Recalculate to make sure values are correct
+  const grossVal=parseFloat(gross)||0;
+  const cogsVal=parseFloat(document.getElementById('pr-cogs').value)||0;
+  const netVal=grossVal-cogsVal;
+  const dealPct=parseFloat((document.getElementById('pr-deal').value||'0').replace('%',''))||0;
+  const commVal=(netVal*dealPct)/100;
+  const row=[
+    document.getElementById('pr-id').value,
+    c?c['Client Name']:'',
+    document.getElementById('pr-dept').value,
+    month,
+    grossVal.toFixed(2),
+    cogsVal.toFixed(2),
+    netVal.toFixed(2),
+    document.getElementById('pr-deal').value,
+    commVal.toFixed(2),
+    document.getElementById('pr-orders').value||'0',
+    document.getElementById('pr-perf').value,
+    document.getElementById('pr-notes').value
+  ];
+  try{
+    if(editMode&&editRowNum)await gAction({action:'update',sheet:'Progress',rowNum:editRowNum,row:JSON.stringify(row)});
+    else await gAction({action:'write',sheet:'Progress',row:JSON.stringify(row)});
+    closeModal('progressModal');showToast('✅ Progress saved!','success');setTimeout(()=>loadAll(),3000);
+  }catch(e){showToast('Error: '+e.message,'error');}
+  btn.innerHTML=orig;btn.disabled=false;
 }
 
 function showToast(msg,type='info'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast toast-'+type;t.style.display='block';setTimeout(()=>t.style.display='none',4000);}
