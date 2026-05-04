@@ -229,6 +229,21 @@ tr:hover td{background:#f8fafc}
 
       <!-- ADMIN DASHBOARD -->
       <div class="section" id="sec-dashboard">
+        <div class="search-bar" style="margin-bottom:14px">
+          <div style="font-size:12px;font-weight:700;color:#0f2044;white-space:nowrap">📅 Filter Period:</div>
+          <select id="dash-period" onchange="renderDashboard()" style="font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;outline:none">
+            <option value="all">All Time</option>
+            <option value="this_month" selected>This Month</option>
+            <option value="last_month">Last Month</option>
+            <option value="last_3">Last 3 Months</option>
+            <option value="last_6">Last 6 Months</option>
+            <option value="this_year">This Year</option>
+            <option value="custom">Custom Range</option>
+          </select>
+          <input type="date" id="dash-from" onchange="renderDashboard()" style="font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;display:none">
+          <input type="date" id="dash-to" onchange="renderDashboard()" style="font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;display:none">
+          <button class="btn-add" onclick="downloadDashboardReport()" style="background:#16a34a">⬇️ Download Report</button>
+        </div>
         <div class="kpi-grid">
           <div class="kpi-card"><div class="kpi-label">Total Clients</div><div class="kpi-val" id="kpi-total">—</div><div class="kpi-sub kpi-up" id="kpi-active"></div></div>
           <div class="kpi-card"><div class="kpi-label">Total Gross Revenue Generated</div><div class="kpi-val" id="kpi-rev">—</div><div class="kpi-sub">All time · from Progress</div></div>
@@ -262,6 +277,9 @@ tr:hover td{background:#f8fafc}
         <div class="search-bar">
           <input type="text" placeholder="Search..." id="pay-search" oninput="filterPayments()">
           <select id="pay-status-filter" onchange="filterPayments()"><option value="">All Status</option><option>Received</option><option>Pending</option><option>Overdue</option></select>
+          <input type="date" id="pay-from" onchange="filterPayments()" style="font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff" placeholder="From">
+          <input type="date" id="pay-to" onchange="filterPayments()" style="font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff" placeholder="To">
+          <button class="btn-add" style="background:#16a34a" onclick="downloadReport('payments')">⬇️ Export</button>
           <button class="btn-add" onclick="openPaymentForm()">+ Add Payment</button>
         </div>
         <div class="kpi-grid" style="margin-bottom:12px">
@@ -279,6 +297,9 @@ tr:hover td{background:#f8fafc}
           <input type="text" placeholder="Search..." id="prog-search" oninput="filterProgress()">
           <select id="prog-month-filter" onchange="filterProgress()" style="font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;outline:none"><option value="">All Months</option></select>
           <select id="prog-dept-filter" onchange="filterProgress()" style="font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;outline:none"><option value="">All Depts</option><option>eBay</option><option>Walmart</option><option>TikTok</option></select>
+          <input type="date" id="prog-from" onchange="filterProgress()" style="font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff">
+          <input type="date" id="prog-to" onchange="filterProgress()" style="font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff">
+          <button class="btn-add" style="background:#16a34a" onclick="downloadReport('progress')">⬇️ Export</button>
           <button class="btn-add" onclick="openProgressForm()">+ Add Progress</button>
         </div>
         <div class="kpi-grid" style="margin-bottom:12px">
@@ -403,7 +424,7 @@ tr:hover td{background:#f8fafc}
 
       <!-- MEMBER: MY CLIENTS -->
       <div class="section" id="sec-my-clients">
-        <div class="table-wrap"><table><thead><tr><th>ID</th><th>Client</th><th>Type</th><th>Dept</th><th>Store</th><th>Revenue</th><th>Commission</th><th>Status</th></tr></thead><tbody id="my-clients-body"></tbody></table></div>
+        <div class="table-wrap"><table><thead><tr><th>Client ID</th><th>Dept</th><th>Store Name</th><th>Deal %</th><th>Status</th></tr></thead><tbody id="my-clients-body"></tbody></table></div>
       </div>
 
       <!-- MEMBER: MY ATTENDANCE -->
@@ -657,7 +678,7 @@ function renderMemberDashboard(){
   document.getElementById('my-rev').textContent=fmt(mr);
   document.getElementById('my-done-count').textContent=md.length;
   document.getElementById('my-task-preview').innerHTML=mp.length===0?'<div class="empty-state"><p>✅ No pending tasks!</p></div>':mp.slice(0,4).map(t=>`<div class="pay-row"><div><div class="pay-name">${t['Task Title']||'—'}</div><div class="pay-dept">Due: ${t['Due Date']||'—'} ${isOD(t['Due Date'])?'<span class="status-pill pill-red">OVERDUE</span>':''}</div></div>${pill(t['Priority'])}</div>`).join('');
-  document.getElementById('my-client-preview').innerHTML=mc.length===0?'<div class="empty-state"><p>No clients assigned yet.</p></div>':mc.map(c=>`<div class="pay-row"><div><div class="pay-name">${c['Client Name']||'—'}</div><div class="pay-dept">${tag(c['Department'])} · ${c['Store Name']||'—'}</div></div><div>${fmt(c['Monthly Revenue'])}</div></div>`).join('');
+  document.getElementById('my-client-preview').innerHTML=mc.length===0?'<div class="empty-state"><p>No clients assigned yet.</p></div>':mc.map(c=>`<div class="pay-row"><div><div class="pay-name" style="font-size:11px;color:#6b7280">${c['ID']||'—'}</div><div class="pay-dept">${tag(c['Department'])} · <b>${c['Store Name']||'—'}</b></div></div>${pill(c['Status'])}</div>`).join('');
   document.getElementById('my-clients-body').innerHTML=mc.length===0?'<tr><td colspan="8"><div class="empty-state"><p>No clients assigned yet.</p></div></td></tr>':mc.map(c=>`<tr><td style="color:#6b7280;font-size:10px">${c['ID']||'—'}</td><td><b>${c['Client Name']||'—'}</b></td><td>${ctPill(c['Client Type'])}</td><td>${tag(c['Department'])}</td><td>${c['Store Name']||'—'}</td><td>${fmt(c['Monthly Revenue'])}</td><td>${fmt(c['Our Commission'])}</td><td>${pill(c['Status'])}</td></tr>`).join('');
   const ma=allAttendance.filter(a=>a['Member Name']===name);
   document.getElementById('my-att-body').innerHTML=ma.length===0?'<tr><td colspan="6"><div class="empty-state"><p>No attendance records yet.</p></div></td></tr>':ma.slice().reverse().map(a=>`<tr><td>${a['Date']||'—'}</td><td>${pill(a['Status'])}</td><td>${a['Check In']||'—'}</td><td>${a['Check Out']||'—'}</td><td>${a['Hours Worked']||'—'}</td><td style="color:#6b7280;font-size:10px">${a['Notes']||'—'}</td></tr>`).join('');
@@ -685,22 +706,65 @@ function filterMyTasks(){
 }
 
 // ADMIN RENDERS
+function getFilteredProgress(){
+  const period=document.getElementById('dash-period')?document.getElementById('dash-period').value:'all';
+  const now=new Date();
+  const fromEl=document.getElementById('dash-from');
+  const toEl=document.getElementById('dash-to');
+  // Show/hide custom date inputs
+  if(fromEl)fromEl.style.display=period==='custom'?'block':'none';
+  if(toEl)toEl.style.display=period==='custom'?'block':'none';
+  return allProgress.filter(p=>{
+    if(!p['Month'])return false;
+    // Try to parse month like "May 2026"
+    const parts=p['Month'].trim().split(' ');
+    if(parts.length<2)return true;
+    const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const mIdx=months.indexOf(parts[0]);
+    if(mIdx===-1)return true;
+    const pDate=new Date(parseInt(parts[1]),mIdx,1);
+    if(period==='all')return true;
+    if(period==='this_month'){return pDate.getMonth()===now.getMonth()&&pDate.getFullYear()===now.getFullYear();}
+    if(period==='last_month'){const lm=new Date(now.getFullYear(),now.getMonth()-1,1);return pDate.getMonth()===lm.getMonth()&&pDate.getFullYear()===lm.getFullYear();}
+    if(period==='last_3'){const f=new Date(now.getFullYear(),now.getMonth()-2,1);return pDate>=f&&pDate<=now;}
+    if(period==='last_6'){const f=new Date(now.getFullYear(),now.getMonth()-5,1);return pDate>=f&&pDate<=now;}
+    if(period==='this_year'){return pDate.getFullYear()===now.getFullYear();}
+    if(period==='custom'){
+      const from=fromEl&&fromEl.value?new Date(fromEl.value):null;
+      const to=toEl&&toEl.value?new Date(toEl.value):null;
+      if(from&&pDate<from)return false;
+      if(to&&pDate>to)return false;
+      return true;
+    }
+    return true;
+  });
+}
+
+function getFilteredPayments(list){
+  const from=document.getElementById('pay-from')?document.getElementById('pay-from').value:'';
+  const to=document.getElementById('pay-to')?document.getElementById('pay-to').value:'';
+  if(!from&&!to)return list;
+  return list.filter(p=>{
+    const d=p['Date Received']||p['Date']||'';
+    if(!d)return true;
+    const pd=new Date(d);
+    if(from&&pd<new Date(from))return false;
+    if(to&&pd>new Date(to))return false;
+    return true;
+  });
+}
+
 function renderDashboard(){
   const active=allClients.filter(c=>c['Status']==='Active').length;
-  // Dashboard now pulls REAL numbers from Progress sheet (current month)
-  const curMonth=new Date().toLocaleString('default',{month:'short'})+' '+new Date().getFullYear();
-  const thisMonthProg=allProgress.filter(p=>p['Month']&&p['Month'].trim()===curMonth);
-  const allTimeProg=allProgress;
-  const tGross=allTimeProg.reduce((a,p)=>a+(parseFloat(p['Gross Revenue'])||0),0);
-  const tNet=allTimeProg.reduce((a,p)=>a+(parseFloat(p['Net Profit'])||0),0);
-  const tComm=allTimeProg.reduce((a,p)=>a+(parseFloat(p['PYB Commission'])||0),0);
-  const thisGross=thisMonthProg.reduce((a,p)=>a+(parseFloat(p['Gross Revenue'])||0),0);
-  const thisComm=thisMonthProg.reduce((a,p)=>a+(parseFloat(p['PYB Commission'])||0),0);
-  const pend=allPayments.filter(p=>p['Status']==='Pending'||p['Status']==='Overdue').reduce((a,p)=>a+(parseFloat(p['Amount ($)'])||0),0);
+  const filteredProg=getFilteredProgress();
+  const tGross=filteredProg.reduce((a,p)=>a+(parseFloat(p['Gross Revenue'])||0),0);
+  const tNet=filteredProg.reduce((a,p)=>a+(parseFloat(p['Net Profit'])||0),0);
+  const tComm=filteredProg.reduce((a,p)=>a+(parseFloat(p['PYB Commission'])||0),0);
+  const pend=allPayments.filter(p=>p['Status']==='Pending'||p['Status']==='Overdue').reduce((a,p)=>a+(parseFloat(p['Amount ($)'])||p['Amount']||0),0);
   document.getElementById('kpi-total').textContent=allClients.length||'0';
   document.getElementById('kpi-active').textContent=active+' active';
-  document.getElementById('kpi-rev').textContent=allTimeProg.length>0?fmt(tGross):'No progress data yet';
-  document.getElementById('kpi-comm').textContent=allTimeProg.length>0?fmt(tComm):'No progress data yet';
+  document.getElementById('kpi-rev').textContent=filteredProg.length>0?fmt(tGross):'No data';
+  document.getElementById('kpi-comm').textContent=filteredProg.length>0?fmt(tComm):'No data';
   document.getElementById('kpi-pend').textContent=fmt(pend);
   const depts=['eBay','Walmart','TikTok'],bCls=['bar-ebay','bar-walmart','bar-tiktok'];
   const dRevs=depts.map(d=>allClients.filter(c=>c['Department']===d).reduce((a,c)=>a+(parseFloat(c['Monthly Revenue'])||0),0));
@@ -742,7 +806,13 @@ function renderPayments(data){
     </td>
   </tr>`).join('');
 }
-function filterPayments(){const s=document.getElementById('pay-search').value.toLowerCase();const st=document.getElementById('pay-status-filter').value;renderPayments(allPayments.filter(p=>(!s||Object.values(p).join(' ').toLowerCase().includes(s))&&(!st||p['Status']===st)));}
+function filterPayments(){
+  const s=document.getElementById('pay-search').value.toLowerCase();
+  const st=document.getElementById('pay-status-filter').value;
+  let list=allPayments.filter(p=>(!s||Object.values(p).join(' ').toLowerCase().includes(s))&&(!st||p['Status']===st));
+  list=getFilteredPayments(list);
+  renderPayments(list);
+}
 function renderProgress(data){
   const list=data||allProgress;
   // Update summary cards
@@ -779,7 +849,27 @@ function filterProgress(){
   const s=document.getElementById('prog-search').value.toLowerCase();
   const m=document.getElementById('prog-month-filter')?document.getElementById('prog-month-filter').value:'';
   const d=document.getElementById('prog-dept-filter')?document.getElementById('prog-dept-filter').value:'';
-  renderProgress(allProgress.filter(p=>(!s||Object.values(p).join(' ').toLowerCase().includes(s))&&(!m||p['Month']===m)&&(!d||p['Department']===d)));
+  const from=document.getElementById('prog-from')?document.getElementById('prog-from').value:'';
+  const to=document.getElementById('prog-to')?document.getElementById('prog-to').value:'';
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const list=allProgress.filter(p=>{
+    if(s&&!Object.values(p).join(' ').toLowerCase().includes(s))return false;
+    if(m&&p['Month']!==m)return false;
+    if(d&&p['Department']!==d)return false;
+    if(from||to){
+      const parts=(p['Month']||'').trim().split(' ');
+      if(parts.length>=2){
+        const mIdx=months.indexOf(parts[0]);
+        if(mIdx>-1){
+          const pd=new Date(parseInt(parts[1]),mIdx,1);
+          if(from&&pd<new Date(from))return false;
+          if(to&&pd>new Date(to))return false;
+        }
+      }
+    }
+    return true;
+  });
+  renderProgress(list);
 }
 function renderTeam(data){
   const list=data||allTeam;
@@ -1280,6 +1370,71 @@ async function saveProgress(){
   btn.innerHTML=orig;btn.disabled=false;
 }
 function showToast(msg,type='info'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast toast-'+type;t.style.display='block';setTimeout(()=>t.style.display='none',4000);}
+
+// ===== TELEGRAM NOTIFICATION =====
+async function sendTelegramNotify(assignedTo, taskTitle, priority, dueDate, clientId, department, assignedBy){
+  try{
+    // Find member's telegram chat ID from Team sheet (stored in Notes as tg:CHATID)
+    const member=allTeam.find(m=>m['Full Name']===assignedTo);
+    if(!member)return;
+    const notes=member['Notes']||'';
+    const tgMatch=notes.match(/tg:(\d+)/);
+    if(!tgMatch)return; // No telegram set up for this member
+    const chatId=tgMatch[1];
+    const BOT_TOKEN='YOUR_BOT_TOKEN'; // Set after bot creation
+    const msg=`🔔 New Task Assigned - Pak Youth Builders%0A%0AHi ${assignedTo}!%0A%0A📋 Task: ${taskTitle}%0A${clientId?'🆔 Client ID: '+clientId+'%0A':''}${department?'🏢 Department: '+department+'%0A':''}⚡ Priority: ${priority}%0A📅 Due Date: ${dueDate}%0A👨‍💼 Assigned By: ${assignedBy}%0A%0ALogin: https://pyb-crm.vercel.app/`;
+    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${chatId}&text=${msg}`);
+  }catch(e){console.log('Telegram error:',e);}
+}
+
+// ===== REPORT DOWNLOAD =====
+function downloadReport(type){
+  let rows=[], filename='', headers=[];
+  if(type==='payments'){
+    const s=document.getElementById('pay-search').value.toLowerCase();
+    const st=document.getElementById('pay-status-filter').value;
+    let list=allPayments.filter(p=>(!s||Object.values(p).join(' ').toLowerCase().includes(s))&&(!st||p['Status']===st));
+    list=getFilteredPayments(list);
+    headers=['Invoice','Client Name','Department','Month','Amount ($)','Commission ($)','Date Received','Status'];
+    rows=list.map(p=>[p['Invoice No']||'',p['Client Name']||'',p['Department']||'',p['Month']||'',p['Amount ($)']||p['Amount']||'',p['Commission ($)']||p['Commission']||'',p['Date Received']||'',p['Status']||'']);
+    filename='PYB_Payments_'+today()+'.csv';
+  } else if(type==='progress'){
+    const s=document.getElementById('prog-search').value.toLowerCase();
+    const m=document.getElementById('prog-month-filter')?document.getElementById('prog-month-filter').value:'';
+    const d=document.getElementById('prog-dept-filter')?document.getElementById('prog-dept-filter').value:'';
+    let list=allProgress.filter(p=>(!s||Object.values(p).join(' ').toLowerCase().includes(s))&&(!m||p['Month']===m)&&(!d||p['Department']===d));
+    headers=['Client ID','Client Name','Department','Month','Gross Revenue','Cost of Goods','Net Profit','Deal %','PYB Commission','Orders','Performance','Notes'];
+    rows=list.map(p=>[p['Client ID']||'',p['Client Name']||'',p['Department']||'',p['Month']||'',p['Gross Revenue']||'',p['Cost of Goods']||'',p['Net Profit']||'',p['Deal %']||'',p['PYB Commission']||'',p['Orders']||'',p['Performance']||'',p['Notes']||'']);
+    filename='PYB_Progress_'+today()+'.csv';
+  }
+  const csv=[headers,...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('
+');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=filename;a.click();
+  URL.revokeObjectURL(url);
+  showToast('✅ Report downloaded!','success');
+}
+
+function downloadDashboardReport(){
+  const filteredProg=getFilteredProgress();
+  const period=document.getElementById('dash-period')?document.getElementById('dash-period').value:'all';
+  const tGross=filteredProg.reduce((a,p)=>a+(parseFloat(p['Gross Revenue'])||0),0);
+  const tNet=filteredProg.reduce((a,p)=>a+(parseFloat(p['Net Profit'])||0),0);
+  const tComm=filteredProg.reduce((a,p)=>a+(parseFloat(p['PYB Commission'])||0),0);
+  const headers=['Client ID','Client Name','Department','Month','Gross Revenue','Net Profit','PYB Commission','Orders','Performance'];
+  const rows=filteredProg.map(p=>[p['Client ID']||'',p['Client Name']||'',p['Department']||'',p['Month']||'',p['Gross Revenue']||'',p['Net Profit']||'',p['PYB Commission']||'',p['Orders']||'',p['Performance']||'']);
+  // Add summary at top
+  const summary=[['PAK YOUTH BUILDERS - REPORT'],['Period: '+period],['Generated: '+new Date().toLocaleDateString()],[''],['SUMMARY'],['Total Gross Revenue','$'+tGross.toLocaleString()],['Total Net Profit','$'+tNet.toLocaleString()],['PYB Commission','$'+tComm.toLocaleString()],['Total Records',filteredProg.length],[''],['DETAIL']];
+  const allRows=[...summary,[headers],...rows];
+  const csv=allRows.map(r=>Array.isArray(r)?r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(','):'"'+r+'"').join('
+');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='PYB_Dashboard_Report_'+today()+'.csv';a.click();
+  URL.revokeObjectURL(url);
+  showToast('✅ Dashboard report downloaded!','success');
+}
 window.addEventListener('click',e=>{if(e.target.classList.contains('modal-bg'))e.target.classList.remove('open');});
 
 // Also need to update Team sheet columns for Username & Password
@@ -1419,8 +1574,14 @@ function renderMemberDashboard(){
   document.getElementById('my-rev').textContent=fmt(mr);
   document.getElementById('my-done-count').textContent=md.length;
   document.getElementById('my-task-preview').innerHTML=mp.length===0?'<div class="empty-state"><p>✅ No pending tasks!</p></div>':mp.slice(0,4).map(t=>`<div class="pay-row"><div><div class="pay-name">${t['Task Title']||'—'}</div><div class="pay-dept">Due: ${t['Due Date']||'—'} ${isOverdue(t['Due Date'])?'<span class="status-pill pill-red">OVERDUE</span>':''}</div></div>${pill(t['Priority'])}</div>`).join('');
-  document.getElementById('my-client-preview').innerHTML=mc.length===0?'<div class="empty-state"><p>No clients assigned yet.</p></div>':mc.map(c=>`<div class="pay-row"><div><div class="pay-name">${c['Client Name']||'—'}</div><div class="pay-dept">${tag(c['Department'])} · ${c['Store Name']||'—'}</div></div><div>${fmt(c['Monthly Revenue'])}</div></div>`).join('');
-  document.getElementById('my-clients-body').innerHTML=mc.length===0?'<tr><td colspan="8"><div class="empty-state"><p>No clients assigned yet.</p></div></td></tr>':mc.map(c=>`<tr><td style="color:#6b7280;font-size:10px">${c['ID']||'—'}</td><td><b>${c['Client Name']||'—'}</b></td><td>${ctp(c['Client Type'])}</td><td>${tag(c['Department'])}</td><td>${c['Store Name']||'—'}</td><td>${fmt(c['Monthly Revenue'])}</td><td>${fmt(c['Our Commission'])}</td><td>${pill(c['Status'])}</td></tr>`).join('');
+  document.getElementById('my-client-preview').innerHTML=mc.length===0?'<div class="empty-state"><p>No clients assigned yet.</p></div>':mc.map(c=>`<div class="pay-row"><div><div class="pay-name" style="font-size:11px;color:#6b7280">${c['ID']||'—'}</div><div class="pay-dept">${tag(c['Department'])} · <b>${c['Store Name']||'—'}</b></div></div>${pill(c['Status'])}</div>`).join('');
+  document.getElementById('my-clients-body').innerHTML=mc.length===0?'<tr><td colspan="5"><div class="empty-state"><p>No clients assigned yet.</p></div></td></tr>':mc.map(c=>`<tr>
+    <td style="color:#6b7280;font-size:10px;font-weight:700">${c['ID']||'—'}</td>
+    <td>${tag(c['Department'])}</td>
+    <td><b>${c['Store Name']||'—'}</b></td>
+    <td>${c['Deal %']||'—'}</td>
+    <td>${pill(c['Status'])}</td>
+  </tr>`).join('');
   const myAtt=allAttendance.filter(a=>a['Member Name']===name);
   document.getElementById('my-att-body').innerHTML=myAtt.length===0?'<tr><td colspan="6"><div class="empty-state"><p>No attendance records yet.</p></div></td></tr>':myAtt.slice().reverse().map(a=>`<tr><td>${a['Date']||'—'}</td><td>${pill(a['Status'])}</td><td>${a['Check In']||'—'}</td><td>${a['Check Out']||'—'}</td><td>${a['Hours Worked']||'—'}</td><td style="color:#6b7280;font-size:10px">${a['Notes']||'—'}</td></tr>`).join('');
   const myUpd=allUpdates.filter(u=>u['Member Name']===name);
@@ -1453,22 +1614,65 @@ function filterMyTasks(){
   renderMyTasks(list);
 }
 
+function getFilteredProgress(){
+  const period=document.getElementById('dash-period')?document.getElementById('dash-period').value:'all';
+  const now=new Date();
+  const fromEl=document.getElementById('dash-from');
+  const toEl=document.getElementById('dash-to');
+  // Show/hide custom date inputs
+  if(fromEl)fromEl.style.display=period==='custom'?'block':'none';
+  if(toEl)toEl.style.display=period==='custom'?'block':'none';
+  return allProgress.filter(p=>{
+    if(!p['Month'])return false;
+    // Try to parse month like "May 2026"
+    const parts=p['Month'].trim().split(' ');
+    if(parts.length<2)return true;
+    const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const mIdx=months.indexOf(parts[0]);
+    if(mIdx===-1)return true;
+    const pDate=new Date(parseInt(parts[1]),mIdx,1);
+    if(period==='all')return true;
+    if(period==='this_month'){return pDate.getMonth()===now.getMonth()&&pDate.getFullYear()===now.getFullYear();}
+    if(period==='last_month'){const lm=new Date(now.getFullYear(),now.getMonth()-1,1);return pDate.getMonth()===lm.getMonth()&&pDate.getFullYear()===lm.getFullYear();}
+    if(period==='last_3'){const f=new Date(now.getFullYear(),now.getMonth()-2,1);return pDate>=f&&pDate<=now;}
+    if(period==='last_6'){const f=new Date(now.getFullYear(),now.getMonth()-5,1);return pDate>=f&&pDate<=now;}
+    if(period==='this_year'){return pDate.getFullYear()===now.getFullYear();}
+    if(period==='custom'){
+      const from=fromEl&&fromEl.value?new Date(fromEl.value):null;
+      const to=toEl&&toEl.value?new Date(toEl.value):null;
+      if(from&&pDate<from)return false;
+      if(to&&pDate>to)return false;
+      return true;
+    }
+    return true;
+  });
+}
+
+function getFilteredPayments(list){
+  const from=document.getElementById('pay-from')?document.getElementById('pay-from').value:'';
+  const to=document.getElementById('pay-to')?document.getElementById('pay-to').value:'';
+  if(!from&&!to)return list;
+  return list.filter(p=>{
+    const d=p['Date Received']||p['Date']||'';
+    if(!d)return true;
+    const pd=new Date(d);
+    if(from&&pd<new Date(from))return false;
+    if(to&&pd>new Date(to))return false;
+    return true;
+  });
+}
+
 function renderDashboard(){
   const active=allClients.filter(c=>c['Status']==='Active').length;
-  // Dashboard now pulls REAL numbers from Progress sheet (current month)
-  const curMonth=new Date().toLocaleString('default',{month:'short'})+' '+new Date().getFullYear();
-  const thisMonthProg=allProgress.filter(p=>p['Month']&&p['Month'].trim()===curMonth);
-  const allTimeProg=allProgress;
-  const tGross=allTimeProg.reduce((a,p)=>a+(parseFloat(p['Gross Revenue'])||0),0);
-  const tNet=allTimeProg.reduce((a,p)=>a+(parseFloat(p['Net Profit'])||0),0);
-  const tComm=allTimeProg.reduce((a,p)=>a+(parseFloat(p['PYB Commission'])||0),0);
-  const thisGross=thisMonthProg.reduce((a,p)=>a+(parseFloat(p['Gross Revenue'])||0),0);
-  const thisComm=thisMonthProg.reduce((a,p)=>a+(parseFloat(p['PYB Commission'])||0),0);
-  const pend=allPayments.filter(p=>p['Status']==='Pending'||p['Status']==='Overdue').reduce((a,p)=>a+(parseFloat(p['Amount ($)'])||0),0);
+  const filteredProg=getFilteredProgress();
+  const tGross=filteredProg.reduce((a,p)=>a+(parseFloat(p['Gross Revenue'])||0),0);
+  const tNet=filteredProg.reduce((a,p)=>a+(parseFloat(p['Net Profit'])||0),0);
+  const tComm=filteredProg.reduce((a,p)=>a+(parseFloat(p['PYB Commission'])||0),0);
+  const pend=allPayments.filter(p=>p['Status']==='Pending'||p['Status']==='Overdue').reduce((a,p)=>a+(parseFloat(p['Amount ($)'])||p['Amount']||0),0);
   document.getElementById('kpi-total').textContent=allClients.length||'0';
   document.getElementById('kpi-active').textContent=active+' active';
-  document.getElementById('kpi-rev').textContent=allTimeProg.length>0?fmt(tGross):'No progress data yet';
-  document.getElementById('kpi-comm').textContent=allTimeProg.length>0?fmt(tComm):'No progress data yet';
+  document.getElementById('kpi-rev').textContent=filteredProg.length>0?fmt(tGross):'No data';
+  document.getElementById('kpi-comm').textContent=filteredProg.length>0?fmt(tComm):'No data';
   document.getElementById('kpi-pend').textContent=fmt(pend);
   const depts=['eBay','Walmart','TikTok'],bCls=['bar-ebay','bar-walmart','bar-tiktok'];
   const dRevs=depts.map(d=>allClients.filter(c=>c['Department']===d).reduce((a,c)=>a+(parseFloat(c['Monthly Revenue'])||0),0));
@@ -1512,7 +1716,13 @@ function renderPayments(data){
     </td>
   </tr>`).join('');
 }
-function filterPayments(){const s=document.getElementById('pay-search').value.toLowerCase();const st=document.getElementById('pay-status-filter').value;renderPayments(allPayments.filter(p=>(!s||Object.values(p).join(' ').toLowerCase().includes(s))&&(!st||p['Status']===st)));}
+function filterPayments(){
+  const s=document.getElementById('pay-search').value.toLowerCase();
+  const st=document.getElementById('pay-status-filter').value;
+  let list=allPayments.filter(p=>(!s||Object.values(p).join(' ').toLowerCase().includes(s))&&(!st||p['Status']===st));
+  list=getFilteredPayments(list);
+  renderPayments(list);
+}
 
 function renderProgress(data){
   const list=data||allProgress;
@@ -1550,7 +1760,27 @@ function filterProgress(){
   const s=document.getElementById('prog-search').value.toLowerCase();
   const m=document.getElementById('prog-month-filter')?document.getElementById('prog-month-filter').value:'';
   const d=document.getElementById('prog-dept-filter')?document.getElementById('prog-dept-filter').value:'';
-  renderProgress(allProgress.filter(p=>(!s||Object.values(p).join(' ').toLowerCase().includes(s))&&(!m||p['Month']===m)&&(!d||p['Department']===d)));
+  const from=document.getElementById('prog-from')?document.getElementById('prog-from').value:'';
+  const to=document.getElementById('prog-to')?document.getElementById('prog-to').value:'';
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const list=allProgress.filter(p=>{
+    if(s&&!Object.values(p).join(' ').toLowerCase().includes(s))return false;
+    if(m&&p['Month']!==m)return false;
+    if(d&&p['Department']!==d)return false;
+    if(from||to){
+      const parts=(p['Month']||'').trim().split(' ');
+      if(parts.length>=2){
+        const mIdx=months.indexOf(parts[0]);
+        if(mIdx>-1){
+          const pd=new Date(parseInt(parts[1]),mIdx,1);
+          if(from&&pd<new Date(from))return false;
+          if(to&&pd>new Date(to))return false;
+        }
+      }
+    }
+    return true;
+  });
+  renderProgress(list);
 }
 
 function renderTeam(data){
@@ -2066,6 +2296,71 @@ async function saveProgress(){
 }
 
 function showToast(msg,type='info'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast toast-'+type;t.style.display='block';setTimeout(()=>t.style.display='none',4000);}
+
+// ===== TELEGRAM NOTIFICATION =====
+async function sendTelegramNotify(assignedTo, taskTitle, priority, dueDate, clientId, department, assignedBy){
+  try{
+    // Find member's telegram chat ID from Team sheet (stored in Notes as tg:CHATID)
+    const member=allTeam.find(m=>m['Full Name']===assignedTo);
+    if(!member)return;
+    const notes=member['Notes']||'';
+    const tgMatch=notes.match(/tg:(\d+)/);
+    if(!tgMatch)return; // No telegram set up for this member
+    const chatId=tgMatch[1];
+    const BOT_TOKEN='YOUR_BOT_TOKEN'; // Set after bot creation
+    const msg=`🔔 New Task Assigned - Pak Youth Builders%0A%0AHi ${assignedTo}!%0A%0A📋 Task: ${taskTitle}%0A${clientId?'🆔 Client ID: '+clientId+'%0A':''}${department?'🏢 Department: '+department+'%0A':''}⚡ Priority: ${priority}%0A📅 Due Date: ${dueDate}%0A👨‍💼 Assigned By: ${assignedBy}%0A%0ALogin: https://pyb-crm.vercel.app/`;
+    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${chatId}&text=${msg}`);
+  }catch(e){console.log('Telegram error:',e);}
+}
+
+// ===== REPORT DOWNLOAD =====
+function downloadReport(type){
+  let rows=[], filename='', headers=[];
+  if(type==='payments'){
+    const s=document.getElementById('pay-search').value.toLowerCase();
+    const st=document.getElementById('pay-status-filter').value;
+    let list=allPayments.filter(p=>(!s||Object.values(p).join(' ').toLowerCase().includes(s))&&(!st||p['Status']===st));
+    list=getFilteredPayments(list);
+    headers=['Invoice','Client Name','Department','Month','Amount ($)','Commission ($)','Date Received','Status'];
+    rows=list.map(p=>[p['Invoice No']||'',p['Client Name']||'',p['Department']||'',p['Month']||'',p['Amount ($)']||p['Amount']||'',p['Commission ($)']||p['Commission']||'',p['Date Received']||'',p['Status']||'']);
+    filename='PYB_Payments_'+today()+'.csv';
+  } else if(type==='progress'){
+    const s=document.getElementById('prog-search').value.toLowerCase();
+    const m=document.getElementById('prog-month-filter')?document.getElementById('prog-month-filter').value:'';
+    const d=document.getElementById('prog-dept-filter')?document.getElementById('prog-dept-filter').value:'';
+    let list=allProgress.filter(p=>(!s||Object.values(p).join(' ').toLowerCase().includes(s))&&(!m||p['Month']===m)&&(!d||p['Department']===d));
+    headers=['Client ID','Client Name','Department','Month','Gross Revenue','Cost of Goods','Net Profit','Deal %','PYB Commission','Orders','Performance','Notes'];
+    rows=list.map(p=>[p['Client ID']||'',p['Client Name']||'',p['Department']||'',p['Month']||'',p['Gross Revenue']||'',p['Cost of Goods']||'',p['Net Profit']||'',p['Deal %']||'',p['PYB Commission']||'',p['Orders']||'',p['Performance']||'',p['Notes']||'']);
+    filename='PYB_Progress_'+today()+'.csv';
+  }
+  const csv=[headers,...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('
+');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=filename;a.click();
+  URL.revokeObjectURL(url);
+  showToast('✅ Report downloaded!','success');
+}
+
+function downloadDashboardReport(){
+  const filteredProg=getFilteredProgress();
+  const period=document.getElementById('dash-period')?document.getElementById('dash-period').value:'all';
+  const tGross=filteredProg.reduce((a,p)=>a+(parseFloat(p['Gross Revenue'])||0),0);
+  const tNet=filteredProg.reduce((a,p)=>a+(parseFloat(p['Net Profit'])||0),0);
+  const tComm=filteredProg.reduce((a,p)=>a+(parseFloat(p['PYB Commission'])||0),0);
+  const headers=['Client ID','Client Name','Department','Month','Gross Revenue','Net Profit','PYB Commission','Orders','Performance'];
+  const rows=filteredProg.map(p=>[p['Client ID']||'',p['Client Name']||'',p['Department']||'',p['Month']||'',p['Gross Revenue']||'',p['Net Profit']||'',p['PYB Commission']||'',p['Orders']||'',p['Performance']||'']);
+  // Add summary at top
+  const summary=[['PAK YOUTH BUILDERS - REPORT'],['Period: '+period],['Generated: '+new Date().toLocaleDateString()],[''],['SUMMARY'],['Total Gross Revenue','$'+tGross.toLocaleString()],['Total Net Profit','$'+tNet.toLocaleString()],['PYB Commission','$'+tComm.toLocaleString()],['Total Records',filteredProg.length],[''],['DETAIL']];
+  const allRows=[...summary,[headers],...rows];
+  const csv=allRows.map(r=>Array.isArray(r)?r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(','):'"'+r+'"').join('
+');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='PYB_Dashboard_Report_'+today()+'.csv';a.click();
+  URL.revokeObjectURL(url);
+  showToast('✅ Dashboard report downloaded!','success');
+}
 window.addEventListener('click',e=>{if(e.target.classList.contains('modal-bg'))e.target.classList.remove('open');});
 
 // Also need to add Username and Password columns to Team sheet
