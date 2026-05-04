@@ -21,7 +21,7 @@ body{font-family:Arial,sans-serif;background:#f0f2f5;color:#1a1a1a}
 .login-btn:hover{background:#1a3570}
 .login-error{background:#fee2e2;color:#dc2626;font-size:12px;padding:8px 12px;border-radius:8px;margin-bottom:14px;display:none;text-align:center}
 .login-hint{text-align:center;margin-top:16px;font-size:11px;color:#6b7280}
-.crm-wrap{display:none;flex;height:100vh;overflow:hidden}
+.crm-wrap{display:none;height:100vh;overflow:hidden}
 .sidebar{width:215px;background:#0f2044;display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
 .sidebar-logo{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,0.1)}
 .sidebar-logo .co{font-size:13px;font-weight:700;color:#fff}
@@ -219,7 +219,7 @@ tr:hover td{background:#f8fafc}
     <div class="topbar">
       <div class="page-title" id="pageTitle">Dashboard</div>
       <div class="topbar-right">
-        <button class="btn-sync" onclick="loadAll()">&#8635; Sync</button>
+        <button class="btn-sync" onclick="loadAll(false)">&#8635; Sync</button>
         <span id="roleBadge" class="badge-admin">Admin</span>
         <div class="avatar" id="userAvatar">PY</div>
         <button class="btn-logout" onclick="doLogout()">Logout</button>
@@ -601,15 +601,15 @@ function toObj(rows){
   const h=rows[0];
   return rows.slice(1).filter(r=>r.some(c=>c)).map((r,i)=>{const o={_row:i+2};h.forEach((k,j)=>o[k]=(r[j]||'').toString().trim());return o;});
 }
-async function loadAll(){
+async function loadAll(silent=false){
   try{
-    showToast('Loading...','info');
+    if(!silent)showToast('Loading...','info');
     const[cr,pr,pgr,tm,tk,at,ud]=await Promise.all([gRead('Clients!A:Q'),gRead('Payments!A:H'),gRead('Progress!A:L'),gRead('Team!A:K'),gRead('Tasks!A:M'),gRead('Attendance!A:H'),gRead('DailyUpdates!A:H')]);
     allClients=toObj(cr);allPayments=toObj(pr);allProgress=toObj(pgr);allTeam=toObj(tm);allTasks=toObj(tk);allAttendance=toObj(at);allUpdates=toObj(ud);
     populateSelects();
     if(currentUser){if(currentUser.isAdmin){renderDashboard();renderMaster();renderPayments();renderProgress();renderTeam();renderTasks();renderAttendance();renderUpdates();}else{renderMemberDashboard();}}
-    showToast('Data loaded!','success');
-  }catch(e){showToast('Error: '+e.message,'error');}
+    if(!silent)showToast('Data loaded!','success');
+  }catch(e){if(!silent)showToast('Error: '+e.message,'error');else console.error('Load error:',e);}
 }
 function populateSelects(){
   const mo=allTeam.filter(m=>m['Status']==='Active').map(m=>`<option value="${m['Full Name']}">${m['Full Name']} (${m['Role']})</option>`).join('');
@@ -622,12 +622,31 @@ function populateSelects(){
 }
 
 // LOGIN
-function doLogin(){
+async function doLogin(){
   const user=document.getElementById('loginUser').value.trim();
   const pass=document.getElementById('loginPass').value.trim();
   const err=document.getElementById('loginError');err.style.display='none';
   if(!user||!pass){err.textContent='Please enter username and password!';err.style.display='block';return;}
-  if(user===ADMIN_USER&&pass===ADMIN_PASS){currentUser={name:'Admin',role:'Admin / Owner',isAdmin:true,memberData:null};loginSuccess();return;}
+  
+  // Admin always works immediately
+  if(user===ADMIN_USER&&pass===ADMIN_PASS){
+    currentUser={name:'Admin',role:'Admin / Owner',isAdmin:true,memberData:null};
+    const btn=document.querySelector('.login-btn');
+    btn.textContent='Loading...';btn.disabled=true;
+    await loadAll();
+    btn.textContent='Login →';btn.disabled=false;
+    loginSuccess();
+    return;
+  }
+  
+  // For team members - load data first if not loaded
+  if(allTeam.length===0){
+    const btn=document.querySelector('.login-btn');
+    btn.textContent='Loading...';btn.disabled=true;
+    await loadAll();
+    btn.textContent='Login →';btn.disabled=false;
+  }
+  
   const member=allTeam.find(m=>m['Username']===user&&m['Password']===pass&&m['Status']==='Active');
   if(member){currentUser={name:member['Full Name'],role:member['Role'],isAdmin:false,memberData:member};loginSuccess();return;}
   err.textContent='Invalid username or password!';err.style.display='block';
@@ -1518,9 +1537,9 @@ function toObj(rows){
   });
 }
 
-async function loadAll(){
+async function loadAll(silent=false){
   try{
-    showToast('Loading...','info');
+    if(!silent)showToast('Loading...','info');
     const[cr,pr,pgr,tm,tk,at,ud]=await Promise.all([
       gRead('Clients!A:Q'),gRead('Payments!A:H'),gRead('Progress!A:L'),
       gRead('Team!A:K'),gRead('Tasks!A:M'),gRead('Attendance!A:H'),gRead('DailyUpdates!A:H')
@@ -1529,11 +1548,15 @@ async function loadAll(){
     allTeam=toObj(tm);allTasks=toObj(tk);allAttendance=toObj(at);allUpdates=toObj(ud);
     populateSelects();
     if(currentUser){
-      if(currentUser.isAdmin){renderDashboard();renderMaster();renderPayments();renderProgress();renderTeam();renderTasks();renderAttendance();renderUpdates();}
-      else renderMemberDashboard();
+      if(currentUser.isAdmin){
+        renderDashboard();renderMaster();renderPayments();renderProgress();
+        renderTeam();renderTasks();renderAttendance();renderUpdates();
+      } else {
+        renderMemberDashboard();
+      }
     }
-    showToast('Data loaded!','success');
-  }catch(e){showToast('Error: '+e.message,'error');}
+    if(!silent)showToast('Data loaded!','success');
+  }catch(e){if(!silent)showToast('Error: '+e.message,'error');else console.error('Load error:',e);}
 }
 
 function populateSelects(){
@@ -2363,9 +2386,8 @@ function downloadDashboardReport(){
 }
 window.addEventListener('click',e=>{if(e.target.classList.contains('modal-bg'))e.target.classList.remove('open');});
 
-// Also need to add Username and Password columns to Team sheet
-// Team sheet columns: Member ID | Full Name | Role | Department | Phone | Email | Join Date | Status | Notes | Username | Password
-loadAll();
+// Load data silently on page start for team member login
+loadAll(true);
 </script>
 </body>
 </html>
