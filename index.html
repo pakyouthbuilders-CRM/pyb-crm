@@ -1393,16 +1393,17 @@ function showToast(msg,type='info'){const t=document.getElementById('toast');t.t
 // ===== TELEGRAM NOTIFICATION =====
 async function sendTelegramNotify(assignedTo, taskTitle, priority, dueDate, clientId, department, assignedBy){
   try{
-    // Find member's telegram chat ID from Team sheet (stored in Notes as tg:CHATID)
     const member=allTeam.find(m=>m['Full Name']===assignedTo);
     if(!member)return;
     const notes=member['Notes']||'';
     const tgMatch=notes.match(/tg:(\d+)/);
-    if(!tgMatch)return; // No telegram set up for this member
+    if(!tgMatch)return;
     const chatId=tgMatch[1];
-    const BOT_TOKEN='YOUR_BOT_TOKEN'; // Set after bot creation
-    const msg=`🔔 New Task Assigned - Pak Youth Builders%0A%0AHi ${assignedTo}!%0A%0A📋 Task: ${taskTitle}%0A${clientId?'🆔 Client ID: '+clientId+'%0A':''}${department?'🏢 Department: '+department+'%0A':''}⚡ Priority: ${priority}%0A📅 Due Date: ${dueDate}%0A👨‍💼 Assigned By: ${assignedBy}%0A%0ALogin: https://pyb-crm.vercel.app/`;
-    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${chatId}&text=${msg}`);
+    const BOT_TOKEN='YOUR_BOT_TOKEN';
+    const lines=['New Task - Pak Youth Builders','','Hi '+assignedTo+'!','','Task: '+taskTitle,(clientId?'Client ID: '+clientId:''),(department?'Department: '+department:''),'Priority: '+priority,'Due: '+dueDate,'Assigned By: '+assignedBy,'','Login: https://pyb-crm.vercel.app/'];
+    const NL2=String.fromCharCode(10);const msg=encodeURIComponent(lines.filter(Boolean).join(NL2));
+    const url='https://api.telegram.org/bot'+BOT_TOKEN+'/sendMessage?chat_id='+chatId+'&text='+msg;
+    await fetch(url);
   }catch(e){console.log('Telegram error:',e);}
 }
 
@@ -1426,13 +1427,13 @@ function downloadReport(type){
     rows=list.map(p=>[p['Client ID']||'',p['Client Name']||'',p['Department']||'',p['Month']||'',p['Gross Revenue']||'',p['Cost of Goods']||'',p['Net Profit']||'',p['Deal %']||'',p['PYB Commission']||'',p['Orders']||'',p['Performance']||'',p['Notes']||'']);
     filename='PYB_Progress_'+today()+'.csv';
   }
-  const csv=[headers,...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('
-');
+  const NL=String.fromCharCode(10);
+  const csv=[headers,...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join(NL);
   const blob=new Blob([csv],{type:'text/csv'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download=filename;a.click();
   URL.revokeObjectURL(url);
-  showToast('✅ Report downloaded!','success');
+  showToast('Report downloaded!','success');
 }
 
 function downloadDashboardReport(){
@@ -1446,13 +1447,13 @@ function downloadDashboardReport(){
   // Add summary at top
   const summary=[['PAK YOUTH BUILDERS - REPORT'],['Period: '+period],['Generated: '+new Date().toLocaleDateString()],[''],['SUMMARY'],['Total Gross Revenue','$'+tGross.toLocaleString()],['Total Net Profit','$'+tNet.toLocaleString()],['PYB Commission','$'+tComm.toLocaleString()],['Total Records',filteredProg.length],[''],['DETAIL']];
   const allRows=[...summary,[headers],...rows];
-  const csv=allRows.map(r=>Array.isArray(r)?r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(','):'"'+r+'"').join('
-');
+  const NL=String.fromCharCode(10);
+  const csv=allRows.map(r=>Array.isArray(r)?r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(','):'"'+r+'"').join(NL);
   const blob=new Blob([csv],{type:'text/csv'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download='PYB_Dashboard_Report_'+today()+'.csv';a.click();
   URL.revokeObjectURL(url);
-  showToast('✅ Dashboard report downloaded!','success');
+  showToast('Dashboard report downloaded!','success');
 }
 window.addEventListener('click',e=>{if(e.target.classList.contains('modal-bg'))e.target.classList.remove('open');});
 
@@ -2323,16 +2324,17 @@ function showToast(msg,type='info'){const t=document.getElementById('toast');t.t
 // ===== TELEGRAM NOTIFICATION =====
 async function sendTelegramNotify(assignedTo, taskTitle, priority, dueDate, clientId, department, assignedBy){
   try{
-    // Find member's telegram chat ID from Team sheet (stored in Notes as tg:CHATID)
     const member=allTeam.find(m=>m['Full Name']===assignedTo);
     if(!member)return;
     const notes=member['Notes']||'';
     const tgMatch=notes.match(/tg:(\d+)/);
-    if(!tgMatch)return; // No telegram set up for this member
+    if(!tgMatch)return;
     const chatId=tgMatch[1];
-    const BOT_TOKEN='YOUR_BOT_TOKEN'; // Set after bot creation
-    const msg=`🔔 New Task Assigned - Pak Youth Builders%0A%0AHi ${assignedTo}!%0A%0A📋 Task: ${taskTitle}%0A${clientId?'🆔 Client ID: '+clientId+'%0A':''}${department?'🏢 Department: '+department+'%0A':''}⚡ Priority: ${priority}%0A📅 Due Date: ${dueDate}%0A👨‍💼 Assigned By: ${assignedBy}%0A%0ALogin: https://pyb-crm.vercel.app/`;
-    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${chatId}&text=${msg}`);
+    const BOT_TOKEN='YOUR_BOT_TOKEN';
+    const lines=['New Task - Pak Youth Builders','','Hi '+assignedTo+'!','','Task: '+taskTitle,(clientId?'Client ID: '+clientId:''),(department?'Department: '+department:''),'Priority: '+priority,'Due: '+dueDate,'Assigned By: '+assignedBy,'','Login: https://pyb-crm.vercel.app/'];
+    const NL2=String.fromCharCode(10);const msg=encodeURIComponent(lines.filter(Boolean).join(NL2));
+    const url='https://api.telegram.org/bot'+BOT_TOKEN+'/sendMessage?chat_id='+chatId+'&text='+msg;
+    await fetch(url);
   }catch(e){console.log('Telegram error:',e);}
 }
 
@@ -2356,13 +2358,13 @@ function downloadReport(type){
     rows=list.map(p=>[p['Client ID']||'',p['Client Name']||'',p['Department']||'',p['Month']||'',p['Gross Revenue']||'',p['Cost of Goods']||'',p['Net Profit']||'',p['Deal %']||'',p['PYB Commission']||'',p['Orders']||'',p['Performance']||'',p['Notes']||'']);
     filename='PYB_Progress_'+today()+'.csv';
   }
-  const csv=[headers,...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('
-');
+  const NL=String.fromCharCode(10);
+  const csv=[headers,...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join(NL);
   const blob=new Blob([csv],{type:'text/csv'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download=filename;a.click();
   URL.revokeObjectURL(url);
-  showToast('✅ Report downloaded!','success');
+  showToast('Report downloaded!','success');
 }
 
 function downloadDashboardReport(){
@@ -2376,13 +2378,13 @@ function downloadDashboardReport(){
   // Add summary at top
   const summary=[['PAK YOUTH BUILDERS - REPORT'],['Period: '+period],['Generated: '+new Date().toLocaleDateString()],[''],['SUMMARY'],['Total Gross Revenue','$'+tGross.toLocaleString()],['Total Net Profit','$'+tNet.toLocaleString()],['PYB Commission','$'+tComm.toLocaleString()],['Total Records',filteredProg.length],[''],['DETAIL']];
   const allRows=[...summary,[headers],...rows];
-  const csv=allRows.map(r=>Array.isArray(r)?r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(','):'"'+r+'"').join('
-');
+  const NL=String.fromCharCode(10);
+  const csv=allRows.map(r=>Array.isArray(r)?r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(','):'"'+r+'"').join(NL);
   const blob=new Blob([csv],{type:'text/csv'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download='PYB_Dashboard_Report_'+today()+'.csv';a.click();
   URL.revokeObjectURL(url);
-  showToast('✅ Dashboard report downloaded!','success');
+  showToast('Dashboard report downloaded!','success');
 }
 window.addEventListener('click',e=>{if(e.target.classList.contains('modal-bg'))e.target.classList.remove('open');});
 
