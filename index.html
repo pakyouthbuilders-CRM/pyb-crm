@@ -21,7 +21,7 @@ body{font-family:Arial,sans-serif;background:#f0f2f5;color:#1a1a1a}
 .login-btn:hover{background:#1a3570}
 .login-error{background:#fee2e2;color:#dc2626;font-size:12px;padding:8px 12px;border-radius:8px;margin-bottom:14px;display:none;text-align:center}
 .login-hint{text-align:center;margin-top:16px;font-size:11px;color:#6b7280}
-.crm-wrap{display:none;height:100vh;overflow:hidden}
+.crm-wrap{display:none;height:100vh;overflow:hidden;flex-direction:row}
 .sidebar{width:215px;background:#0f2044;display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
 .sidebar-logo{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,0.1)}
 .sidebar-logo .co{font-size:13px;font-weight:700;color:#fff}
@@ -152,6 +152,7 @@ tr:hover td{background:#f8fafc}
 .type-card .desc{font-size:9px;color:#6b7280;margin-top:1px}
 .ctype-wrap{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 <!-- LOGIN -->
@@ -625,31 +626,26 @@ function populateSelects(){
 async function doLogin(){
   const user=document.getElementById('loginUser').value.trim();
   const pass=document.getElementById('loginPass').value.trim();
-  const err=document.getElementById('loginError');err.style.display='none';
+  const err=document.getElementById('loginError');
+  err.style.display='none';
   if(!user||!pass){err.textContent='Please enter username and password!';err.style.display='block';return;}
-  
-  // Admin always works immediately
+  const btn=document.querySelector('.login-btn');
+  btn.textContent='Please wait...';
+  btn.disabled=true;
+  try{await loadAll(true);}catch(e){console.log('preload',e);}
   if(user===ADMIN_USER&&pass===ADMIN_PASS){
     currentUser={name:'Admin',role:'Admin / Owner',isAdmin:true,memberData:null};
-    const btn=document.querySelector('.login-btn');
-    btn.textContent='Loading...';btn.disabled=true;
-    await loadAll();
     btn.textContent='Login →';btn.disabled=false;
-    loginSuccess();
-    return;
+    loginSuccess();return;
   }
-  
-  // For team members - load data first if not loaded
-  if(allTeam.length===0){
-    const btn=document.querySelector('.login-btn');
-    btn.textContent='Loading...';btn.disabled=true;
-    await loadAll();
+  const member=allTeam.find(m=>m['Username']&&m['Username'].trim()===user&&m['Password']&&m['Password'].trim()===pass&&m['Status']==='Active');
+  if(member){
+    currentUser={name:member['Full Name'],role:member['Role'],isAdmin:false,memberData:member};
     btn.textContent='Login →';btn.disabled=false;
+    loginSuccess();return;
   }
-  
-  const member=allTeam.find(m=>m['Username']===user&&m['Password']===pass&&m['Status']==='Active');
-  if(member){currentUser={name:member['Full Name'],role:member['Role'],isAdmin:false,memberData:member};loginSuccess();return;}
   err.textContent='Invalid username or password!';err.style.display='block';
+  btn.textContent='Login →';btn.disabled=false;
 }
 function loginSuccess(){
   document.getElementById('loginPage').style.display='none';
@@ -821,6 +817,7 @@ function renderPayments(data){
     <td>${pill(p['Status'])}</td>
     <td>
       <button class="btn-edit" onclick="openEditPaymentForm(${p._row})">✏️</button>
+      <button style="font-size:10px;color:#2E8B57;cursor:pointer;background:none;border:none;padding:0;font-weight:700;margin-left:7px" onclick="generateInvoicePDF(${p._row})">📄</button>
       <button class="btn-del" onclick="confirmDelete('Payments',${p._row},'payment')">🗑️</button>
     </td>
   </tr>`).join('');
@@ -860,6 +857,7 @@ function renderProgress(data){
     <td style="color:#6b7280;font-size:10px">${p['Notes']||'—'}</td>
     <td>
       <button class="btn-edit" onclick="openEditProgressForm(${p._row})">✏️</button>
+      <button style="font-size:10px;color:#2E8B57;cursor:pointer;background:none;border:none;padding:0;font-weight:700;margin-left:7px" onclick="generateProgressPDF(${p._row})">📊</button>
       <button class="btn-del" onclick="confirmDelete('Progress',${p._row},'record')">🗑️</button>
     </td>
   </tr>`).join('');
@@ -936,7 +934,7 @@ function viewMember(id){
       <div style="flex:1"><div class="profile-name">${m['Full Name']||'—'}</div>
       <div class="profile-meta">${m['Role']||'—'} · ${m['Department']||'—'} · ${m['Phone']||''}</div>
       <div class="profile-meta">${m['Email']||''} · Joined: ${m['Join Date']||'—'}</div>
-      <div class="profile-meta">Login: <b>${m['Username']||'Not set'}</b></div></div>
+      <div class="profile-meta">Member ID: <b style="color:#2E8B57">${m['Member ID']||'Not set'}</b></div></div>
       <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
         <button class="btn-update" onclick="openEditMemberForm('${m['Member ID']}')">✏️ Edit</button>
         <button class="btn-add" onclick="openTaskFormForMember('${m['Full Name']}')">+ Assign Task</button>
@@ -1388,6 +1386,308 @@ async function saveProgress(){
   }catch(e){showToast('Error: '+e.message,'error');}
   btn.innerHTML=orig;btn.disabled=false;
 }
+// =============================================
+// INVOICE PDF GENERATOR - Template A
+// =============================================
+function generateInvoicePDF(rowNum){
+  const p=allPayments.find(x=>x._row===rowNum);
+  if(!p){showToast('Payment record not found','error');return;}
+  const c=allClients.find(x=>x['Client Name']===(p['Client Name']||p['Client']));
+  const manager=c?allTeam.find(m=>m['Full Name']===c['Account Manager']):null;
+  const managerId=manager?manager['Member ID']:'—';
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const W=210,navy=[10,61,98],green=[46,139,87],lightGreen=[232,245,233],lightBlue=[239,246,255];
+  const getAmt=()=>parseFloat(p['Amount ($)']||p['Amount']||0)||0;
+  const getComm=()=>parseFloat(p['Commission ($)']||p['Commission']||0)||0;
+  const invNo=p['Invoice No']||p['Invoice']||'INV-001';
+  const clientName=p['Client Name']||p['Client']||'—';
+  const dept=p['Department']||p['Dept']||'—';
+  const month=p['Month']||'—';
+  const status=p['Status']||'—';
+  const dateRec=p['Date Received']||p['Date']||new Date().toLocaleDateString();
+  const storeName=c?c['Store Name']:'—';
+  const dealPct=c?c['Deal %']:'—';
+  const dealType=c?c['Deal Type']:'—';
+
+  // ---- HEADER ----
+  doc.setFillColor(...navy);
+  doc.rect(0,0,W,38,'F');
+  // Logo circle
+  doc.setFillColor(...green);
+  doc.circle(22,19,10,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(8);doc.setFont('helvetica','bold');
+  doc.text('PYB',22,17,{align:'center'});
+  doc.setFontSize(7);doc.setFont('helvetica','normal');
+  doc.text('Together',22,21,{align:'center'});
+  // Company name
+  doc.setFontSize(18);doc.setFont('helvetica','bold');
+  doc.text('Pak Youth Builders',36,16);
+  doc.setFontSize(9);doc.setFont('helvetica','normal');
+  doc.setTextColor(200,220,255);
+  doc.text('Together We Build, Together We Rise',36,23);
+  // INVOICE label
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(22);doc.setFont('helvetica','bold');
+  doc.text('INVOICE',W-15,18,{align:'right'});
+  doc.setFontSize(9);doc.setFont('helvetica','normal');
+  doc.setTextColor(180,210,255);
+  doc.text(invNo,W-15,25,{align:'right'});
+  doc.text('Date: '+dateRec,W-15,31,{align:'right'});
+
+  // Green accent bar
+  doc.setFillColor(...green);
+  doc.rect(0,38,W,2.5,'F');
+
+  // ---- BILL TO + INVOICE DETAILS ----
+  doc.setTextColor(...green);
+  doc.setFontSize(8);doc.setFont('helvetica','bold');
+  doc.text('BILLED TO',15,50);
+  doc.text('INVOICE DETAILS',W/2+5,50);
+  // Left - client info
+  doc.setTextColor(20,20,20);
+  doc.setFontSize(12);doc.setFont('helvetica','bold');
+  doc.text(clientName,15,58);
+  doc.setFontSize(9);doc.setFont('helvetica','normal');
+  doc.setTextColor(80,80,80);
+  doc.text('Department: '+dept,15,64);
+  doc.text('Store: '+storeName,15,70);
+  // Right - invoice details
+  doc.setFontSize(9);
+  doc.text('Period: '+month,W/2+5,58);
+  doc.text('Deal Type: '+dealType,W/2+5,64);
+  doc.text('Deal Rate: '+dealPct,W/2+5,70);
+  doc.text('Manager ID: '+managerId,W/2+5,76);
+
+  // Divider
+  doc.setDrawColor(...navy);doc.setLineWidth(0.3);
+  doc.line(15,82,W-15,82);
+
+  // ---- TABLE HEADER ----
+  doc.setFillColor(240,244,248);
+  doc.roundedRect(15,86,W-30,8,1,1,'F');
+  doc.setTextColor(...navy);doc.setFontSize(8);doc.setFont('helvetica','bold');
+  doc.text('Description',19,91.5);
+  doc.text('Gross Revenue',90,91.5,{align:'right'});
+  doc.text('Net Profit / Comm Basis',130,91.5,{align:'right'});
+  doc.text('Amount Due',W-17,91.5,{align:'right'});
+
+  // TABLE ROW
+  doc.setFillColor(255,255,255);
+  doc.setTextColor(20,20,20);doc.setFontSize(9);doc.setFont('helvetica','normal');
+  doc.text('Store Management Services — '+month,19,100);
+  doc.text('$'+getAmt().toLocaleString(),90,100,{align:'right'});
+  doc.text('$'+getComm().toLocaleString()+' ('+dealPct+')',130,100,{align:'right'});
+  doc.setFont('helvetica','bold');
+  doc.text('$'+getComm().toLocaleString(),W-17,100,{align:'right'});
+
+  doc.setDrawColor(220,220,220);doc.setLineWidth(0.2);
+  doc.line(15,104,W-15,104);
+
+  // TOTAL BOX
+  doc.setFillColor(...navy);
+  doc.roundedRect(W-65,108,50,16,2,2,'F');
+  doc.setTextColor(200,220,255);doc.setFontSize(8);doc.setFont('helvetica','normal');
+  doc.text('Total Amount Due',W-40,114,{align:'center'});
+  doc.setTextColor(255,255,255);doc.setFontSize(14);doc.setFont('helvetica','bold');
+  doc.text('$'+getComm().toLocaleString(),W-40,122,{align:'center'});
+
+  // STATUS badge
+  const sColor=status==='Received'?[22,163,74]:status==='Pending'?[217,119,6]:[220,38,38];
+  doc.setFillColor(...sColor);
+  doc.roundedRect(15,110,28,10,2,2,'F');
+  doc.setTextColor(255,255,255);doc.setFontSize(8);doc.setFont('helvetica','bold');
+  doc.text('Status: '+status,29,116,{align:'center'});
+
+  // ---- BANK DETAILS ----
+  doc.setFillColor(...lightGreen);
+  doc.setDrawColor(...green);doc.setLineWidth(0.5);
+  doc.roundedRect(15,132,W-30,30,2,2,'FD');
+  doc.setTextColor(...green);doc.setFontSize(8);doc.setFont('helvetica','bold');
+  doc.text('PAYMENT DETAILS',22,139);
+  doc.setTextColor(30,30,30);doc.setFontSize(9);doc.setFont('helvetica','normal');
+  doc.text('Account Name:',22,147);doc.setFont('helvetica','bold');doc.text('Muhammad Ali Raza Lodhi',60,147);
+  doc.setFont('helvetica','normal');doc.text('Account No:',22,153);doc.setFont('helvetica','bold');doc.text('00300110929338',60,153);
+  doc.setFont('helvetica','normal');doc.text('IBAN:',22,159);doc.setFont('helvetica','bold');doc.text('PK90MEZN0000300110929338',60,159);
+  doc.setFont('helvetica','normal');doc.text('Bank:',W/2+5,147);doc.setFont('helvetica','bold');doc.text('Meezan Digital Centre',W/2+22,147);
+
+  // ---- FOOTER ----
+  doc.setFillColor(...navy);
+  doc.rect(0,272,W,25,'F');
+  doc.setTextColor(200,220,255);doc.setFontSize(8);doc.setFont('helvetica','normal');
+  doc.text('Thank you for your business!',W/2,280,{align:'center'});
+  doc.setTextColor(150,180,220);doc.setFontSize(7);
+  doc.text('Pak Youth Builders | pyb-crm.vercel.app | Together We Build, Together We Rise',W/2,287,{align:'center'});
+  doc.setFontSize(7);
+  doc.text('This is a computer-generated invoice',W/2,292,{align:'center'});
+
+  doc.save('PYB_Invoice_'+invNo+'_'+clientName.replace(/\s/g,'_')+'.pdf');
+  showToast('✅ Invoice PDF generated!','success');
+}
+
+// =============================================
+// PROGRESS REPORT PDF GENERATOR - Design 1
+// =============================================
+function generateProgressPDF(rowNum){
+  const p=allProgress.find(x=>x._row===rowNum);
+  if(!p){showToast('Progress record not found','error');return;}
+  const c=allClients.find(x=>x['Client Name']===p['Client Name']||x['ID']===p['Client ID']);
+  const manager=c?allTeam.find(m=>m['Full Name']===c['Account Manager']):null;
+  const managerId=manager?manager['Member ID']:'—';
+  const clientId=p['Client ID']||c?.['ID']||'—';
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const W=210,navy=[10,61,98],green=[46,139,87],lightGreen=[232,245,233],lightBlue=[239,246,255],amber=[255,251,235];
+
+  const gross=parseFloat(p['Gross Revenue'])||0;
+  const cogs=parseFloat(p['Cost of Goods'])||0;
+  const net=parseFloat(p['Net Profit'])||gross-cogs;
+  const comm=parseFloat(p['PYB Commission'])||0;
+  const orders=p['Orders']||'—';
+  const perf=p['Performance']||'Good';
+  const month=p['Month']||'—';
+  const dept=p['Department']||c?.['Department']||'—';
+  const storeName=c?c['Store Name']:'—';
+  const notes=p['Notes']||'Store performed well this month.';
+  const margin=gross>0?((net/gross)*100).toFixed(1):0;
+
+  // ---- HEADER ----
+  doc.setFillColor(...navy);
+  doc.rect(0,0,W,40,'F');
+  doc.setFillColor(...green);doc.circle(22,20,11,'F');
+  doc.setTextColor(255,255,255);doc.setFontSize(9);doc.setFont('helvetica','bold');
+  doc.text('PYB',22,18,{align:'center'});
+  doc.setFontSize(7);doc.setFont('helvetica','normal');doc.text('Together',22,23,{align:'center'});
+  doc.setTextColor(255,255,255);doc.setFontSize(17);doc.setFont('helvetica','bold');
+  doc.text('Monthly Store Performance',37,17);
+  doc.setFontSize(9);doc.setFont('helvetica','normal');
+  doc.setTextColor(180,210,255);doc.text('Pak Youth Builders — Confidential Client Report',37,24);
+  // Right side - period badge
+  doc.setFillColor(46,139,87,77);
+  doc.setDrawColor(...green);doc.setLineWidth(0.5);
+  doc.roundedRect(W-50,8,40,14,2,2,'FD');
+  doc.setTextColor(150,230,180);doc.setFontSize(11);doc.setFont('helvetica','bold');
+  doc.text(month,W-30,17,{align:'center'});
+  doc.setTextColor(200,220,255);doc.setFontSize(8);doc.setFont('helvetica','normal');
+  doc.text('Prepared: '+new Date().toLocaleDateString(),W-15,36,{align:'right'});
+
+  // Gradient bar
+  doc.setFillColor(...green);doc.rect(0,40,W*0.6,2.5,'F');
+  doc.setFillColor(...navy);doc.rect(W*0.6,40,W*0.4,2.5,'F');
+
+  // ---- CLIENT INFO STRIP ----
+  doc.setFillColor(248,250,251);
+  doc.rect(0,42.5,W,16,'F');
+  doc.setDrawColor(220,220,220);doc.setLineWidth(0.2);
+  doc.line(0,58.5,W,58.5);
+  doc.setTextColor(100,100,100);doc.setFontSize(8);doc.setFont('helvetica','normal');
+  const fields=[['Client ID',clientId],['Department',dept],['Store',storeName],['Manager ID',managerId],['Performance',perf]];
+  fields.forEach((f,i)=>{
+    const x=15+i*38;
+    doc.text(f[0].toUpperCase(),x,49);
+    doc.setFont('helvetica','bold');
+    if(f[0]==='Performance'){
+      const pc=perf==='Good'?[22,163,74]:perf==='Attention'?[217,119,6]:[220,38,38];
+      doc.setTextColor(...pc);
+    } else {doc.setTextColor(15,61,98);}
+    doc.text(f[1],x,55);
+    doc.setFont('helvetica','normal');doc.setTextColor(100,100,100);
+  });
+
+  // ---- 4 KPI CARDS ----
+  const cards=[
+    {label:'GROSS REVENUE',val:'$'+gross.toLocaleString(),sub:'Total store sales',color:green,bg:lightGreen},
+    {label:'COST OF GOODS',val:'$'+cogs.toLocaleString(),sub:'Product costs',color:navy,bg:lightBlue},
+    {label:'NET PROFIT',val:'$'+net.toLocaleString(),sub:'After all costs',color:green,bg:lightGreen},
+    {label:'TOTAL ORDERS',val:String(orders),sub:'This month',color:[180,100,0],bg:amber},
+  ];
+  cards.forEach((card,i)=>{
+    const x=15+i*47;
+    doc.setFillColor(...card.bg);
+    doc.setDrawColor(...card.color);doc.setLineWidth(0.5);
+    doc.roundedRect(x,63,43,24,2,2,'FD');
+    doc.setTextColor(...card.color);doc.setFontSize(7);doc.setFont('helvetica','bold');
+    doc.text(card.label,x+4,70);
+    doc.setTextColor(10,61,98);doc.setFontSize(13);doc.setFont('helvetica','bold');
+    doc.text(card.val,x+4,79);
+    doc.setTextColor(100,100,100);doc.setFontSize(7);doc.setFont('helvetica','normal');
+    doc.text(card.sub,x+4,85);
+  });
+
+  // ---- REVENUE BREAKDOWN BAR ----
+  doc.setFillColor(248,250,251);
+  doc.roundedRect(15,93,W-30,28,2,2,'F');
+  doc.setTextColor(...navy);doc.setFontSize(9);doc.setFont('helvetica','bold');
+  doc.text('Revenue Breakdown',20,100);
+  // COGS bar
+  const barW=W-70;const cogsW=gross>0?Math.min((cogs/gross)*barW,barW):0;
+  const netW=gross>0?Math.min((net/gross)*barW,barW):0;
+  doc.setTextColor(80,80,80);doc.setFontSize(8);doc.setFont('helvetica','normal');
+  doc.text('Cost of Goods',20,108);
+  doc.setFillColor(220,220,220);doc.roundedRect(55,104.5,barW,5,1,1,'F');
+  doc.setFillColor(...navy);doc.roundedRect(55,104.5,cogsW,5,1,1,'F');
+  doc.setTextColor(...navy);doc.setFont('helvetica','bold');
+  doc.text('$'+cogs.toLocaleString()+' ('+(gross>0?((cogs/gross)*100).toFixed(0):0)+'%)',W-17,108,{align:'right'});
+  doc.setTextColor(80,80,80);doc.setFont('helvetica','normal');
+  doc.text('Net Profit',20,118);
+  doc.setFillColor(220,220,220);doc.roundedRect(55,114.5,barW,5,1,1,'F');
+  doc.setFillColor(...green);doc.roundedRect(55,114.5,netW,5,1,1,'F');
+  doc.setTextColor(...green);doc.setFont('helvetica','bold');
+  doc.text('$'+net.toLocaleString()+' ('+margin+'%)',W-17,118,{align:'right'});
+
+  // ---- NOTES + SCREENSHOT PLACEHOLDER ----
+  doc.setFillColor(248,250,251);doc.setDrawColor(220,220,220);doc.setLineWidth(0.3);
+  doc.roundedRect(15,127,89,40,2,2,'FD');
+  doc.setTextColor(...navy);doc.setFontSize(8);doc.setFont('helvetica','bold');
+  doc.text('MANAGER NOTES',20,134);
+  doc.setFont('helvetica','normal');doc.setTextColor(60,60,60);doc.setFontSize(9);
+  const noteLines=doc.splitTextToSize(notes,80);
+  doc.text(noteLines,20,141);
+
+  // Screenshot placeholder
+  doc.setFillColor(248,252,249);doc.setDrawColor(...green);doc.setLineWidth(0.7);
+  doc.setLineDashPattern([2,1],0);
+  doc.roundedRect(110,127,85,40,2,2,'FD');
+  doc.setLineDashPattern([],0);
+  doc.setTextColor(...green);doc.setFontSize(9);doc.setFont('helvetica','bold');
+  doc.text('Store Screenshot',152,145,{align:'center'});
+  doc.setTextColor(120,120,120);doc.setFontSize(8);doc.setFont('helvetica','normal');
+  doc.text('Account Health Report',152,152,{align:'center'});
+  doc.text('(Attached)',152,158,{align:'center'});
+
+  // ---- SUMMARY TABLE ----
+  doc.setFillColor(240,244,248);
+  doc.roundedRect(15,173,W-30,8,1,1,'F');
+  doc.setTextColor(...navy);doc.setFontSize(8);doc.setFont('helvetica','bold');
+  doc.text('Item',20,178.5);doc.text('Amount',W-17,178.5,{align:'right'});
+
+  const rows2=[['Gross Revenue','$'+gross.toLocaleString()],['Less: Cost of Goods','($'+cogs.toLocaleString()+')'],['Net Profit','$'+net.toLocaleString()],['Profit Margin',margin+'%'],['Total Orders',String(orders)]];
+  rows2.forEach((r,i)=>{
+    const y=187+i*8;
+    if(i%2===0){doc.setFillColor(252,252,252);doc.rect(15,y-5,W-30,8,'F');}
+    doc.setFont('helvetica','normal');doc.setTextColor(60,60,60);doc.setFontSize(9);
+    doc.text(r[0],20,y);
+    doc.setFont('helvetica','bold');
+    doc.setTextColor(r[0].startsWith('Less')?[220,38,38]:r[0]==='Net Profit'?green:navy);
+    doc.text(r[1],W-17,y,{align:'right'});
+    doc.setDrawColor(230,230,230);doc.setLineWidth(0.1);
+    doc.line(15,y+3,W-15,y+3);
+  });
+
+  // ---- FOOTER ----
+  doc.setFillColor(...navy);doc.rect(0,272,W,25,'F');
+  doc.setTextColor(...green);doc.setFontSize(9);doc.setFont('helvetica','bold');
+  doc.text('Pak Youth Builders',W/2,280,{align:'center'});
+  doc.setTextColor(180,210,255);doc.setFontSize(8);doc.setFont('helvetica','normal');
+  doc.text('Together We Build, Together We Rise',W/2,286,{align:'center'});
+  doc.setTextColor(120,160,210);doc.setFontSize(7);
+  doc.text('This report is confidential and prepared exclusively for '+clientId,W/2,292,{align:'center'});
+
+  doc.save('PYB_Progress_'+clientId+'_'+month.replace(/\s/g,'_')+'.pdf');
+  showToast('✅ Progress report PDF generated!','success');
+}
+
 function showToast(msg,type='info'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast toast-'+type;t.style.display='block';setTimeout(()=>t.style.display='none',4000);}
 
 // ===== TELEGRAM NOTIFICATION =====
@@ -1736,6 +2036,7 @@ function renderPayments(data){
     <td>${pill(p['Status'])}</td>
     <td>
       <button class="btn-edit" onclick="openEditPaymentForm(${p._row})">✏️</button>
+      <button style="font-size:10px;color:#2E8B57;cursor:pointer;background:none;border:none;padding:0;font-weight:700;margin-left:7px" onclick="generateInvoicePDF(${p._row})">📄</button>
       <button class="btn-del" onclick="confirmDelete('Payments',${p._row},'payment')">🗑️</button>
     </td>
   </tr>`).join('');
@@ -1776,6 +2077,7 @@ function renderProgress(data){
     <td style="color:#6b7280;font-size:10px">${p['Notes']||'—'}</td>
     <td>
       <button class="btn-edit" onclick="openEditProgressForm(${p._row})">✏️</button>
+      <button style="font-size:10px;color:#2E8B57;cursor:pointer;background:none;border:none;padding:0;font-weight:700;margin-left:7px" onclick="generateProgressPDF(${p._row})">📊</button>
       <button class="btn-del" onclick="confirmDelete('Progress',${p._row},'record')">🗑️</button>
     </td>
   </tr>`).join('');
@@ -1829,7 +2131,7 @@ function renderTeam(data){
       </div>
       <div style="display:flex;align-items:center;gap:10px;cursor:pointer" onclick="viewMember('${m['Member ID']}')">
         <div class="profile-avatar" style="width:40px;height:40px;font-size:13px;background:${aColor(idx)};flex-shrink:0">${ini(m['Full Name'])}</div>
-        <div><div class="mname">${m['Full Name']||'—'}</div><div style="font-size:10px;color:#6b7280">${m['Role']||'—'} · ${m['Department']||'—'}</div></div>
+        <div><div style="font-size:9px;color:#6b7280;font-weight:700">${m['Member ID']||'—'}</div><div class="mname">${m['Full Name']||'—'}</div><div style="font-size:10px;color:#6b7280">${m['Role']||'—'} · ${m['Department']||'—'}</div></div>
       </div>
       <div class="stats" style="cursor:pointer" onclick="viewMember('${m['Member ID']}')">
         <div class="stat"><div class="stat-val">${mc.length}</div><div class="stat-lbl">Clients</div></div>
@@ -1861,7 +2163,7 @@ function viewMember(id){
       <div style="flex:1"><div class="profile-name">${m['Full Name']||'—'}</div>
       <div class="profile-meta">${m['Role']||'—'} · ${m['Department']||'—'} · ${m['Phone']||''}</div>
       <div class="profile-meta">${m['Email']||''} · Joined: ${m['Join Date']||'—'}</div>
-      <div class="profile-meta">Login: <b>${m['Username']||'Not set'}</b></div></div>
+      <div class="profile-meta">Member ID: <b style="color:#2E8B57">${m['Member ID']||'Not set'}</b></div></div>
       <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
         <button class="btn-update" onclick="openEditMemberForm('${m['Member ID']}')">✏️ Edit</button>
         <button class="btn-add" onclick="openTaskFormForMember('${m['Full Name']}')">+ Assign Task</button>
@@ -2317,6 +2619,308 @@ async function saveProgress(){
     closeModal('progressModal');showToast('✅ Progress saved!','success');setTimeout(()=>loadAll(),3000);
   }catch(e){showToast('Error: '+e.message,'error');}
   btn.innerHTML=orig;btn.disabled=false;
+}
+
+// =============================================
+// INVOICE PDF GENERATOR - Template A
+// =============================================
+function generateInvoicePDF(rowNum){
+  const p=allPayments.find(x=>x._row===rowNum);
+  if(!p){showToast('Payment record not found','error');return;}
+  const c=allClients.find(x=>x['Client Name']===(p['Client Name']||p['Client']));
+  const manager=c?allTeam.find(m=>m['Full Name']===c['Account Manager']):null;
+  const managerId=manager?manager['Member ID']:'—';
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const W=210,navy=[10,61,98],green=[46,139,87],lightGreen=[232,245,233],lightBlue=[239,246,255];
+  const getAmt=()=>parseFloat(p['Amount ($)']||p['Amount']||0)||0;
+  const getComm=()=>parseFloat(p['Commission ($)']||p['Commission']||0)||0;
+  const invNo=p['Invoice No']||p['Invoice']||'INV-001';
+  const clientName=p['Client Name']||p['Client']||'—';
+  const dept=p['Department']||p['Dept']||'—';
+  const month=p['Month']||'—';
+  const status=p['Status']||'—';
+  const dateRec=p['Date Received']||p['Date']||new Date().toLocaleDateString();
+  const storeName=c?c['Store Name']:'—';
+  const dealPct=c?c['Deal %']:'—';
+  const dealType=c?c['Deal Type']:'—';
+
+  // ---- HEADER ----
+  doc.setFillColor(...navy);
+  doc.rect(0,0,W,38,'F');
+  // Logo circle
+  doc.setFillColor(...green);
+  doc.circle(22,19,10,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(8);doc.setFont('helvetica','bold');
+  doc.text('PYB',22,17,{align:'center'});
+  doc.setFontSize(7);doc.setFont('helvetica','normal');
+  doc.text('Together',22,21,{align:'center'});
+  // Company name
+  doc.setFontSize(18);doc.setFont('helvetica','bold');
+  doc.text('Pak Youth Builders',36,16);
+  doc.setFontSize(9);doc.setFont('helvetica','normal');
+  doc.setTextColor(200,220,255);
+  doc.text('Together We Build, Together We Rise',36,23);
+  // INVOICE label
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(22);doc.setFont('helvetica','bold');
+  doc.text('INVOICE',W-15,18,{align:'right'});
+  doc.setFontSize(9);doc.setFont('helvetica','normal');
+  doc.setTextColor(180,210,255);
+  doc.text(invNo,W-15,25,{align:'right'});
+  doc.text('Date: '+dateRec,W-15,31,{align:'right'});
+
+  // Green accent bar
+  doc.setFillColor(...green);
+  doc.rect(0,38,W,2.5,'F');
+
+  // ---- BILL TO + INVOICE DETAILS ----
+  doc.setTextColor(...green);
+  doc.setFontSize(8);doc.setFont('helvetica','bold');
+  doc.text('BILLED TO',15,50);
+  doc.text('INVOICE DETAILS',W/2+5,50);
+  // Left - client info
+  doc.setTextColor(20,20,20);
+  doc.setFontSize(12);doc.setFont('helvetica','bold');
+  doc.text(clientName,15,58);
+  doc.setFontSize(9);doc.setFont('helvetica','normal');
+  doc.setTextColor(80,80,80);
+  doc.text('Department: '+dept,15,64);
+  doc.text('Store: '+storeName,15,70);
+  // Right - invoice details
+  doc.setFontSize(9);
+  doc.text('Period: '+month,W/2+5,58);
+  doc.text('Deal Type: '+dealType,W/2+5,64);
+  doc.text('Deal Rate: '+dealPct,W/2+5,70);
+  doc.text('Manager ID: '+managerId,W/2+5,76);
+
+  // Divider
+  doc.setDrawColor(...navy);doc.setLineWidth(0.3);
+  doc.line(15,82,W-15,82);
+
+  // ---- TABLE HEADER ----
+  doc.setFillColor(240,244,248);
+  doc.roundedRect(15,86,W-30,8,1,1,'F');
+  doc.setTextColor(...navy);doc.setFontSize(8);doc.setFont('helvetica','bold');
+  doc.text('Description',19,91.5);
+  doc.text('Gross Revenue',90,91.5,{align:'right'});
+  doc.text('Net Profit / Comm Basis',130,91.5,{align:'right'});
+  doc.text('Amount Due',W-17,91.5,{align:'right'});
+
+  // TABLE ROW
+  doc.setFillColor(255,255,255);
+  doc.setTextColor(20,20,20);doc.setFontSize(9);doc.setFont('helvetica','normal');
+  doc.text('Store Management Services — '+month,19,100);
+  doc.text('$'+getAmt().toLocaleString(),90,100,{align:'right'});
+  doc.text('$'+getComm().toLocaleString()+' ('+dealPct+')',130,100,{align:'right'});
+  doc.setFont('helvetica','bold');
+  doc.text('$'+getComm().toLocaleString(),W-17,100,{align:'right'});
+
+  doc.setDrawColor(220,220,220);doc.setLineWidth(0.2);
+  doc.line(15,104,W-15,104);
+
+  // TOTAL BOX
+  doc.setFillColor(...navy);
+  doc.roundedRect(W-65,108,50,16,2,2,'F');
+  doc.setTextColor(200,220,255);doc.setFontSize(8);doc.setFont('helvetica','normal');
+  doc.text('Total Amount Due',W-40,114,{align:'center'});
+  doc.setTextColor(255,255,255);doc.setFontSize(14);doc.setFont('helvetica','bold');
+  doc.text('$'+getComm().toLocaleString(),W-40,122,{align:'center'});
+
+  // STATUS badge
+  const sColor=status==='Received'?[22,163,74]:status==='Pending'?[217,119,6]:[220,38,38];
+  doc.setFillColor(...sColor);
+  doc.roundedRect(15,110,28,10,2,2,'F');
+  doc.setTextColor(255,255,255);doc.setFontSize(8);doc.setFont('helvetica','bold');
+  doc.text('Status: '+status,29,116,{align:'center'});
+
+  // ---- BANK DETAILS ----
+  doc.setFillColor(...lightGreen);
+  doc.setDrawColor(...green);doc.setLineWidth(0.5);
+  doc.roundedRect(15,132,W-30,30,2,2,'FD');
+  doc.setTextColor(...green);doc.setFontSize(8);doc.setFont('helvetica','bold');
+  doc.text('PAYMENT DETAILS',22,139);
+  doc.setTextColor(30,30,30);doc.setFontSize(9);doc.setFont('helvetica','normal');
+  doc.text('Account Name:',22,147);doc.setFont('helvetica','bold');doc.text('Muhammad Ali Raza Lodhi',60,147);
+  doc.setFont('helvetica','normal');doc.text('Account No:',22,153);doc.setFont('helvetica','bold');doc.text('00300110929338',60,153);
+  doc.setFont('helvetica','normal');doc.text('IBAN:',22,159);doc.setFont('helvetica','bold');doc.text('PK90MEZN0000300110929338',60,159);
+  doc.setFont('helvetica','normal');doc.text('Bank:',W/2+5,147);doc.setFont('helvetica','bold');doc.text('Meezan Digital Centre',W/2+22,147);
+
+  // ---- FOOTER ----
+  doc.setFillColor(...navy);
+  doc.rect(0,272,W,25,'F');
+  doc.setTextColor(200,220,255);doc.setFontSize(8);doc.setFont('helvetica','normal');
+  doc.text('Thank you for your business!',W/2,280,{align:'center'});
+  doc.setTextColor(150,180,220);doc.setFontSize(7);
+  doc.text('Pak Youth Builders | pyb-crm.vercel.app | Together We Build, Together We Rise',W/2,287,{align:'center'});
+  doc.setFontSize(7);
+  doc.text('This is a computer-generated invoice',W/2,292,{align:'center'});
+
+  doc.save('PYB_Invoice_'+invNo+'_'+clientName.replace(/\s/g,'_')+'.pdf');
+  showToast('✅ Invoice PDF generated!','success');
+}
+
+// =============================================
+// PROGRESS REPORT PDF GENERATOR - Design 1
+// =============================================
+function generateProgressPDF(rowNum){
+  const p=allProgress.find(x=>x._row===rowNum);
+  if(!p){showToast('Progress record not found','error');return;}
+  const c=allClients.find(x=>x['Client Name']===p['Client Name']||x['ID']===p['Client ID']);
+  const manager=c?allTeam.find(m=>m['Full Name']===c['Account Manager']):null;
+  const managerId=manager?manager['Member ID']:'—';
+  const clientId=p['Client ID']||c?.['ID']||'—';
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const W=210,navy=[10,61,98],green=[46,139,87],lightGreen=[232,245,233],lightBlue=[239,246,255],amber=[255,251,235];
+
+  const gross=parseFloat(p['Gross Revenue'])||0;
+  const cogs=parseFloat(p['Cost of Goods'])||0;
+  const net=parseFloat(p['Net Profit'])||gross-cogs;
+  const comm=parseFloat(p['PYB Commission'])||0;
+  const orders=p['Orders']||'—';
+  const perf=p['Performance']||'Good';
+  const month=p['Month']||'—';
+  const dept=p['Department']||c?.['Department']||'—';
+  const storeName=c?c['Store Name']:'—';
+  const notes=p['Notes']||'Store performed well this month.';
+  const margin=gross>0?((net/gross)*100).toFixed(1):0;
+
+  // ---- HEADER ----
+  doc.setFillColor(...navy);
+  doc.rect(0,0,W,40,'F');
+  doc.setFillColor(...green);doc.circle(22,20,11,'F');
+  doc.setTextColor(255,255,255);doc.setFontSize(9);doc.setFont('helvetica','bold');
+  doc.text('PYB',22,18,{align:'center'});
+  doc.setFontSize(7);doc.setFont('helvetica','normal');doc.text('Together',22,23,{align:'center'});
+  doc.setTextColor(255,255,255);doc.setFontSize(17);doc.setFont('helvetica','bold');
+  doc.text('Monthly Store Performance',37,17);
+  doc.setFontSize(9);doc.setFont('helvetica','normal');
+  doc.setTextColor(180,210,255);doc.text('Pak Youth Builders — Confidential Client Report',37,24);
+  // Right side - period badge
+  doc.setFillColor(46,139,87,77);
+  doc.setDrawColor(...green);doc.setLineWidth(0.5);
+  doc.roundedRect(W-50,8,40,14,2,2,'FD');
+  doc.setTextColor(150,230,180);doc.setFontSize(11);doc.setFont('helvetica','bold');
+  doc.text(month,W-30,17,{align:'center'});
+  doc.setTextColor(200,220,255);doc.setFontSize(8);doc.setFont('helvetica','normal');
+  doc.text('Prepared: '+new Date().toLocaleDateString(),W-15,36,{align:'right'});
+
+  // Gradient bar
+  doc.setFillColor(...green);doc.rect(0,40,W*0.6,2.5,'F');
+  doc.setFillColor(...navy);doc.rect(W*0.6,40,W*0.4,2.5,'F');
+
+  // ---- CLIENT INFO STRIP ----
+  doc.setFillColor(248,250,251);
+  doc.rect(0,42.5,W,16,'F');
+  doc.setDrawColor(220,220,220);doc.setLineWidth(0.2);
+  doc.line(0,58.5,W,58.5);
+  doc.setTextColor(100,100,100);doc.setFontSize(8);doc.setFont('helvetica','normal');
+  const fields=[['Client ID',clientId],['Department',dept],['Store',storeName],['Manager ID',managerId],['Performance',perf]];
+  fields.forEach((f,i)=>{
+    const x=15+i*38;
+    doc.text(f[0].toUpperCase(),x,49);
+    doc.setFont('helvetica','bold');
+    if(f[0]==='Performance'){
+      const pc=perf==='Good'?[22,163,74]:perf==='Attention'?[217,119,6]:[220,38,38];
+      doc.setTextColor(...pc);
+    } else {doc.setTextColor(15,61,98);}
+    doc.text(f[1],x,55);
+    doc.setFont('helvetica','normal');doc.setTextColor(100,100,100);
+  });
+
+  // ---- 4 KPI CARDS ----
+  const cards=[
+    {label:'GROSS REVENUE',val:'$'+gross.toLocaleString(),sub:'Total store sales',color:green,bg:lightGreen},
+    {label:'COST OF GOODS',val:'$'+cogs.toLocaleString(),sub:'Product costs',color:navy,bg:lightBlue},
+    {label:'NET PROFIT',val:'$'+net.toLocaleString(),sub:'After all costs',color:green,bg:lightGreen},
+    {label:'TOTAL ORDERS',val:String(orders),sub:'This month',color:[180,100,0],bg:amber},
+  ];
+  cards.forEach((card,i)=>{
+    const x=15+i*47;
+    doc.setFillColor(...card.bg);
+    doc.setDrawColor(...card.color);doc.setLineWidth(0.5);
+    doc.roundedRect(x,63,43,24,2,2,'FD');
+    doc.setTextColor(...card.color);doc.setFontSize(7);doc.setFont('helvetica','bold');
+    doc.text(card.label,x+4,70);
+    doc.setTextColor(10,61,98);doc.setFontSize(13);doc.setFont('helvetica','bold');
+    doc.text(card.val,x+4,79);
+    doc.setTextColor(100,100,100);doc.setFontSize(7);doc.setFont('helvetica','normal');
+    doc.text(card.sub,x+4,85);
+  });
+
+  // ---- REVENUE BREAKDOWN BAR ----
+  doc.setFillColor(248,250,251);
+  doc.roundedRect(15,93,W-30,28,2,2,'F');
+  doc.setTextColor(...navy);doc.setFontSize(9);doc.setFont('helvetica','bold');
+  doc.text('Revenue Breakdown',20,100);
+  // COGS bar
+  const barW=W-70;const cogsW=gross>0?Math.min((cogs/gross)*barW,barW):0;
+  const netW=gross>0?Math.min((net/gross)*barW,barW):0;
+  doc.setTextColor(80,80,80);doc.setFontSize(8);doc.setFont('helvetica','normal');
+  doc.text('Cost of Goods',20,108);
+  doc.setFillColor(220,220,220);doc.roundedRect(55,104.5,barW,5,1,1,'F');
+  doc.setFillColor(...navy);doc.roundedRect(55,104.5,cogsW,5,1,1,'F');
+  doc.setTextColor(...navy);doc.setFont('helvetica','bold');
+  doc.text('$'+cogs.toLocaleString()+' ('+(gross>0?((cogs/gross)*100).toFixed(0):0)+'%)',W-17,108,{align:'right'});
+  doc.setTextColor(80,80,80);doc.setFont('helvetica','normal');
+  doc.text('Net Profit',20,118);
+  doc.setFillColor(220,220,220);doc.roundedRect(55,114.5,barW,5,1,1,'F');
+  doc.setFillColor(...green);doc.roundedRect(55,114.5,netW,5,1,1,'F');
+  doc.setTextColor(...green);doc.setFont('helvetica','bold');
+  doc.text('$'+net.toLocaleString()+' ('+margin+'%)',W-17,118,{align:'right'});
+
+  // ---- NOTES + SCREENSHOT PLACEHOLDER ----
+  doc.setFillColor(248,250,251);doc.setDrawColor(220,220,220);doc.setLineWidth(0.3);
+  doc.roundedRect(15,127,89,40,2,2,'FD');
+  doc.setTextColor(...navy);doc.setFontSize(8);doc.setFont('helvetica','bold');
+  doc.text('MANAGER NOTES',20,134);
+  doc.setFont('helvetica','normal');doc.setTextColor(60,60,60);doc.setFontSize(9);
+  const noteLines=doc.splitTextToSize(notes,80);
+  doc.text(noteLines,20,141);
+
+  // Screenshot placeholder
+  doc.setFillColor(248,252,249);doc.setDrawColor(...green);doc.setLineWidth(0.7);
+  doc.setLineDashPattern([2,1],0);
+  doc.roundedRect(110,127,85,40,2,2,'FD');
+  doc.setLineDashPattern([],0);
+  doc.setTextColor(...green);doc.setFontSize(9);doc.setFont('helvetica','bold');
+  doc.text('Store Screenshot',152,145,{align:'center'});
+  doc.setTextColor(120,120,120);doc.setFontSize(8);doc.setFont('helvetica','normal');
+  doc.text('Account Health Report',152,152,{align:'center'});
+  doc.text('(Attached)',152,158,{align:'center'});
+
+  // ---- SUMMARY TABLE ----
+  doc.setFillColor(240,244,248);
+  doc.roundedRect(15,173,W-30,8,1,1,'F');
+  doc.setTextColor(...navy);doc.setFontSize(8);doc.setFont('helvetica','bold');
+  doc.text('Item',20,178.5);doc.text('Amount',W-17,178.5,{align:'right'});
+
+  const rows2=[['Gross Revenue','$'+gross.toLocaleString()],['Less: Cost of Goods','($'+cogs.toLocaleString()+')'],['Net Profit','$'+net.toLocaleString()],['Profit Margin',margin+'%'],['Total Orders',String(orders)]];
+  rows2.forEach((r,i)=>{
+    const y=187+i*8;
+    if(i%2===0){doc.setFillColor(252,252,252);doc.rect(15,y-5,W-30,8,'F');}
+    doc.setFont('helvetica','normal');doc.setTextColor(60,60,60);doc.setFontSize(9);
+    doc.text(r[0],20,y);
+    doc.setFont('helvetica','bold');
+    doc.setTextColor(r[0].startsWith('Less')?[220,38,38]:r[0]==='Net Profit'?green:navy);
+    doc.text(r[1],W-17,y,{align:'right'});
+    doc.setDrawColor(230,230,230);doc.setLineWidth(0.1);
+    doc.line(15,y+3,W-15,y+3);
+  });
+
+  // ---- FOOTER ----
+  doc.setFillColor(...navy);doc.rect(0,272,W,25,'F');
+  doc.setTextColor(...green);doc.setFontSize(9);doc.setFont('helvetica','bold');
+  doc.text('Pak Youth Builders',W/2,280,{align:'center'});
+  doc.setTextColor(180,210,255);doc.setFontSize(8);doc.setFont('helvetica','normal');
+  doc.text('Together We Build, Together We Rise',W/2,286,{align:'center'});
+  doc.setTextColor(120,160,210);doc.setFontSize(7);
+  doc.text('This report is confidential and prepared exclusively for '+clientId,W/2,292,{align:'center'});
+
+  doc.save('PYB_Progress_'+clientId+'_'+month.replace(/\s/g,'_')+'.pdf');
+  showToast('✅ Progress report PDF generated!','success');
 }
 
 function showToast(msg,type='info'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast toast-'+type;t.style.display='block';setTimeout(()=>t.style.display='none',4000);}
