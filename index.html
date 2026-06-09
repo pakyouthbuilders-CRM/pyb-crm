@@ -436,7 +436,7 @@ tr:hover td{background:#f8fafc}
   <div class="form-row"><div class="form-group"><label>Month *</label><input id="p-month" placeholder="May 2026"></div><div class="form-group"><label>Date Received</label><input id="p-date" type="date"></div></div>
   <div class="form-row"><div class="form-group"><label>Amount ($) *</label><input id="p-amount" type="number" placeholder="5000"></div><div class="form-group"><label>Commission ($) *</label><input id="p-comm" type="number" placeholder="1600"></div></div>
   <div class="form-row"><div class="form-group"><label>Status</label><select id="p-status"><option>Received</option><option>Pending</option><option>Overdue</option></select></div><div class="form-group"><label>Notes</label><input id="p-notes"></div></div>
-  <input type="hidden" id="p-row-num"><input type="hidden" id="p-dept">
+  <input type="hidden" id="p-row-num"><input type="hidden" id="p-dept"><input type="hidden" id="p-client-id">
   <div class="form-btns"><button class="btn-cancel" onclick="closeModal('paymentModal')">Cancel</button><button class="btn-save" id="paySaveBtn" onclick="savePayment()">Save Payment</button></div>
 </div></div>
 
@@ -1004,7 +1004,7 @@ function openPaymentForm(){
 function fillPaymentClient(){
   const sel=document.getElementById('p-client-select');
   const c=allClients.find(x=>x['ID']===sel.value);
-  if(c){document.getElementById('p-client').value=c['Client Name']||'';document.getElementById('p-dept-text').value=c['Department']||'';document.getElementById('p-dept').value=c['Department']||'';}
+  if(c){document.getElementById('p-client').value=c['Client Name']||'';document.getElementById('p-dept-text').value=c['Department']||'';document.getElementById('p-dept').value=c['Department']||'';document.getElementById('p-client-id').value=c['ID']||'';}
 }
 
 function openEditPaymentForm(rowNum){
@@ -1016,6 +1016,8 @@ function openEditPaymentForm(rowNum){
   const pcs=document.getElementById('p-client-select');
   pcs.innerHTML='<option value="">Select client...</option>'+allClients.map(c=>'<option value="'+c['ID']+'">'+c['ID']+' - '+c['Client Name']+'</option>').join('');
   document.getElementById('p-client').value=p['Client Name']||p['Client']||'';
+  document.getElementById('p-client-id').value=p['Client ID']||'';
+  document.getElementById('p-client-select').value=p['Client ID']||'';
   document.getElementById('p-dept-text').value=p['Department']||p['Dept']||'';
   document.getElementById('p-dept').value=p['Department']||p['Dept']||'';
   document.getElementById('p-inv').value=p['Invoice No']||p['Invoice']||'';
@@ -1295,7 +1297,7 @@ async function savePayment(){
   if(!amount){showToast('Amount is required!','error');return;}
   const btn=document.getElementById('paySaveBtn');const orig=btn.textContent;
   btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
-  const row=[document.getElementById('p-inv').value||'INV-'+Date.now(),client,document.getElementById('p-dept').value||document.getElementById('p-dept-text').value,document.getElementById('p-month').value,amount||'0',document.getElementById('p-comm').value||'0',document.getElementById('p-date').value,document.getElementById('p-status').value,document.getElementById('p-notes').value];
+  const row=[document.getElementById('p-client-id').value||'',document.getElementById('p-inv').value||'INV-'+Date.now(),client,document.getElementById('p-dept').value||document.getElementById('p-dept-text').value,document.getElementById('p-month').value,amount||'0',document.getElementById('p-comm').value||'0',document.getElementById('p-date').value,document.getElementById('p-status').value,document.getElementById('p-notes').value];
   try{
     if(editMode&&editRowNum)await gAction({action:'update',sheet:'Payments',rowNum:editRowNum,row:JSON.stringify(row)});
     else await gAction({action:'write',sheet:'Payments',row:JSON.stringify(row)});
