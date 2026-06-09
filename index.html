@@ -1191,14 +1191,14 @@ function openEmailModal(type,rowNum){
   document.getElementById('email-row-num').value=rowNum;
   if(type==='invoice'){
     const p=allPayments.find(x=>x._row===rowNum);
-    const c=p?allClients.find(x=>x['Client Name']===(p['Client Name']||p['Client'])):null;
+    const c=p?allClients.find(x=>x['ID']===(p['Client ID']||p['ID']))||allClients.find(x=>x['Client Name']===(p['Client Name']||p['Client'])):null;
     document.getElementById('emailModalTitle').textContent='Send Invoice via Email';
     document.getElementById('email-to').value=c?c['Email']||'':'';
     document.getElementById('email-subject').value='Invoice - Pak Youth Builders - '+(p?p['Month']||'':'');
     document.getElementById('email-body').value='Dear Client,\n\nPlease find attached your invoice from Pak Youth Builders.\n\nFor any queries please contact us.\n\nRegards,\nPak Youth Builders Team';
   }else{
     const p=allProgress.find(x=>x._row===rowNum);
-    const c=p?allClients.find(x=>x['Client Name']===p['Client Name']||x['ID']===p['Client ID']):null;
+    const c=p?allClients.find(x=>x['ID']===p['Client ID'])||allClients.find(x=>x['Client Name']===p['Client Name']):null;
     document.getElementById('emailModalTitle').textContent='Send Progress Report via Email';
     document.getElementById('email-to').value=c?c['Email']||'':'';
     document.getElementById('email-subject').value='Monthly Performance Report - '+(p?p['Month']||'':'') +' - Pak Youth Builders';
@@ -1427,7 +1427,8 @@ function generateInvoicePDF(rowNum){
   const p=allPayments.find(x=>x._row===rowNum);
   if(!p){showToast('Payment not found','error');return;}
   const clientName=p['Client Name']||p['Client']||'';
-  const c=allClients.find(x=>x['Client Name']===clientName);
+  const clientId=p['Client ID']||p['ID']||'';
+  const c=allClients.find(x=>clientId&&x['ID']===clientId)||allClients.find(x=>x['Client Name']===clientName);
   const manager=c?allTeam.find(m=>m['Full Name']===c['Account Manager']):null;
   const managerId=manager?manager['Member ID']:'--';
   const invNo=p['Invoice No']||p['Invoice']||'INV-001';
@@ -1499,7 +1500,7 @@ function generateProgressPDF(rowNum,imgData){
   const p=allProgress.find(x=>x._row===rowNum);
   if(!p){showToast('Progress record not found','error');return;}
   const clientId=p['Client ID']||'--';
-  const c=allClients.find(x=>x['Client Name']===p['Client Name']||x['ID']===clientId);
+  const c=allClients.find(x=>x['ID']===clientId)||allClients.find(x=>x['Client Name']===p['Client Name']);
   const manager=c?allTeam.find(m=>m['Full Name']===c['Account Manager']):null;
   const managerId=manager?manager['Member ID']:'--';
   const dept=p['Department']||c?.['Department']||'--';
