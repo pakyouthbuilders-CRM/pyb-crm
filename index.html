@@ -634,7 +634,7 @@ async function loadAll(silent=false){
       gRead('Clients!A:O'),gRead('Payments!A:J'),gRead('Progress!A:L'),
       gRead('Team!A:K'),gRead('Tasks!A:M'),gRead('Attendance!A:H'),gRead('DailyUpdates!A:H')
     ]);
-    allClients=toObj(cr).map(c=>{if(!c['ID']&&c['Client ID'])c['ID']=c['Client ID'];return c;});allPayments=toObj(pr);allProgress=toObj(pgr);
+    allClients=toObj(cr).map(c=>{c['ID']=c['Client ID']||c['ID']||'';return c;});allPayments=toObj(pr);allProgress=toObj(pgr);
     allTeam=toObj(tm);allTasks=toObj(tk);allAttendance=toObj(at);allUpdates=toObj(ud);
     populateSelects();
     if(currentUser){
