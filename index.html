@@ -678,10 +678,11 @@ let allPersonalProgress=[],allAssignments=[];
 async function loadAll(silent=false){
   try{
     if(!silent)showToast('Loading...','info');
+    const safeRead=async(range)=>{try{return await gRead(range);}catch(e){console.warn('Sheet read failed:',range,e);return[];}};
     const[cr,pr,pgr,tm,tk,at,ud,pp,as]=await Promise.all([
-      gRead('Clients!A:O'),gRead('Payments!A:J'),gRead('Progress!A:L'),
-      gRead('Team!A:L'),gRead('Tasks!A:M'),gRead('Attendance!A:H'),gRead('DailyUpdates!A:H'),
-      gRead('PersonalProgress!A:K'),gRead('TeamAssignments!A:D')
+      safeRead('Clients!A:O'),safeRead('Payments!A:J'),safeRead('Progress!A:L'),
+      safeRead('Team!A:L'),safeRead('Tasks!A:M'),safeRead('Attendance!A:H'),safeRead('DailyUpdates!A:H'),
+      safeRead('PersonalProgress!A:K'),safeRead('TeamAssignments!A:E')
     ]);
     allClients=toObj(cr).map(c=>{c['ID']=c['Client ID']||c['ID']||'';return c;});allPayments=toObj(pr);allProgress=toObj(pgr);
     allTeam=toObj(tm);allTasks=toObj(tk);allAttendance=toObj(at);allUpdates=toObj(ud);
