@@ -659,9 +659,12 @@ async function gRead(range){
 async function gAction(params){
   const url=SCRIPT+'?'+Object.entries(params).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');
   const r=await fetch(url);
+  if(!r.ok)throw new Error('Network error: '+r.status);
   const text=await r.text();
-  try{const d=JSON.parse(text);if(d.status==='error')throw new Error(d.msg);return d;}
-  catch(e){return{status:'success'};}
+  let d;
+  try{d=JSON.parse(text);}catch(e){throw new Error('Invalid response: '+text.substring(0,100));}
+  if(d.status==='error')throw new Error(d.msg||'Script error');
+  return d;
 }
 
 function toObj(rows){
@@ -1467,13 +1470,13 @@ async function saveAssignment(){
   const dealPct=document.getElementById('as-deal-pct').value||'';
   const row=[mid,m?m['Full Name']:'',cid,document.getElementById('as-role').value,document.getElementById('as-start').value,dealPct];
   try{
-    const result=await gAction({action:'write',sheet:'TeamAssignments',row:JSON.stringify(row)});
+    await gAction({action:'write',sheet:'TeamAssignments',row:JSON.stringify(row)});
     closeModal('assignModal');
-    showToast('Account assigned successfully!','success');
+    showToast('Account assigned!','success');
     setTimeout(()=>loadAll(true),2000);
   }catch(e){
-    showToast('Save failed: '+e.message,'error');
-    console.error('Assignment save error:',e);
+    showToast('Error: '+e.message,'error');
+    console.error('saveAssignment failed:',e);
   }
   btn.innerHTML=orig;btn.disabled=false;
 }
