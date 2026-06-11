@@ -494,6 +494,7 @@ tr:hover td{background:#f8fafc}
   <div class="modal-title" id="assignModalTitle">Assign Account to Member</div>
   <div class="form-row"><div class="form-group"><label>Team Member *</label><select id="as-member"><option value="">Select member...</option></select></div><div class="form-group"><label>Account (Client ID) *</label><select id="as-client"><option value="">Select account...</option></select></div></div>
   <div class="form-row"><div class="form-group"><label>Role on Account</label><select id="as-role"><option>Account Manager</option><option>Assistant</option><option>VA</option><option>Listing Specialist</option></select></div><div class="form-group"><label>Start Date</label><input id="as-start" type="date"></div></div>
+  <div class="form-row"><div class="form-group"><label>Personal Deal % <span style="font-size:10px;color:#6b7280">(for this account)</span></label><input id="as-deal-pct" type="number" step="0.1" min="0" max="100" placeholder="e.g. 10"></div><div class="form-group"></div></div>
   <input type="hidden" id="as-row-num">
   <div class="form-btns"><button class="btn-cancel" onclick="closeModal('assignModal')">Cancel</button><button class="btn-save" id="assignSaveBtn" onclick="saveAssignment()">Save Assignment</button></div>
 </div></div>
@@ -651,7 +652,7 @@ function doLogout(){
 
 async function gRead(range){
   const r=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(range)+'?key='+API_KEY);
-  if(!r.ok)throw new Error('Read failed');
+  if(!r.ok)return[];
   const d=await r.json();return d.values||[];
 }
 
@@ -682,7 +683,7 @@ async function loadAll(silent=false){
     const[cr,pr,pgr,tm,tk,at,ud,pp,as]=await Promise.all([
       safeRead('Clients!A:O'),safeRead('Payments!A:J'),safeRead('Progress!A:L'),
       safeRead('Team!A:L'),safeRead('Tasks!A:M'),safeRead('Attendance!A:H'),safeRead('DailyUpdates!A:H'),
-      safeRead('PersonalProgress!A:K'),safeRead('TeamAssignments!A:E')
+      safeRead('PersonalProgress!A:K'),safeRead('TeamAssignments!A:F')
     ]);
     allClients=toObj(cr).map(c=>{c['ID']=c['Client ID']||c['ID']||'';return c;});allPayments=toObj(pr);allProgress=toObj(pgr);
     allTeam=toObj(tm);allTasks=toObj(tk);allAttendance=toObj(at);allUpdates=toObj(ud);
@@ -888,7 +889,7 @@ function viewMember(id){
   const totalNet=mpp.reduce((a,p)=>a+(parseFloat(p['Net Profit'])||0),0);
   const assignedAccounts=mas.map(a=>{const cl=allClients.find(x=>x['ID']===a['Client ID']);return cl?{...a,storeName:cl['Store Name']||a['Client ID'],dept:cl['Department']||''}:null;}).filter(Boolean);
 
-  const assignTab='<div id="mv-assignments" class="tab-content"><div style="display:flex;justify-content:flex-end;margin-bottom:8px"><button class="btn-add" style="font-size:11px" onclick="openAssignForm(\''+m['Member ID']+'\')">+ Assign Account</button></div>'+(assignedAccounts.length===0?'<div class="empty-state"><p>No accounts assigned yet</p></div>':'<div class="table-wrap"><table><thead><tr><th>Client ID</th><th>Store Name</th><th>Dept</th><th>Role</th><th>Start Date</th><th>Del</th></tr></thead><tbody>'+assignedAccounts.map(a=>'<tr><td style="color:#6b7280;font-size:10px">'+a['Client ID']+'</td><td><b>'+a.storeName+'</b></td><td>'+tag(a.dept)+'</td><td>'+(a['Role']||'?')+'</td><td>'+(a['Start Date']||'?')+'</td><td><button class="btn-del" onclick="confirmDelete(\'TeamAssignments\','+a._row+',\'assignment\')">Del</button></td></tr>').join('')+'</tbody></table></div>')+'</div>';
+  const assignTab='<div id="mv-assignments" class="tab-content active"><div style="display:flex;justify-content:flex-end;margin-bottom:8px"><button class="btn-add" style="font-size:11px" onclick="openAssignForm(\''+m['Member ID']+'\')">+ Assign Account</button></div>'+(assignedAccounts.length===0?'<div class="empty-state"><p>No accounts assigned yet</p></div>':'<div class="table-wrap"><table><thead><tr><th>Client ID</th><th>Store Name</th><th>Dept</th><th>Role</th><th>Deal %</th><th>Start Date</th><th>Del</th></tr></thead><tbody>'+assignedAccounts.map(a=>'<tr><td style="color:#6b7280;font-size:10px">'+a['Client ID']+'</td><td><b>'+a.storeName+'</b></td><td>'+tag(a.dept)+'</td><td>'+(a['Role']||'?')+'</td><td style="color:#185FA5;font-weight:700">'+(a['Deal %']||a['Personal Deal %']||'—')+'%</td><td>'+(a['Start Date']||'?')+'</td><td><button class="btn-del" onclick="confirmDelete(\'TeamAssignments\','+a._row+',\'assignment\')">Del</button></td></tr>').join('')+'</tbody></table></div>')+'</div>';
 
   const ppRows=mpp.length===0?'<tr><td colspan="9"><div class="empty-state"><p>No personal progress records yet</p></div></td></tr>':mpp.slice().reverse().map(p=>'<tr><td style="color:#6b7280;font-size:10px">'+p['Account (Client ID)']+'</td><td>'+(p['Month']||'?')+'</td><td style="color:#6b7280;font-size:11px">'+(p['SKU Ref']||'?')+'</td><td>'+fmt(p['Gross Revenue'])+'</td><td>'+fmt(p['COGS'])+'</td><td style="color:#16a34a;font-weight:700">'+fmt(p['Net Profit'])+'</td><td style="color:#185FA5">'+(p['Deal %']||'?')+'</td><td style="color:#2E8B57;font-weight:700">'+fmt(p['Commission'])+'</td><td><button class="btn-edit" onclick="openEditPPForm('+p._row+')">Edit</button><button class="btn-del" onclick="confirmDelete(\'PersonalProgress\','+p._row+',\'record\')">Del</button></td></tr>').join('');
   const ppTab='<div id="mv-pp" class="tab-content"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div style="display:flex;gap:10px"><div style="background:#f0fff4;border:1px solid #bbf7d0;border-radius:8px;padding:8px 14px;font-size:12px"><span style="color:#6b7280">Total Net Profit: </span><b style="color:#16a34a">'+fmt(totalNet)+'</b></div><div style="background:#f0fff4;border:1px solid #bbf7d0;border-radius:8px;padding:8px 14px;font-size:12px"><span style="color:#6b7280">Total Commission: </span><b style="color:#2E8B57">'+fmt(totalComm)+'</b></div></div><button class="btn-add" style="font-size:11px" onclick="openPPFormForMember(\''+m['Member ID']+'\')">+ Add Record</button></div><div class="table-wrap"><table><thead><tr><th>Account</th><th>Month</th><th>SKU Ref</th><th>Gross ($)</th><th>COGS ($)</th><th>Net Profit ($)</th><th>Deal %</th><th>Commission ($)</th><th>Actions</th></tr></thead><tbody>'+ppRows+'</tbody></table></div></div>';
@@ -1446,9 +1447,9 @@ function openAssignForm(memberId){
   document.getElementById('as-row-num').value='';
   document.getElementById('as-start').value=today();
   document.getElementById('as-role').value='Account Manager';
+  document.getElementById('as-deal-pct').value='';
   const msel=document.getElementById('as-member');
-  if(memberId)msel.value=memberId;
-  else msel.value='';
+  if(memberId){msel.value=memberId;}else{msel.value='';}
   document.getElementById('as-client').value='';
   document.getElementById('assignModal').classList.add('open');
 }
@@ -1459,15 +1460,21 @@ async function saveAssignment(){
   if(!mid){showToast('Select a member!','error');return;}
   if(!cid){showToast('Select an account!','error');return;}
   const duplicate=allAssignments.find(a=>a['Member ID']===mid&&a['Client ID']===cid);
-  if(duplicate&&!editMode){showToast('This member is already assigned to this account!','error');return;}
+  if(duplicate&&!editMode){showToast('Already assigned to this account!','error');return;}
   const btn=document.getElementById('assignSaveBtn');const orig=btn.textContent;
   btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
   const m=allTeam.find(x=>x['Member ID']===mid);
-  const row=[mid,m?m['Full Name']:'',cid,document.getElementById('as-role').value,document.getElementById('as-start').value];
+  const dealPct=document.getElementById('as-deal-pct').value||'';
+  const row=[mid,m?m['Full Name']:'',cid,document.getElementById('as-role').value,document.getElementById('as-start').value,dealPct];
   try{
-    await gAction({action:'write',sheet:'TeamAssignments',row:JSON.stringify(row)});
-    closeModal('assignModal');showToast('Assignment saved!','success');setTimeout(()=>loadAll(true),2000);
-  }catch(e){showToast('Error: '+e.message,'error');}
+    const result=await gAction({action:'write',sheet:'TeamAssignments',row:JSON.stringify(row)});
+    closeModal('assignModal');
+    showToast('Account assigned successfully!','success');
+    setTimeout(()=>loadAll(true),2000);
+  }catch(e){
+    showToast('Save failed: '+e.message,'error');
+    console.error('Assignment save error:',e);
+  }
   btn.innerHTML=orig;btn.disabled=false;
 }
 
@@ -1514,25 +1521,34 @@ function openEditPPForm(rowNum){
 
 function fillPPMember(){
   const mid=document.getElementById('pp-member').value;
-  const m=allTeam.find(x=>x['Member ID']===mid);
   document.getElementById('pp-mid').value=mid;
   const memberAssignments=allAssignments.filter(a=>a['Member ID']===mid);
   const accSel=document.getElementById('pp-account');
   if(memberAssignments.length>0){
     accSel.innerHTML='<option value="">Select account...</option>'+memberAssignments.map(a=>{
       const cl=allClients.find(x=>x['ID']===a['Client ID']);
-      return'<option value="'+a['Client ID']+'">'+a['Client ID']+(cl?' - '+cl['Store Name']:'')+'</option>';
+      return'<option value="'+a['Client ID']+'" data-deal="'+(a['Deal %']||a['Personal Deal %']||'')+'">'+a['Client ID']+(cl?' - '+cl['Store Name']:'')+'</option>';
     }).join('');
   }else{
-    accSel.innerHTML='<option value="">No accounts assigned</option>';
+    accSel.innerHTML='<option value="">No accounts assigned yet</option>';
   }
-  if(m&&m['Personal Deal %']){document.getElementById('pp-deal').value=m['Personal Deal %'];calcPP();}
+  document.getElementById('pp-deal').value='';
+  calcPP();
 }
 
 function fillPPDeal(){
-  const mid=document.getElementById('pp-member').value;
-  const m=allTeam.find(x=>x['Member ID']===mid);
-  if(m&&m['Personal Deal %']){document.getElementById('pp-deal').value=m['Personal Deal %'];calcPP();}
+  const accSel=document.getElementById('pp-account');
+  const selected=accSel.options[accSel.selectedIndex];
+  const dealFromAssignment=selected?selected.getAttribute('data-deal'):'';
+  if(dealFromAssignment){
+    document.getElementById('pp-deal').value=dealFromAssignment;
+  }else{
+    // fallback to member level deal%
+    const mid=document.getElementById('pp-member').value;
+    const m=allTeam.find(x=>x['Member ID']===mid);
+    document.getElementById('pp-deal').value=m&&m['Personal Deal %']?m['Personal Deal %']:'';
+  }
+  calcPP();
 }
 
 function calcPP(){
