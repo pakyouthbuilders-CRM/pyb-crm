@@ -184,6 +184,7 @@ tr:hover td{background:#f8fafc}
       <div class="nav-section">
         <div class="nav-label">Team</div>
         <div class="nav-item" onclick="nav('team',this)">&#128101; Team Members</div>
+        <div class="nav-item" onclick="nav('personal-progress',this)">&#127775; Personal Progress</div>
         <div class="nav-item" onclick="nav('tasks',this)">&#9989; Task Board</div>
         <div class="nav-item" onclick="nav('attendance',this)">&#128197; Attendance</div>
         <div class="nav-item" onclick="nav('updates',this)">&#128203; Daily Updates</div>
@@ -314,6 +315,23 @@ tr:hover td{background:#f8fafc}
         </div>
         <div id="team-profile-view" style="display:none"></div>
       </div>
+      <!-- PERSONAL PROGRESS -->
+      <div class="section" id="sec-personal-progress">
+        <div class="search-bar">
+          <input type="text" placeholder="Search by member, account, SKU..." id="pp-search" oninput="filterPP()">
+          <select id="pp-member-filter" onchange="filterPP()" style="font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;outline:none"><option value="">All Members</option></select>
+          <select id="pp-month-filter" onchange="filterPP()" style="font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;outline:none"><option value="">All Months</option></select>
+          <button class="btn-add" style="background:#16a34a" onclick="exportPP()">Export CSV</button>
+          <button class="btn-add" onclick="openPPForm()">+ Add Record</button>
+        </div>
+        <div class="kpi-grid" style="margin-bottom:12px">
+          <div class="kpi-card"><div class="kpi-label">Total Records</div><div class="kpi-val" id="pp-kpi-count">0</div></div>
+          <div class="kpi-card"><div class="kpi-label">Total Personal Revenue</div><div class="kpi-val" id="pp-kpi-gross">$0</div></div>
+          <div class="kpi-card"><div class="kpi-label">Total Net Profit</div><div class="kpi-val" id="pp-kpi-net">$0</div></div>
+          <div class="kpi-card"><div class="kpi-label">Total Commission Paid</div><div class="kpi-val kpi-up" id="pp-kpi-comm">$0</div></div>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Member</th><th>Account</th><th>Month</th><th>SKU Ref</th><th>Gross ($)</th><th>COGS ($)</th><th>Net Profit ($)</th><th>Deal %</th><th>Commission ($)</th><th>Notes</th><th>Actions</th></tr></thead><tbody id="pp-body"></tbody></table></div>
+      </div>
       <!-- TASKS -->
       <div class="section" id="sec-tasks">
         <div class="search-bar">
@@ -373,15 +391,16 @@ tr:hover td{background:#f8fafc}
       <div class="section" id="sec-my-dashboard">
         <div class="my-hero"><h2 id="my-welcome">Welcome!</h2><p id="my-role-text">Your personal dashboard</p></div>
         <div class="kpi-grid">
-          <div class="kpi-card"><div class="kpi-label">My Clients</div><div class="kpi-val" id="my-clients-count">0</div></div>
+          <div class="kpi-card"><div class="kpi-label">My Accounts</div><div class="kpi-val" id="my-clients-count">0</div></div>
           <div class="kpi-card"><div class="kpi-label">Open Tasks</div><div class="kpi-val" id="my-tasks-count">0</div><div class="kpi-sub kpi-down" id="my-overdue-count"></div></div>
           <div class="kpi-card"><div class="kpi-label">Tasks Done</div><div class="kpi-val kpi-up" id="my-done-count">0</div></div>
           <div class="kpi-card"><div class="kpi-label">Present Days</div><div class="kpi-val" id="my-att-count">0</div></div>
         </div>
         <div class="grid-2">
           <div class="card"><div class="card-title">My Pending Tasks</div><div id="my-task-preview"></div></div>
-          <div class="card"><div class="card-title">My Clients</div><div id="my-client-preview"></div></div>
+          <div class="card"><div class="card-title">My Assigned Accounts</div><div id="my-client-preview"></div></div>
         </div>
+        <div class="card" style="margin-top:12px"><div class="card-title">&#127775; My Personal Progress & Earnings</div><div id="my-pp-preview"><div class="empty-state"><p>Loading...</p></div></div></div>
       </div>
       <div class="section" id="sec-my-tasks">
         <div class="search-bar">
@@ -395,7 +414,7 @@ tr:hover td{background:#f8fafc}
         </div>
       </div>
       <div class="section" id="sec-my-clients">
-        <div class="table-wrap"><table><thead><tr><th>Client ID</th><th>Dept</th><th>Store Name</th><th>Deal %</th><th>Status</th></tr></thead><tbody id="my-clients-body"></tbody></table></div>
+        <div class="table-wrap"><table><thead><tr><th>Account ID</th><th>Dept</th><th>Store Name</th><th>My Role</th><th>Status</th></tr></thead><tbody id="my-clients-body"></tbody></table></div>
       </div>
       <div class="section" id="sec-my-attendance">
         <div class="search-bar"><button class="btn-add" onclick="openAttForm()">+ Mark My Attendance</button></div>
@@ -464,9 +483,36 @@ tr:hover td{background:#f8fafc}
   <div class="form-row"><div class="form-group"><label>Email</label><input id="m-email" type="email"></div><div class="form-group"><label>Join Date</label><input id="m-join" type="date"></div></div>
   <div class="form-section">Login Credentials</div>
   <div class="form-row"><div class="form-group"><label>Username</label><input id="m-username" placeholder="ahmed123"></div><div class="form-group"><label>Password</label><input id="m-password" type="password" placeholder="password123"></div></div>
-  <div class="form-row"><div class="form-group"><label>Status</label><select id="m-status"><option>Active</option><option>Inactive</option></select></div><div class="form-group"><label>Notes</label><input id="m-notes"></div></div>
+  <div class="form-row"><div class="form-group"><label>Status</label><select id="m-status"><option>Active</option><option>Inactive</option></select></div><div class="form-group"><label>Personal Deal % <span style="font-size:10px;color:#6b7280">(company share to member)</span></label><input id="m-deal-pct" type="number" step="0.1" min="0" max="100" placeholder="e.g. 10"></div></div>
+  <div class="form-group"><label>Notes</label><input id="m-notes"></div>
   <input type="hidden" id="m-id">
   <div class="form-btns"><button class="btn-cancel" onclick="closeModal('memberModal')">Cancel</button><button class="btn-save" id="memberSaveBtn" onclick="saveMember()">Save Member</button></div>
+</div></div>
+
+<!-- TEAM ASSIGNMENT MODAL -->
+<div class="modal-bg" id="assignModal"><div class="modal">
+  <div class="modal-title" id="assignModalTitle">Assign Account to Member</div>
+  <div class="form-row"><div class="form-group"><label>Team Member *</label><select id="as-member"><option value="">Select member...</option></select></div><div class="form-group"><label>Account (Client ID) *</label><select id="as-client"><option value="">Select account...</option></select></div></div>
+  <div class="form-row"><div class="form-group"><label>Role on Account</label><select id="as-role"><option>Account Manager</option><option>Assistant</option><option>VA</option><option>Listing Specialist</option></select></div><div class="form-group"><label>Start Date</label><input id="as-start" type="date"></div></div>
+  <input type="hidden" id="as-row-num">
+  <div class="form-btns"><button class="btn-cancel" onclick="closeModal('assignModal')">Cancel</button><button class="btn-save" id="assignSaveBtn" onclick="saveAssignment()">Save Assignment</button></div>
+</div></div>
+
+<!-- PERSONAL PROGRESS MODAL -->
+<div class="modal-bg" id="ppModal"><div class="modal">
+  <div class="modal-title" id="ppModalTitle">Add Personal Progress</div>
+  <div class="form-row"><div class="form-group"><label>Team Member *</label><select id="pp-member" onchange="fillPPMember()"><option value="">Select member...</option></select></div><div class="form-group"><label>Account *</label><select id="pp-account" onchange="fillPPDeal()"><option value="">Select account...</option></select></div></div>
+  <div class="form-row"><div class="form-group"><label>Member ID</label><input id="pp-mid" readonly style="background:#f8fafc"></div><div class="form-group"><label>Month *</label><input id="pp-month" placeholder="May 2026"></div></div>
+  <div class="form-group"><label>SKU Ref <span style="font-size:10px;color:#6b7280">(e.g. ALI-1042, MB-SKU-07)</span></label><input id="pp-sku" placeholder="Member initials + item no"></div>
+  <div style="background:#f0f7ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px;margin-bottom:10px">
+    <div style="font-size:11px;font-weight:700;color:#185FA5;margin-bottom:8px">Revenue (Auto-calculates)</div>
+    <div class="form-row" style="margin-bottom:8px"><div class="form-group"><label>Gross Revenue ($) *</label><input id="pp-gross" type="number" placeholder="0" oninput="calcPP()"></div><div class="form-group"><label>COGS ($) *</label><input id="pp-cogs" type="number" placeholder="0" oninput="calcPP()"></div></div>
+    <div class="form-row" style="margin-bottom:0"><div class="form-group"><label>Net Profit ($)</label><input id="pp-net" readonly style="background:#f0fff4;font-weight:700;color:#16a34a"></div><div class="form-group"><label>Deal %</label><input id="pp-deal" readonly style="background:#f8fafc"></div></div>
+    <div class="form-row" style="margin-bottom:0;margin-top:8px"><div class="form-group"><label>Personal Commission ($)</label><input id="pp-comm" readonly style="background:#f0fff4;font-weight:700;color:#2E8B57"></div></div>
+  </div>
+  <div class="form-group"><label>Notes</label><input id="pp-notes"></div>
+  <input type="hidden" id="pp-row-num">
+  <div class="form-btns"><button class="btn-cancel" onclick="closeModal('ppModal')">Cancel</button><button class="btn-save" id="ppSaveBtn" onclick="savePP()">Save Record</button></div>
 </div></div>
 
 <!-- TASK MODAL -->
@@ -541,7 +587,7 @@ tr:hover td{background:#f8fafc}
 
 <div class="toast" id="toast"></div>
 <script>
-const SCRIPT='https://script.google.com/macros/s/AKfycbwrfxVlXshZxtrOIX_IL5CXLPm2RWk5AX8oKzr2JVNZcwoaXPyWkFeSx53wos4C4yQy8Q/exec';
+const SCRIPT='https://script.google.com/macros/s/AKfycbxB-agQsU_ZqC49e-U_7_jjoe5haDeFb7w-tmtGjiZdKTH6PDw5C4bp2ganLMKKScT93A/exec';
 const SHEET_ID='1X6FaHYrSs96XYZMLkWBwzp23zCTjSDk13YAVp_TfYwg';
 const API_KEY='AIzaSyBevUeL-MqrlyKFxQ6VfbBDH19uAnma4nU';
 const ADMIN_USER='admin',ADMIN_PASS='admin123';
@@ -627,18 +673,22 @@ function toObj(rows){
   });
 }
 
+let allPersonalProgress=[],allAssignments=[];
+
 async function loadAll(silent=false){
   try{
     if(!silent)showToast('Loading...','info');
-    const[cr,pr,pgr,tm,tk,at,ud]=await Promise.all([
+    const[cr,pr,pgr,tm,tk,at,ud,pp,as]=await Promise.all([
       gRead('Clients!A:O'),gRead('Payments!A:J'),gRead('Progress!A:L'),
-      gRead('Team!A:K'),gRead('Tasks!A:M'),gRead('Attendance!A:H'),gRead('DailyUpdates!A:H')
+      gRead('Team!A:L'),gRead('Tasks!A:M'),gRead('Attendance!A:H'),gRead('DailyUpdates!A:H'),
+      gRead('PersonalProgress!A:K'),gRead('TeamAssignments!A:D')
     ]);
     allClients=toObj(cr).map(c=>{c['ID']=c['Client ID']||c['ID']||'';return c;});allPayments=toObj(pr);allProgress=toObj(pgr);
     allTeam=toObj(tm);allTasks=toObj(tk);allAttendance=toObj(at);allUpdates=toObj(ud);
+    allPersonalProgress=toObj(pp);allAssignments=toObj(as);
     populateSelects();
     if(currentUser){
-      if(currentUser.isAdmin){renderDashboard();renderMaster();renderPayments();renderProgress();renderTeam();renderTasks();renderAttendance();renderUpdates();}
+      if(currentUser.isAdmin){renderDashboard();renderMaster();renderPayments();renderProgress();renderTeam();renderTasks();renderAttendance();renderUpdates();renderPP();}
       else renderMemberDashboard();
     }
     if(!silent)showToast('Data loaded!','success');
@@ -649,8 +699,16 @@ function populateSelects(){
   const mo=allTeam.filter(m=>m['Status']==='Active').map(m=>'<option value="'+m['Full Name']+'">'+m['Full Name']+' ('+m['Role']+')</option>').join('');
   ['task-member-filter','upd-member-filter'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML='<option value="">All Members</option>'+mo;});
   ['t-assigned'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML='<option value="">Select member...</option>'+mo;});
+  const moOpts=allTeam.filter(m=>m['Status']==='Active').map(m=>'<option value="'+m['Member ID']+'">'+m['Full Name']+'</option>').join('');
+  ['pp-member','as-member'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML='<option value="">Select member...</option>'+moOpts;});
+  const ppMF=document.getElementById('pp-member-filter');
+  if(ppMF)ppMF.innerHTML='<option value="">All Members</option>'+allTeam.map(m=>'<option value="'+m['Member ID']+'">'+m['Full Name']+'</option>').join('');
+  const ppMonths=[...new Set(allPersonalProgress.map(p=>p['Month']).filter(Boolean))];
+  const ppMoF=document.getElementById('pp-month-filter');
+  if(ppMoF)ppMoF.innerHTML='<option value="">All Months</option>'+ppMonths.map(m=>'<option value="'+m+'">'+m+'</option>').join('');
   const co=allClients.map(c=>'<option value="'+c['ID']+'">'+c['ID']+' - '+c['Client Name']+'</option>').join('');
   const tc=document.getElementById('t-client');if(tc)tc.innerHTML='<option value="">No client</option>'+co;
+  const asc=document.getElementById('as-client');if(asc)asc.innerHTML='<option value="">Select account...</option>'+co;
   const pcs=document.getElementById('p-client-select');
   if(pcs)pcs.innerHTML='<option value="">Select client...</option>'+allClients.map(c=>'<option value="'+c['ID']+'">'+c['ID']+' - '+c['Client Name']+'</option>').join('');
   const prcs=document.getElementById('pr-client-select');
@@ -821,8 +879,50 @@ function viewMember(id){
   const mt=allTasks.filter(t=>t['Assigned To']===m['Full Name']);
   const mu=allUpdates.filter(u=>u['Member Name']===m['Full Name']);
   const ma=allAttendance.filter(a=>a['Member Name']===m['Full Name']);
+  const mpp=allPersonalProgress.filter(p=>p['Member ID']===m['Member ID']);
+  const mas=allAssignments.filter(a=>a['Member ID']===m['Member ID']);
   const idx=allTeam.indexOf(m);
-  pv.innerHTML='<button class="back-btn" onclick="backToTeamList()">Back to Team</button><div class="profile-header"><div class="profile-avatar" style="background:'+aColor(idx)+'">'+ini(m['Full Name'])+'</div><div style="flex:1"><div style="font-size:9px;color:#2E8B57;font-weight:700;margin-bottom:3px">'+(m['Member ID']||'?')+'</div><div class="profile-name">'+(m['Full Name']||'?')+'</div><div class="profile-meta">'+(m['Role']||'?')+' · '+(m['Department']||'?')+' · '+(m['Phone']||'?')+'</div><div class="profile-meta">'+(m['Email']||'?')+' · Joined: '+(m['Join Date']||'?')+'</div></div><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end"><button class="btn-update" onclick="openEditMemberForm(\''+m['Member ID']+'\')">Edit</button><button class="btn-add" onclick="openTaskFormForMember(\''+m['Full Name']+'\')">+ Assign Task</button></div></div><div class="kpi-grid" style="margin-bottom:14px"><div class="kpi-card"><div class="kpi-label">Clients</div><div class="kpi-val">'+mc.length+'</div></div><div class="kpi-card"><div class="kpi-label">Tasks Done</div><div class="kpi-val kpi-up">'+mt.filter(t=>t['Status']==='Done').length+'</div></div><div class="kpi-card"><div class="kpi-label">Updates</div><div class="kpi-val">'+mu.length+'</div></div><div class="kpi-card"><div class="kpi-label">Attendance</div><div class="kpi-val">'+ma.filter(a=>a['Status']==='Present'||a['Status']==='Remote').length+' days</div></div></div><div class="tabs"><div class="tab active" onclick="swTab(\'mv\',\'clients\',this)">Clients ('+mc.length+')</div><div class="tab" onclick="swTab(\'mv\',\'tasks\',this)">Tasks ('+mt.length+')</div><div class="tab" onclick="swTab(\'mv\',\'updates\',this)">Updates ('+mu.length+')</div><div class="tab" onclick="swTab(\'mv\',\'att\',this)">Attendance ('+ma.length+')</div></div><div id="mv-clients" class="tab-content active">'+(mc.length===0?'<div class="empty-state"><p>No clients assigned</p></div>':'<div class="table-wrap"><table><thead><tr><th>ID</th><th>Client</th><th>Dept</th><th>Store</th><th>Deal %</th><th>Status</th></tr></thead><tbody>'+mc.map(c=>'<tr><td>'+c['ID']+'</td><td><b>'+(c['Client Name']||'?')+'</b></td><td>'+tag(c['Department'])+'</td><td>'+(c['Store Name']||'?')+'</td><td>'+(c['Deal %']||'?')+'</td><td>'+pill(c['Status'])+'</td></tr>').join('')+'</tbody></table></div>')+'</div><div id="mv-tasks" class="tab-content">'+(mt.length===0?'<div class="empty-state"><p>No tasks</p></div>':mt.map(t=>'<div class="task-card '+(t['Priority']||'').toLowerCase()+' '+(isOverdue(t['Due Date'])&&t['Status']!=='Done'?'overdue':'')+'"><div class="task-title">'+(t['Task Title']||'?')+(isOverdue(t['Due Date'])&&t['Status']!=='Done'?'<span class="status-pill pill-red" style="margin-left:6px">OVERDUE</span>':'')+'</div><div class="task-meta">Due: '+(t['Due Date']||'?')+'</div><div class="task-footer"><span class="pdot pdot-'+(t['Priority']||'low').toLowerCase()+'"></span>'+(t['Priority']||'?')+'<div>'+pill(t['Status'])+'</div></div></div>').join(''))+'</div><div id="mv-updates" class="tab-content">'+(mu.length===0?'<div class="empty-state"><p>No updates</p></div>':mu.slice().reverse().map(u=>'<div class="upd-card"><div class="upd-date">'+u['Date']+' - '+u['Hours Worked']+'h</div><div class="upd-lbl">Work Done</div><div class="upd-text">'+(u['Work Done Today']||'?')+'</div>'+(u['Issues Faced']?'<div class="upd-lbl">Issues</div><div class="upd-text kpi-down">'+u['Issues Faced']+'</div>':'')+'</div>').join(''))+'</div><div id="mv-att" class="tab-content">'+(ma.length===0?'<div class="empty-state"><p>No attendance records</p></div>':'<div class="table-wrap"><table><thead><tr><th>Date</th><th>Status</th><th>Check In</th><th>Check Out</th><th>Hours</th></tr></thead><tbody>'+ma.slice().reverse().map(a=>'<tr><td>'+a['Date']+'</td><td>'+pill(a['Status'])+'</td><td>'+(a['Check In']||'?')+'</td><td>'+(a['Check Out']||'?')+'</td><td>'+(a['Hours Worked']||'?')+'</td></tr>').join('')+'</tbody></table></div>')+'</div>';
+  const dealPct=m['Personal Deal %']||'Not set';
+  const totalComm=mpp.reduce((a,p)=>a+(parseFloat(p['Commission'])||0),0);
+  const totalNet=mpp.reduce((a,p)=>a+(parseFloat(p['Net Profit'])||0),0);
+  const assignedAccounts=mas.map(a=>{const cl=allClients.find(x=>x['ID']===a['Client ID']);return cl?{...a,storeName:cl['Store Name']||a['Client ID'],dept:cl['Department']||''}:null;}).filter(Boolean);
+
+  const assignTab='<div id="mv-assignments" class="tab-content"><div style="display:flex;justify-content:flex-end;margin-bottom:8px"><button class="btn-add" style="font-size:11px" onclick="openAssignForm(\''+m['Member ID']+'\')">+ Assign Account</button></div>'+(assignedAccounts.length===0?'<div class="empty-state"><p>No accounts assigned yet</p></div>':'<div class="table-wrap"><table><thead><tr><th>Client ID</th><th>Store Name</th><th>Dept</th><th>Role</th><th>Start Date</th><th>Del</th></tr></thead><tbody>'+assignedAccounts.map(a=>'<tr><td style="color:#6b7280;font-size:10px">'+a['Client ID']+'</td><td><b>'+a.storeName+'</b></td><td>'+tag(a.dept)+'</td><td>'+(a['Role']||'?')+'</td><td>'+(a['Start Date']||'?')+'</td><td><button class="btn-del" onclick="confirmDelete(\'TeamAssignments\','+a._row+',\'assignment\')">Del</button></td></tr>').join('')+'</tbody></table></div>')+'</div>';
+
+  const ppRows=mpp.length===0?'<tr><td colspan="9"><div class="empty-state"><p>No personal progress records yet</p></div></td></tr>':mpp.slice().reverse().map(p=>'<tr><td style="color:#6b7280;font-size:10px">'+p['Account (Client ID)']+'</td><td>'+(p['Month']||'?')+'</td><td style="color:#6b7280;font-size:11px">'+(p['SKU Ref']||'?')+'</td><td>'+fmt(p['Gross Revenue'])+'</td><td>'+fmt(p['COGS'])+'</td><td style="color:#16a34a;font-weight:700">'+fmt(p['Net Profit'])+'</td><td style="color:#185FA5">'+(p['Deal %']||'?')+'</td><td style="color:#2E8B57;font-weight:700">'+fmt(p['Commission'])+'</td><td><button class="btn-edit" onclick="openEditPPForm('+p._row+')">Edit</button><button class="btn-del" onclick="confirmDelete(\'PersonalProgress\','+p._row+',\'record\')">Del</button></td></tr>').join('');
+  const ppTab='<div id="mv-pp" class="tab-content"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div style="display:flex;gap:10px"><div style="background:#f0fff4;border:1px solid #bbf7d0;border-radius:8px;padding:8px 14px;font-size:12px"><span style="color:#6b7280">Total Net Profit: </span><b style="color:#16a34a">'+fmt(totalNet)+'</b></div><div style="background:#f0fff4;border:1px solid #bbf7d0;border-radius:8px;padding:8px 14px;font-size:12px"><span style="color:#6b7280">Total Commission: </span><b style="color:#2E8B57">'+fmt(totalComm)+'</b></div></div><button class="btn-add" style="font-size:11px" onclick="openPPFormForMember(\''+m['Member ID']+'\')">+ Add Record</button></div><div class="table-wrap"><table><thead><tr><th>Account</th><th>Month</th><th>SKU Ref</th><th>Gross ($)</th><th>COGS ($)</th><th>Net Profit ($)</th><th>Deal %</th><th>Commission ($)</th><th>Actions</th></tr></thead><tbody>'+ppRows+'</tbody></table></div></div>';
+
+  pv.innerHTML='<button class="back-btn" onclick="backToTeamList()">&#8592; Back to Team</button>'
+  +'<div class="profile-header"><div class="profile-avatar" style="background:'+aColor(idx)+'">'+ini(m['Full Name'])+'</div>'
+  +'<div style="flex:1"><div style="font-size:9px;color:#2E8B57;font-weight:700;margin-bottom:3px">'+(m['Member ID']||'?')+'</div>'
+  +'<div class="profile-name">'+(m['Full Name']||'?')+'</div>'
+  +'<div class="profile-meta">'+(m['Role']||'?')+' · '+(m['Department']||'?')+' · '+(m['Phone']||'?')+'</div>'
+  +'<div class="profile-meta">'+(m['Email']||'?')+' · Joined: '+(m['Join Date']||'?')+'</div>'
+  +'<div style="margin-top:5px"><span style="font-size:11px;background:#e0f2fe;color:#0369a1;padding:3px 10px;border-radius:20px;font-weight:700">Personal Deal: '+dealPct+'%</span></div>'
+  +'</div><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">'
+  +'<button class="btn-update" onclick="openEditMemberForm(\''+m['Member ID']+'\')">Edit</button>'
+  +'<button class="btn-add" onclick="openTaskFormForMember(\''+m['Full Name']+'\')">+ Assign Task</button>'
+  +'</div></div>'
+  +'<div class="kpi-grid" style="margin-bottom:14px">'
+  +'<div class="kpi-card"><div class="kpi-label">Accounts Assigned</div><div class="kpi-val">'+mas.length+'</div></div>'
+  +'<div class="kpi-card"><div class="kpi-label">Personal Commission</div><div class="kpi-val kpi-up">'+fmt(totalComm)+'</div></div>'
+  +'<div class="kpi-card"><div class="kpi-label">Tasks Done</div><div class="kpi-val kpi-up">'+mt.filter(t=>t['Status']==='Done').length+'</div></div>'
+  +'<div class="kpi-card"><div class="kpi-label">Attendance Days</div><div class="kpi-val">'+ma.filter(a=>a['Status']==='Present'||a['Status']==='Remote').length+'</div></div>'
+  +'</div>'
+  +'<div class="tabs">'
+  +'<div class="tab active" onclick="swTab(\'mv\',\'assignments\',this)">Accounts ('+mas.length+')</div>'
+  +'<div class="tab" onclick="swTab(\'mv\',\'pp\',this)">Personal Progress ('+mpp.length+')</div>'
+  +'<div class="tab" onclick="swTab(\'mv\',\'clients\',this)">Managed Clients ('+mc.length+')</div>'
+  +'<div class="tab" onclick="swTab(\'mv\',\'tasks\',this)">Tasks ('+mt.length+')</div>'
+  +'<div class="tab" onclick="swTab(\'mv\',\'updates\',this)">Updates ('+mu.length+')</div>'
+  +'<div class="tab" onclick="swTab(\'mv\',\'att\',this)">Attendance ('+ma.length+')</div>'
+  +'</div>'
+  +assignTab
+  +ppTab
+  +'<div id="mv-clients" class="tab-content">'+(mc.length===0?'<div class="empty-state"><p>No clients assigned</p></div>':'<div class="table-wrap"><table><thead><tr><th>ID</th><th>Client</th><th>Dept</th><th>Store</th><th>Deal %</th><th>Status</th></tr></thead><tbody>'+mc.map(c=>'<tr><td>'+c['ID']+'</td><td><b>'+(c['Client Name']||'?')+'</b></td><td>'+tag(c['Department'])+'</td><td>'+(c['Store Name']||'?')+'</td><td>'+(c['Deal %']||'?')+'</td><td>'+pill(c['Status'])+'</td></tr>').join('')+'</tbody></table></div>')+'</div>'
+  +'<div id="mv-tasks" class="tab-content">'+(mt.length===0?'<div class="empty-state"><p>No tasks</p></div>':mt.map(t=>'<div class="task-card '+(t['Priority']||'').toLowerCase()+' '+(isOverdue(t['Due Date'])&&t['Status']!=='Done'?'overdue':'')+'"><div class="task-title">'+(t['Task Title']||'?')+(isOverdue(t['Due Date'])&&t['Status']!=='Done'?'<span class="status-pill pill-red" style="margin-left:6px">OVERDUE</span>':'')+'</div><div class="task-meta">Due: '+(t['Due Date']||'?')+'</div><div class="task-footer"><span class="pdot pdot-'+(t['Priority']||'low').toLowerCase()+'"></span>'+(t['Priority']||'?')+'<div>'+pill(t['Status'])+'</div></div></div>').join(''))+'</div>'
+  +'<div id="mv-updates" class="tab-content">'+(mu.length===0?'<div class="empty-state"><p>No updates</p></div>':mu.slice().reverse().map(u=>'<div class="upd-card"><div class="upd-date">'+u['Date']+' - '+u['Hours Worked']+'h</div><div class="upd-lbl">Work Done</div><div class="upd-text">'+(u['Work Done Today']||'?')+'</div>'+(u['Issues Faced']?'<div class="upd-lbl">Issues</div><div class="upd-text kpi-down">'+u['Issues Faced']+'</div>':'')+'</div>').join(''))+'</div>'
+  +'<div id="mv-att" class="tab-content">'+(ma.length===0?'<div class="empty-state"><p>No attendance records</p></div>':'<div class="table-wrap"><table><thead><tr><th>Date</th><th>Status</th><th>Check In</th><th>Check Out</th><th>Hours</th></tr></thead><tbody>'+ma.slice().reverse().map(a=>'<tr><td>'+a['Date']+'</td><td>'+pill(a['Status'])+'</td><td>'+(a['Check In']||'?')+'</td><td>'+(a['Check Out']||'?')+'</td><td>'+(a['Hours Worked']||'?')+'</td></tr>').join('')+'</tbody></table></div>')+'</div>';
 }
 function backToTeamList(){document.getElementById('team-list-view').style.display='block';document.getElementById('team-profile-view').style.display='none';}
 function swTab(p,t,el){document.querySelectorAll('[id^="'+p+'-"]').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.getElementById(p+'-'+t).classList.add('active');el.classList.add('active');}
@@ -871,22 +971,46 @@ function filterUpdates(){const s=document.getElementById('upd-search').value.toL
 function renderMemberDashboard(){
   if(!currentUser||currentUser.isAdmin)return;
   const name=currentUser.name;
+  const m=allTeam.find(x=>x['Username']===currentUser.username||x['Full Name']===name);
+  const mid=m?m['Member ID']:'';
   const mc=allClients.filter(c=>c['Account Manager']===name);
   const mt=allTasks.filter(t=>t['Assigned To']===name);
   const mp=mt.filter(t=>t['Status']!=='Done');
   const md=mt.filter(t=>t['Status']==='Done');
   const mo=mt.filter(t=>t['Status']!=='Done'&&isOverdue(t['Due Date']));
   const ma=allAttendance.filter(a=>a['Member Name']===name&&(a['Status']==='Present'||a['Status']==='Remote'));
+  const mpp=allPersonalProgress.filter(p=>p['Member ID']===mid);
+  const mas=allAssignments.filter(a=>a['Member ID']===mid);
+  const totalPPComm=mpp.reduce((a,p)=>a+(parseFloat(p['Commission'])||0),0);
+  const totalPPNet=mpp.reduce((a,p)=>a+(parseFloat(p['Net Profit'])||0),0);
   document.getElementById('my-welcome').textContent='Welcome, '+name+'!';
-  document.getElementById('my-role-text').textContent=currentUser.role+' - '+new Date().toDateString();
-  document.getElementById('my-clients-count').textContent=mc.length;
+  document.getElementById('my-role-text').textContent=(currentUser.role||'Team Member')+' - '+new Date().toDateString();
+  document.getElementById('my-clients-count').textContent=mas.length||mc.length;
   document.getElementById('my-tasks-count').textContent=mp.length;
   document.getElementById('my-overdue-count').textContent=mo.length+' overdue';
   document.getElementById('my-done-count').textContent=md.length;
   document.getElementById('my-att-count').textContent=ma.length;
   document.getElementById('my-task-preview').innerHTML=mp.length===0?'<div class="empty-state"><p>No pending tasks!</p></div>':mp.slice(0,4).map(t=>'<div class="pay-row"><div><div class="pay-name">'+(t['Task Title']||'?')+'</div><div class="pay-dept">Due: '+(t['Due Date']||'?')+(isOverdue(t['Due Date'])?' <span class="status-pill pill-red">OVERDUE</span>':'')+'</div></div>'+pill(t['Priority'])+'</div>').join('');
-  document.getElementById('my-client-preview').innerHTML=mc.length===0?'<div class="empty-state"><p>No clients assigned yet</p></div>':mc.map(c=>'<div class="pay-row"><div><div class="pay-name" style="font-size:11px;color:#6b7280">'+c['ID']+'</div><div class="pay-dept">'+tag(c['Department'])+' · <b>'+(c['Store Name']||'?')+'</b></div></div>'+pill(c['Status'])+'</div>').join('');
-  document.getElementById('my-clients-body').innerHTML=mc.length===0?'<tr><td colspan="5"><div class="empty-state"><p>No clients assigned yet</p></div></td></tr>':mc.map(c=>'<tr><td style="color:#6b7280;font-size:10px;font-weight:700">'+c['ID']+'</td><td>'+tag(c['Department'])+'</td><td><b>'+(c['Store Name']||'?')+'</b></td><td>'+(c['Deal %']||'?')+'</td><td>'+pill(c['Status'])+'</td></tr>').join('');
+  // Assigned accounts (store name only — no client name)
+  const assignedHTML=mas.length===0
+    ?'<div class="empty-state"><p>No accounts assigned yet</p></div>'
+    :mas.map(a=>{const cl=allClients.find(x=>x['ID']===a['Client ID']);return'<div class="pay-row"><div><div class="pay-name" style="font-size:11px;color:#6b7280">'+a['Client ID']+'</div><div class="pay-dept">'+tag(cl?.['Department']||'')+'&nbsp;·&nbsp;<b>'+(cl?.['Store Name']||a['Client ID'])+'</b></div></div><span style="font-size:10px;color:#6b7280">'+(a['Role']||'')+'</span></div>';}).join('');
+  document.getElementById('my-client-preview').innerHTML=assignedHTML;
+  // my-clients section: show assigned accounts (store name only)
+  const myAccBody=document.getElementById('my-clients-body');
+  if(myAccBody)myAccBody.innerHTML=mas.length===0?'<tr><td colspan="5"><div class="empty-state"><p>No accounts assigned yet</p></div></td></tr>':mas.map(a=>{const cl=allClients.find(x=>x['ID']===a['Client ID']);return'<tr><td style="color:#6b7280;font-size:10px;font-weight:700">'+a['Client ID']+'</td><td>'+tag(cl?.['Department']||'')+'</td><td><b>'+(cl?.['Store Name']||'?')+'</b></td><td>'+(a['Role']||'?')+'</td><td>'+pill('Active')+'</td></tr>';}).join('');
+  // Personal progress section in my-dashboard
+  const ppPreview=document.getElementById('my-pp-preview');
+  if(ppPreview){
+    ppPreview.innerHTML='<div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap">'
+    +'<div style="background:#f0fff4;border:1px solid #bbf7d0;border-radius:8px;padding:8px 14px;font-size:12px"><span style="color:#6b7280">Net Profit: </span><b style="color:#16a34a">'+fmt(totalPPNet)+'</b></div>'
+    +'<div style="background:#e0f2fe;border:1px solid #bae6fd;border-radius:8px;padding:8px 14px;font-size:12px"><span style="color:#6b7280">My Commission: </span><b style="color:#0369a1">'+fmt(totalPPComm)+'</b></div>'
+    +'</div>'
+    +(mpp.length===0?'<div class="empty-state"><p>No personal progress records yet</p></div>'
+    :'<div class="table-wrap"><table><thead><tr><th>Account</th><th>Month</th><th>SKU Ref</th><th>Net Profit</th><th>Deal %</th><th>Commission</th></tr></thead><tbody>'
+    +mpp.slice().reverse().slice(0,10).map(p=>'<tr><td style="color:#185FA5;font-size:11px">'+p['Account (Client ID)']+'</td><td>'+(p['Month']||'?')+'</td><td style="color:#6b7280;font-size:11px">'+(p['SKU Ref']||'—')+'</td><td style="color:#16a34a;font-weight:700">'+fmt(p['Net Profit'])+'</td><td>'+(p['Deal %']||'?')+'%</td><td style="color:#2E8B57;font-weight:700">'+fmt(p['Commission'])+'</td></tr>').join('')
+    +'</tbody></table></div>');
+  }
   const myAtt=allAttendance.filter(a=>a['Member Name']===name);
   document.getElementById('my-att-body').innerHTML=myAtt.length===0?'<tr><td colspan="6"><div class="empty-state"><p>No attendance records yet</p></div></td></tr>':myAtt.slice().reverse().map(a=>'<tr><td>'+(a['Date']||'?')+'</td><td>'+pill(a['Status'])+'</td><td>'+(a['Check In']||'?')+'</td><td>'+(a['Check Out']||'?')+'</td><td>'+(a['Hours Worked']||'?')+'</td><td style="color:#6b7280;font-size:10px">'+(a['Notes']||'?')+'</td></tr>').join('');
   const myUpd=allUpdates.filter(u=>u['Member Name']===name);
@@ -904,14 +1028,18 @@ function renderMyTasks(tasks){
 }
 function filterMyTasks(){const s=document.getElementById('my-task-search').value.toLowerCase();const st=document.getElementById('my-task-status').value;renderMyTasks(allTasks.filter(t=>t['Assigned To']===currentUser?.name&&(!s||Object.values(t).join(' ').toLowerCase().includes(s))&&(!st||t['Status']===st)));}
 
-function renderDept(dept){
+function renderDept(dept,searchVal){
   const dn=dept==='ebay'?'eBay':dept==='walmart'?'Walmart':'TikTok';
-  const dc=allClients.filter(c=>c['Department']===dn);
-  const act=dc.filter(c=>c['Status']==='Active').length;
+  const s=(searchVal||document.getElementById(dept+'-search-inp')?.value||'').toLowerCase();
+  let dc=allClients.filter(c=>c['Department']===dn);
+  if(s)dc=dc.filter(c=>Object.values(c).join(' ').toLowerCase().includes(s));
+  const act=allClients.filter(c=>c['Department']===dn&&c['Status']==='Active').length;
   const dp=allProgress.filter(p=>p['Department']===dn);
   const dGross=dp.reduce((a,p)=>a+(parseFloat(p['Gross Revenue'])||0),0);
   const dComm=dp.reduce((a,p)=>a+(parseFloat(p['PYB Commission'])||0),0);
-  document.getElementById(dept+'-list').innerHTML='<div class="kpi-grid" style="margin-bottom:12px"><div class="kpi-card"><div class="kpi-label">Total Clients</div><div class="kpi-val">'+dc.length+'</div><div class="kpi-sub kpi-up">'+act+' active</div></div><div class="kpi-card"><div class="kpi-label">Gross Revenue Generated</div><div class="kpi-val">'+fmt(dGross)+'</div></div><div class="kpi-card"><div class="kpi-label">PYB Commission</div><div class="kpi-val kpi-up">'+fmt(dComm)+'</div></div><div class="kpi-card"><div class="kpi-label">Inactive/Hold</div><div class="kpi-val kpi-down">'+(dc.length-act)+'</div></div></div><div class="search-bar"><input type="text" placeholder="Search..."><button class="btn-add" onclick="openClientForm(\''+dn+'\')">+ Add Client</button></div><div class="table-wrap"><table><thead><tr><th>ID</th><th>Client</th><th>Type</th><th>Country</th><th>Store</th><th>Deal %</th><th>Manager</th><th>Status</th><th>Actions</th></tr></thead><tbody>'+(dc.length===0?'<tr><td colspan="9"><div class="empty-state"><p>No '+dn+' clients yet</p></div></td></tr>':dc.map(c=>'<tr><td style="color:#6b7280;font-size:10px">'+c['ID']+'</td><td><b>'+(c['Client Name']||'?')+'</b></td><td>'+ctp(c['Client Type'])+'</td><td>'+(c['Country']||'?')+'</td><td>'+(c['Store Name']||'?')+'</td><td style="color:#185FA5;font-weight:700">'+(c['Deal %']||'?')+'</td><td>'+(c['Account Manager']||'?')+'</td><td>'+pill(c['Status'])+'</td><td><button class="btn-view" onclick="viewClient(\''+c['ID']+'\',\''+dept+'\')">View</button><button class="btn-edit" onclick="openEditClientForm(\''+c['ID']+'\')">Edit</button><button class="btn-del" onclick="confirmDelete(\'Clients\','+c._row+',\''+c['Client Name']+'\')">Del</button></td></tr>').join(''))+'</tbody></table></div>';
+  document.getElementById(dept+'-list').innerHTML='<div class="kpi-grid" style="margin-bottom:12px"><div class="kpi-card"><div class="kpi-label">Total Clients</div><div class="kpi-val">'+allClients.filter(c=>c['Department']===dn).length+'</div><div class="kpi-sub kpi-up">'+act+' active</div></div><div class="kpi-card"><div class="kpi-label">Gross Revenue Generated</div><div class="kpi-val">'+fmt(dGross)+'</div></div><div class="kpi-card"><div class="kpi-label">PYB Commission</div><div class="kpi-val kpi-up">'+fmt(dComm)+'</div></div><div class="kpi-card"><div class="kpi-label">Inactive/Hold</div><div class="kpi-val kpi-down">'+(allClients.filter(c=>c['Department']===dn).length-act)+'</div></div></div>'
+  +'<div class="search-bar"><input type="text" id="'+dept+'-search-inp" placeholder="Search '+dn+' clients..." value="'+(s||'')+'" oninput="renderDept(\''+dept+'\')"><select id="'+dept+'-status-filter" onchange="renderDept(\''+dept+'\')" style="font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff"><option value="">All Status</option><option>Active</option><option>Inactive</option><option>Hold</option></select><button class="btn-add" onclick="openClientForm(\''+dn+'\')">+ Add Client</button></div>'
+  +'<div class="table-wrap"><table><thead><tr><th>ID</th><th>Client</th><th>Type</th><th>Country</th><th>Store</th><th>Deal %</th><th>Manager</th><th>Status</th><th>Actions</th></tr></thead><tbody>'+(dc.length===0?'<tr><td colspan="9"><div class="empty-state"><p>No '+dn+' clients found</p></div></td></tr>':dc.map(c=>'<tr><td style="color:#6b7280;font-size:10px">'+c['ID']+'</td><td><b>'+(c['Client Name']||'?')+'</b></td><td>'+ctp(c['Client Type'])+'</td><td>'+(c['Country']||'?')+'</td><td>'+(c['Store Name']||'?')+'</td><td style="color:#185FA5;font-weight:700">'+(c['Deal %']||'?')+'</td><td>'+(c['Account Manager']||'?')+'</td><td>'+pill(c['Status'])+'</td><td><button class="btn-view" onclick="viewClient(\''+c['ID']+'\',\''+dept+'\')">View</button><button class="btn-edit" onclick="openEditClientForm(\''+c['ID']+'\')">Edit</button><button class="btn-del" onclick="confirmDelete(\'Clients\','+c._row+',\''+c['Client Name']+'\')">Del</button></td></tr>').join(''))+'</tbody></table></div>';
 }
 
 function viewClient(id,dept){
@@ -939,10 +1067,11 @@ function nav(id,el){
   if(el)el.classList.add('active');
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   const sec=document.getElementById('sec-'+id);if(sec)sec.classList.add('active');
-  const titles={dashboard:'Dashboard',master:'Master Record',payments:'Payments',progress:'Progress Tracker',ebay:'eBay Department',walmart:'Walmart Department',tiktok:'TikTok Department',team:'Team Members',tasks:'Task Board',attendance:'Attendance',updates:'Daily Updates',growth:'Growth Report','my-dashboard':'My Dashboard','my-tasks':'My Tasks','my-clients':'My Clients','my-attendance':'My Attendance','my-updates':'My Daily Updates'};
+  const titles={dashboard:'Dashboard',master:'Master Record',payments:'Payments',progress:'Progress Tracker',ebay:'eBay Department',walmart:'Walmart Department',tiktok:'TikTok Department',team:'Team Members','personal-progress':'Personal Progress',tasks:'Task Board',attendance:'Attendance',updates:'Daily Updates',growth:'Growth Report','my-dashboard':'My Dashboard','my-tasks':'My Tasks','my-clients':'My Clients','my-attendance':'My Attendance','my-updates':'My Daily Updates'};
   document.getElementById('pageTitle').textContent=titles[id]||id;
   if(['ebay','walmart','tiktok'].includes(id)){document.getElementById(id+'-list').style.display='block';document.getElementById(id+'-profile').style.display='none';renderDept(id);}
   if(id==='growth')renderGrowth();
+  if(id==='personal-progress')renderPP();
   if(id==='my-dashboard'&&currentUser&&!currentUser.isAdmin)renderMemberDashboard();
   if(id==='my-tasks'&&currentUser&&!currentUser.isAdmin)renderMyTasks();
 }
@@ -1090,7 +1219,7 @@ function openMemberForm(){
   document.getElementById('memberModalTitle').textContent='Add Team Member';
   document.getElementById('memberSaveBtn').textContent='Save Member';
   document.getElementById('memberSaveBtn').className='btn-save';
-  ['m-name','m-phone','m-email','m-notes','m-id','m-username','m-password'].forEach(id=>document.getElementById(id).value='');
+  ['m-name','m-phone','m-email','m-notes','m-id','m-username','m-password','m-deal-pct'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('m-join').value=today();
   document.getElementById('m-status').value='Active';
   document.getElementById('memberModal').classList.add('open');
@@ -1110,6 +1239,7 @@ function openEditMemberForm(id){
   document.getElementById('m-join').value=m['Join Date']||'';
   document.getElementById('m-status').value=m['Status']||'Active';
   document.getElementById('m-notes').value=m['Notes']||'';
+  document.getElementById('m-deal-pct').value=m['Personal Deal %']||'';
   document.getElementById('m-id').value=m['Member ID']||'';
   document.getElementById('m-username').value=m['Username']||'';
   document.getElementById('m-password').value=m['Password']||'';
@@ -1306,6 +1436,205 @@ async function savePayment(){
   btn.innerHTML=orig;btn.disabled=false;
 }
 
+// ========== TEAM ASSIGNMENT FUNCTIONS ==========
+function openAssignForm(memberId){
+  editMode=false;editRowNum=null;
+  document.getElementById('assignModalTitle').textContent='Assign Account to Member';
+  document.getElementById('assignSaveBtn').textContent='Save Assignment';
+  document.getElementById('assignSaveBtn').className='btn-save';
+  document.getElementById('as-row-num').value='';
+  document.getElementById('as-start').value=today();
+  document.getElementById('as-role').value='Account Manager';
+  const msel=document.getElementById('as-member');
+  if(memberId)msel.value=memberId;
+  else msel.value='';
+  document.getElementById('as-client').value='';
+  document.getElementById('assignModal').classList.add('open');
+}
+
+async function saveAssignment(){
+  const mid=document.getElementById('as-member').value;
+  const cid=document.getElementById('as-client').value;
+  if(!mid){showToast('Select a member!','error');return;}
+  if(!cid){showToast('Select an account!','error');return;}
+  const duplicate=allAssignments.find(a=>a['Member ID']===mid&&a['Client ID']===cid);
+  if(duplicate&&!editMode){showToast('This member is already assigned to this account!','error');return;}
+  const btn=document.getElementById('assignSaveBtn');const orig=btn.textContent;
+  btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
+  const m=allTeam.find(x=>x['Member ID']===mid);
+  const row=[mid,m?m['Full Name']:'',cid,document.getElementById('as-role').value,document.getElementById('as-start').value];
+  try{
+    await gAction({action:'write',sheet:'TeamAssignments',row:JSON.stringify(row)});
+    closeModal('assignModal');showToast('Assignment saved!','success');setTimeout(()=>loadAll(true),2000);
+  }catch(e){showToast('Error: '+e.message,'error');}
+  btn.innerHTML=orig;btn.disabled=false;
+}
+
+// ========== PERSONAL PROGRESS FUNCTIONS ==========
+function openPPForm(){
+  editMode=false;editRowNum=null;
+  document.getElementById('ppModalTitle').textContent='Add Personal Progress';
+  document.getElementById('ppSaveBtn').textContent='Save Record';
+  document.getElementById('ppSaveBtn').className='btn-save';
+  ['pp-mid','pp-month','pp-sku','pp-gross','pp-cogs','pp-net','pp-deal','pp-comm','pp-notes','pp-row-num'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('pp-member').value='';
+  document.getElementById('pp-account').value='';
+  document.getElementById('ppModal').classList.add('open');
+}
+
+function openPPFormForMember(memberId){
+  openPPForm();
+  const msel=document.getElementById('pp-member');
+  msel.value=memberId;
+  fillPPMember();
+}
+
+function openEditPPForm(rowNum){
+  const p=allPersonalProgress.find(x=>x._row===rowNum);if(!p)return;
+  editMode=true;editRowNum=rowNum;
+  document.getElementById('ppModalTitle').textContent='Edit Personal Progress';
+  document.getElementById('ppSaveBtn').textContent='Update';
+  document.getElementById('ppSaveBtn').className='btn-update';
+  document.getElementById('pp-member').value=p['Member ID']||'';
+  fillPPMember();
+  document.getElementById('pp-account').value=p['Account (Client ID)']||'';
+  document.getElementById('pp-mid').value=p['Member ID']||'';
+  document.getElementById('pp-month').value=p['Month']||'';
+  document.getElementById('pp-sku').value=p['SKU Ref']||'';
+  document.getElementById('pp-gross').value=p['Gross Revenue']||'';
+  document.getElementById('pp-cogs').value=p['COGS']||'';
+  document.getElementById('pp-net').value=p['Net Profit']||'';
+  document.getElementById('pp-deal').value=p['Deal %']||'';
+  document.getElementById('pp-comm').value=p['Commission']||'';
+  document.getElementById('pp-notes').value=p['Notes']||'';
+  document.getElementById('pp-row-num').value=rowNum;
+  document.getElementById('ppModal').classList.add('open');
+}
+
+function fillPPMember(){
+  const mid=document.getElementById('pp-member').value;
+  const m=allTeam.find(x=>x['Member ID']===mid);
+  document.getElementById('pp-mid').value=mid;
+  const memberAssignments=allAssignments.filter(a=>a['Member ID']===mid);
+  const accSel=document.getElementById('pp-account');
+  if(memberAssignments.length>0){
+    accSel.innerHTML='<option value="">Select account...</option>'+memberAssignments.map(a=>{
+      const cl=allClients.find(x=>x['ID']===a['Client ID']);
+      return'<option value="'+a['Client ID']+'">'+a['Client ID']+(cl?' - '+cl['Store Name']:'')+'</option>';
+    }).join('');
+  }else{
+    accSel.innerHTML='<option value="">No accounts assigned</option>';
+  }
+  if(m&&m['Personal Deal %']){document.getElementById('pp-deal').value=m['Personal Deal %'];calcPP();}
+}
+
+function fillPPDeal(){
+  const mid=document.getElementById('pp-member').value;
+  const m=allTeam.find(x=>x['Member ID']===mid);
+  if(m&&m['Personal Deal %']){document.getElementById('pp-deal').value=m['Personal Deal %'];calcPP();}
+}
+
+function calcPP(){
+  const gross=parseFloat(document.getElementById('pp-gross').value)||0;
+  const cogs=parseFloat(document.getElementById('pp-cogs').value)||0;
+  const deal=parseFloat(document.getElementById('pp-deal').value)||0;
+  const net=gross-cogs;
+  const comm=(net*deal)/100;
+  document.getElementById('pp-net').value=net>=0?net.toFixed(2):'0';
+  document.getElementById('pp-comm').value=comm>=0?comm.toFixed(2):'0';
+}
+
+async function savePP(){
+  const mid=document.getElementById('pp-member').value;
+  const acc=document.getElementById('pp-account').value;
+  const month=document.getElementById('pp-month').value.trim();
+  const gross=document.getElementById('pp-gross').value;
+  if(!mid){showToast('Select a member!','error');return;}
+  if(!acc){showToast('Select an account!','error');return;}
+  if(!month){showToast('Month is required!','error');return;}
+  if(!gross){showToast('Gross Revenue is required!','error');return;}
+  const m=allTeam.find(x=>x['Member ID']===mid);
+  const btn=document.getElementById('ppSaveBtn');const orig=btn.textContent;
+  btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
+  const row=[mid,m?m['Full Name']:'',acc,month,document.getElementById('pp-sku').value,document.getElementById('pp-gross').value||'0',document.getElementById('pp-cogs').value||'0',document.getElementById('pp-net').value||'0',document.getElementById('pp-deal').value||'0',document.getElementById('pp-comm').value||'0',document.getElementById('pp-notes').value];
+  try{
+    if(editMode&&editRowNum)await gAction({action:'update',sheet:'PersonalProgress',rowNum:editRowNum,row:JSON.stringify(row)});
+    else await gAction({action:'write',sheet:'PersonalProgress',row:JSON.stringify(row)});
+    closeModal('ppModal');showToast('Record saved!','success');setTimeout(()=>loadAll(true),2000);
+  }catch(e){showToast('Error: '+e.message,'error');}
+  btn.innerHTML=orig;btn.disabled=false;
+}
+
+function renderPP(data){
+  const list=data||allPersonalProgress;
+  const gross=list.reduce((a,p)=>a+(parseFloat(p['Gross Revenue'])||0),0);
+  const net=list.reduce((a,p)=>a+(parseFloat(p['Net Profit'])||0),0);
+  const comm=list.reduce((a,p)=>a+(parseFloat(p['Commission'])||0),0);
+  const ppKpiCount=document.getElementById('pp-kpi-count');if(ppKpiCount)ppKpiCount.textContent=list.length;
+  const ppKpiGross=document.getElementById('pp-kpi-gross');if(ppKpiGross)ppKpiGross.textContent=fmt(gross);
+  const ppKpiNet=document.getElementById('pp-kpi-net');if(ppKpiNet)ppKpiNet.textContent=fmt(net);
+  const ppKpiComm=document.getElementById('pp-kpi-comm');if(ppKpiComm)ppKpiComm.textContent=fmt(comm);
+  const mf=document.getElementById('pp-member-filter');
+  if(mf){const cur=mf.value;mf.innerHTML='<option value="">All Members</option>'+allTeam.map(m=>'<option value="'+m['Member ID']+'"'+(m['Member ID']===cur?' selected':'')+'>'+m['Full Name']+'</option>').join('');}
+  const moF=document.getElementById('pp-month-filter');
+  if(moF){const months=[...new Set(allPersonalProgress.map(p=>p['Month']).filter(Boolean))];const cur=moF.value;moF.innerHTML='<option value="">All Months</option>'+months.map(m=>'<option value="'+m+'"'+(m===cur?' selected':'')+'>'+m+'</option>').join('');}
+  const tbody=document.getElementById('pp-body');if(!tbody)return;
+  tbody.innerHTML=list.length===0?'<tr><td colspan="11"><div class="empty-state"><p>No personal progress records yet. Add the first record!</p></div></td></tr>':list.map(p=>{
+    const m=allTeam.find(x=>x['Member ID']===p['Member ID']);
+    return'<tr><td><b>'+(p['Member Name']||m?.['Full Name']||'?')+'</b><div style="font-size:9px;color:#6b7280">'+(p['Member ID']||'?')+'</div></td>'
+    +'<td style="color:#185FA5;font-size:11px">'+(p['Account (Client ID)']||'?')+'</td>'
+    +'<td>'+(p['Month']||'?')+'</td>'
+    +'<td style="color:#6b7280;font-size:11px">'+(p['SKU Ref']||'—')+'</td>'
+    +'<td>'+fmt(p['Gross Revenue'])+'</td>'
+    +'<td>'+fmt(p['COGS'])+'</td>'
+    +'<td style="color:#16a34a;font-weight:700">'+fmt(p['Net Profit'])+'</td>'
+    +'<td style="color:#185FA5">'+(p['Deal %']||'?')+'%</td>'
+    +'<td style="color:#2E8B57;font-weight:700">'+fmt(p['Commission'])+'</td>'
+    +'<td style="color:#6b7280;font-size:11px">'+(p['Notes']||'—')+'</td>'
+    +'<td style="white-space:nowrap"><button class="btn-edit" onclick="openEditPPForm('+p._row+')">Edit</button><button class="btn-del" onclick="confirmDelete(\'PersonalProgress\','+p._row+',\'record\')">Del</button></td></tr>';
+  }).join('');
+}
+
+function filterPP(){
+  const s=(document.getElementById('pp-search')?.value||'').toLowerCase();
+  const m=document.getElementById('pp-member-filter')?.value||'';
+  const mo=document.getElementById('pp-month-filter')?.value||'';
+  renderPP(allPersonalProgress.filter(p=>{
+    if(s&&!Object.values(p).join(' ').toLowerCase().includes(s))return false;
+    if(m&&p['Member ID']!==m)return false;
+    if(mo&&p['Month']!==mo)return false;
+    return true;
+  }));
+}
+
+function exportPP(){
+  const list=allPersonalProgress;
+  if(!list.length){showToast('No data to export','error');return;}
+  const h=['Member ID','Member Name','Account','Month','SKU Ref','Gross Revenue','COGS','Net Profit','Deal %','Commission','Notes'];
+  const rows=list.map(p=>[p['Member ID'],p['Member Name'],p['Account (Client ID)'],p['Month'],p['SKU Ref'],p['Gross Revenue'],p['COGS'],p['Net Profit'],p['Deal %'],p['Commission'],p['Notes']].map(v=>(v||'').replace(/,/g,' ')).join(','));
+  const csv=[h.join(','),...rows].join('\n');
+  const a=document.createElement('a');a.href='data:text/csv,'+encodeURIComponent(csv);a.download='personal_progress.csv';a.click();
+}
+
+// ========== SEARCH FUNCTIONS ==========
+function filterClients(){
+  const s=document.getElementById('client-search')?.value.toLowerCase()||'';
+  const d=document.getElementById('client-dept-filter')?.value||'';
+  const st=document.getElementById('client-status-filter')?.value||'';
+  const list=allClients.filter(c=>{
+    if(s&&!Object.values(c).join(' ').toLowerCase().includes(s))return false;
+    if(d&&c['Department']!==d)return false;
+    if(st&&c['Status']!==st)return false;
+    return true;
+  });
+  renderClientCards(list);
+}
+
+function renderClientCards(list){
+  const grid=document.getElementById('clients-grid');if(!grid)return;
+  grid.innerHTML=list.length===0?'<div class="empty-state" style="grid-column:1/-1"><p>No clients found</p></div>':list.map(c=>'<div class="client-card" onclick="viewClient(\''+c['ID']+'\',\''+c['Department'].toLowerCase()+'\')"><div class="cc-header"><div><div class="cc-id">'+c['ID']+'</div><div class="cc-name">'+(c['Client Name']||'?')+'</div></div>'+pill(c['Status'])+'</div><div class="cc-store">'+(c['Store Name']||'No store')+'</div><div class="cc-footer">'+tag(c['Department'])+'<span style="color:#185FA5;font-weight:700">'+(c['Deal %']||'?')+'</span></div></div>').join('');
+}
+
 async function saveProgress(){
   const clientSel=document.getElementById('pr-client-select').value;
   const month=document.getElementById('pr-month').value.trim();
@@ -1335,7 +1664,8 @@ async function saveMember(){
   const btn=document.getElementById('memberSaveBtn');const orig=btn.textContent;
   btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
   const mid=editMode?(document.getElementById('m-id').value||genMemberId()):genMemberId();
-  const row=[mid,name,document.getElementById('m-role').value,document.getElementById('m-dept').value,document.getElementById('m-phone').value,document.getElementById('m-email').value,document.getElementById('m-join').value,document.getElementById('m-status').value,document.getElementById('m-notes').value,document.getElementById('m-username').value,document.getElementById('m-password').value];
+  const dealPct=document.getElementById('m-deal-pct').value||'';
+  const row=[mid,name,document.getElementById('m-role').value,document.getElementById('m-dept').value,document.getElementById('m-phone').value,document.getElementById('m-email').value,document.getElementById('m-join').value,document.getElementById('m-status').value,document.getElementById('m-notes').value,document.getElementById('m-username').value,document.getElementById('m-password').value,dealPct];
   try{
     if(editMode&&editRowNum)await gAction({action:'update',sheet:'Team',rowNum:editRowNum,row:JSON.stringify(row)});
     else await gAction({action:'write',sheet:'Team',row:JSON.stringify(row)});
