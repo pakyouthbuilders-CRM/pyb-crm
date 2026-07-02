@@ -184,7 +184,6 @@ tr:hover td{background:#f8fafc}
       <div class="nav-section">
         <div class="nav-label">Team</div>
         <div class="nav-item" onclick="nav('team',this)">&#128101; Team Members</div>
-        <div class="nav-item" onclick="nav('personal-progress',this)">&#127775; Personal Progress</div>
         <div class="nav-item" onclick="nav('tasks',this)">&#9989; Task Board</div>
         <div class="nav-item" onclick="nav('attendance',this)">&#128197; Attendance</div>
         <div class="nav-item" onclick="nav('updates',this)">&#128203; Daily Updates</div>
@@ -192,6 +191,7 @@ tr:hover td{background:#f8fafc}
       <div class="nav-section">
         <div class="nav-label">Reports</div>
         <div class="nav-item" onclick="nav('growth',this)">&#8593; Growth Report</div>
+        <div class="nav-item" onclick="nav('targets',this)">&#127919; Targets & KPIs</div>
       </div>
     </div>
     <div id="memberNav" style="display:none">
@@ -315,23 +315,6 @@ tr:hover td{background:#f8fafc}
         </div>
         <div id="team-profile-view" style="display:none"></div>
       </div>
-      <!-- PERSONAL PROGRESS -->
-      <div class="section" id="sec-personal-progress">
-        <div class="search-bar">
-          <input type="text" placeholder="Search by member, account, SKU..." id="pp-search" oninput="filterPP()">
-          <select id="pp-member-filter" onchange="filterPP()" style="font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;outline:none"><option value="">All Members</option></select>
-          <select id="pp-month-filter" onchange="filterPP()" style="font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;outline:none"><option value="">All Months</option></select>
-          <button class="btn-add" style="background:#16a34a" onclick="exportPP()">Export CSV</button>
-          <button class="btn-add" onclick="openPPForm()">+ Add Record</button>
-        </div>
-        <div class="kpi-grid" style="margin-bottom:12px">
-          <div class="kpi-card"><div class="kpi-label">Total Records</div><div class="kpi-val" id="pp-kpi-count">0</div></div>
-          <div class="kpi-card"><div class="kpi-label">Total Personal Revenue</div><div class="kpi-val" id="pp-kpi-gross">$0</div></div>
-          <div class="kpi-card"><div class="kpi-label">Total Net Profit</div><div class="kpi-val" id="pp-kpi-net">$0</div></div>
-          <div class="kpi-card"><div class="kpi-label">Total Commission Paid</div><div class="kpi-val kpi-up" id="pp-kpi-comm">$0</div></div>
-        </div>
-        <div class="table-wrap"><table><thead><tr><th>Member</th><th>Account</th><th>Month</th><th>SKU Ref</th><th>Gross ($)</th><th>COGS ($)</th><th>Net Profit ($)</th><th>Deal %</th><th>Commission ($)</th><th>Notes</th><th>Actions</th></tr></thead><tbody id="pp-body"></tbody></table></div>
-      </div>
       <!-- TASKS -->
       <div class="section" id="sec-tasks">
         <div class="search-bar">
@@ -387,20 +370,69 @@ tr:hover td{background:#f8fafc}
         </div>
         <div class="card"><div class="card-title">Department Breakdown</div><div id="growth-detail"></div></div>
       </div>
+      <!-- TARGETS & KPIs -->
+      <div class="section" id="sec-targets">
+        <div class="search-bar" style="margin-bottom:14px">
+          <select id="tgt-month-filter" onchange="filterTargets()" style="font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;outline:none"><option value="">All Months</option></select>
+          <select id="tgt-dept-filter" onchange="filterTargets()" style="font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;outline:none"><option value="">All Depts</option><option>eBay</option><option>Walmart</option><option>TikTok</option></select>
+          <select id="tgt-status-filter" onchange="filterTargets()" style="font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;outline:none"><option value="">All Status</option><option value="achieved">Achieved</option><option value="on_track">On Track</option><option value="behind">Behind</option><option value="critical">Critical</option><option value="at_risk">At Risk</option></select>
+          <button class="btn-add" onclick="openTargetForm()" style="background:#7c3aed">+ Set Target</button>
+        </div>
+        <!-- Company Summary Cards -->
+        <div class="kpi-grid" style="margin-bottom:14px">
+          <div class="kpi-card" style="border-left:4px solid #7c3aed"><div class="kpi-label">Active Targets This Month</div><div class="kpi-val" id="tgt-count">0</div><div class="kpi-sub" id="tgt-month-label"></div></div>
+          <div class="kpi-card" style="border-left:4px solid #16a34a"><div class="kpi-label">Expected PYB Commission</div><div class="kpi-val kpi-up" id="tgt-expected-comm">$0</div><div class="kpi-sub">Based on targets set</div></div>
+          <div class="kpi-card" style="border-left:4px solid #185FA5"><div class="kpi-label">Actual PYB Commission</div><div class="kpi-val" id="tgt-actual-comm">$0</div><div class="kpi-sub">From progress data</div></div>
+          <div class="kpi-card" style="border-left:4px solid #dc2626"><div class="kpi-label">At Risk Accounts</div><div class="kpi-val kpi-down" id="tgt-at-risk">0</div><div class="kpi-sub">Missing targets 2+ months</div></div>
+        </div>
+        <!-- Company Forecast Banner -->
+        <div id="tgt-forecast-banner" style="background:linear-gradient(135deg,#0f2044,#1a3570);border-radius:12px;padding:16px 20px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+          <div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.6);font-weight:700;text-transform:uppercase;letter-spacing:0.06em">Company Revenue Forecast</div>
+            <div style="font-size:22px;font-weight:700;color:#fff;margin-top:4px" id="tgt-forecast-total">$0</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px">Total expected PYB commission this month across all accounts</div>
+          </div>
+          <div style="display:flex;gap:16px;flex-wrap:wrap">
+            <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:#4ade80" id="tgt-forecast-ebay">$0</div><div style="font-size:10px;color:rgba(255,255,255,0.5)">eBay</div></div>
+            <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:#fbbf24" id="tgt-forecast-walmart">$0</div><div style="font-size:10px;color:rgba(255,255,255,0.5)">Walmart</div></div>
+            <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:#f472b6" id="tgt-forecast-tiktok">$0</div><div style="font-size:10px;color:rgba(255,255,255,0.5)">TikTok</div></div>
+          </div>
+        </div>
+        <!-- Targets Table -->
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Client ID</th><th>Store / Client</th><th>Dept</th><th>Month</th>
+                <th>Target Gross</th><th>Actual Gross</th><th>Sales Ach%</th>
+                <th>Target Net</th><th>Actual Net</th><th>Profit Ach%</th>
+                <th>Target ROI%</th><th>Actual ROI%</th>
+                <th>Exp. Commission</th><th>Actual Commission</th>
+                <th>Score</th><th>Status</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tgt-body"></tbody>
+          </table>
+        </div>
+        <!-- Team KPI Section -->
+        <div class="card" style="margin-top:14px">
+          <div class="card-title">Team Member KPI Summary</div>
+          <div id="tgt-team-kpi"><div class="loading">Loading...</div></div>
+        </div>
+      </div>
       <!-- MEMBER SECTIONS -->
       <div class="section" id="sec-my-dashboard">
         <div class="my-hero"><h2 id="my-welcome">Welcome!</h2><p id="my-role-text">Your personal dashboard</p></div>
         <div class="kpi-grid">
-          <div class="kpi-card"><div class="kpi-label">My Accounts</div><div class="kpi-val" id="my-clients-count">0</div></div>
+          <div class="kpi-card"><div class="kpi-label">My Clients</div><div class="kpi-val" id="my-clients-count">0</div></div>
           <div class="kpi-card"><div class="kpi-label">Open Tasks</div><div class="kpi-val" id="my-tasks-count">0</div><div class="kpi-sub kpi-down" id="my-overdue-count"></div></div>
           <div class="kpi-card"><div class="kpi-label">Tasks Done</div><div class="kpi-val kpi-up" id="my-done-count">0</div></div>
           <div class="kpi-card"><div class="kpi-label">Present Days</div><div class="kpi-val" id="my-att-count">0</div></div>
         </div>
         <div class="grid-2">
           <div class="card"><div class="card-title">My Pending Tasks</div><div id="my-task-preview"></div></div>
-          <div class="card"><div class="card-title">My Assigned Accounts</div><div id="my-client-preview"></div></div>
+          <div class="card"><div class="card-title">My Clients</div><div id="my-client-preview"></div></div>
         </div>
-        <div class="card" style="margin-top:12px"><div class="card-title">&#127775; My Personal Progress & Earnings</div><div id="my-pp-preview"><div class="empty-state"><p>Loading...</p></div></div></div>
       </div>
       <div class="section" id="sec-my-tasks">
         <div class="search-bar">
@@ -414,7 +446,7 @@ tr:hover td{background:#f8fafc}
         </div>
       </div>
       <div class="section" id="sec-my-clients">
-        <div class="table-wrap"><table><thead><tr><th>Account ID</th><th>Dept</th><th>Store Name</th><th>My Role</th><th>Status</th></tr></thead><tbody id="my-clients-body"></tbody></table></div>
+        <div class="table-wrap"><table><thead><tr><th>Client ID</th><th>Dept</th><th>Store Name</th><th>Deal %</th><th>Status</th></tr></thead><tbody id="my-clients-body"></tbody></table></div>
       </div>
       <div class="section" id="sec-my-attendance">
         <div class="search-bar"><button class="btn-add" onclick="openAttForm()">+ Mark My Attendance</button></div>
@@ -455,7 +487,7 @@ tr:hover td{background:#f8fafc}
   <div class="form-row"><div class="form-group"><label>Month *</label><input id="p-month" placeholder="May 2026"></div><div class="form-group"><label>Date Received</label><input id="p-date" type="date"></div></div>
   <div class="form-row"><div class="form-group"><label>Amount ($) *</label><input id="p-amount" type="number" placeholder="5000"></div><div class="form-group"><label>Commission ($) *</label><input id="p-comm" type="number" placeholder="1600"></div></div>
   <div class="form-row"><div class="form-group"><label>Status</label><select id="p-status"><option>Received</option><option>Pending</option><option>Overdue</option></select></div><div class="form-group"><label>Notes</label><input id="p-notes"></div></div>
-  <input type="hidden" id="p-row-num"><input type="hidden" id="p-dept"><input type="hidden" id="p-client-id">
+  <input type="hidden" id="p-row-num"><input type="hidden" id="p-dept"><input type="hidden" id="p-client-id-hidden">
   <div class="form-btns"><button class="btn-cancel" onclick="closeModal('paymentModal')">Cancel</button><button class="btn-save" id="paySaveBtn" onclick="savePayment()">Save Payment</button></div>
 </div></div>
 
@@ -483,37 +515,9 @@ tr:hover td{background:#f8fafc}
   <div class="form-row"><div class="form-group"><label>Email</label><input id="m-email" type="email"></div><div class="form-group"><label>Join Date</label><input id="m-join" type="date"></div></div>
   <div class="form-section">Login Credentials</div>
   <div class="form-row"><div class="form-group"><label>Username</label><input id="m-username" placeholder="ahmed123"></div><div class="form-group"><label>Password</label><input id="m-password" type="password" placeholder="password123"></div></div>
-  <div class="form-row"><div class="form-group"><label>Status</label><select id="m-status"><option>Active</option><option>Inactive</option></select></div><div class="form-group"><label>Personal Deal % <span style="font-size:10px;color:#6b7280">(company share to member)</span></label><input id="m-deal-pct" type="number" step="0.1" min="0" max="100" placeholder="e.g. 10"></div></div>
-  <div class="form-group"><label>Notes</label><input id="m-notes"></div>
+  <div class="form-row"><div class="form-group"><label>Status</label><select id="m-status"><option>Active</option><option>Inactive</option></select></div><div class="form-group"><label>Notes</label><input id="m-notes"></div></div>
   <input type="hidden" id="m-id">
   <div class="form-btns"><button class="btn-cancel" onclick="closeModal('memberModal')">Cancel</button><button class="btn-save" id="memberSaveBtn" onclick="saveMember()">Save Member</button></div>
-</div></div>
-
-<!-- TEAM ASSIGNMENT MODAL -->
-<div class="modal-bg" id="assignModal"><div class="modal">
-  <div class="modal-title" id="assignModalTitle">Assign Account to Member</div>
-  <div class="form-row"><div class="form-group"><label>Team Member *</label><select id="as-member"><option value="">Select member...</option></select></div><div class="form-group"><label>Account (Client ID) *</label><select id="as-client"><option value="">Select account...</option></select></div></div>
-  <div class="form-row"><div class="form-group"><label>Role on Account</label><select id="as-role"><option>Account Manager</option><option>Assistant</option><option>VA</option><option>Listing Specialist</option></select></div><div class="form-group"><label>Start Date</label><input id="as-start" type="date"></div></div>
-  <div class="form-row"><div class="form-group"><label>Personal Deal % <span style="font-size:10px;color:#6b7280">(for this account)</span></label><input id="as-deal-pct" type="number" step="0.1" min="0" max="100" placeholder="e.g. 10"></div><div class="form-group"></div></div>
-  <input type="hidden" id="as-row-num">
-  <div class="form-btns"><button class="btn-cancel" onclick="closeModal('assignModal')">Cancel</button><button class="btn-save" id="assignSaveBtn" onclick="saveAssignment()">Save Assignment</button></div>
-</div></div>
-
-<!-- PERSONAL PROGRESS MODAL -->
-<div class="modal-bg" id="ppModal"><div class="modal">
-  <div class="modal-title" id="ppModalTitle">Add Personal Progress</div>
-  <div class="form-row"><div class="form-group"><label>Team Member *</label><select id="pp-member" onchange="fillPPMember()"><option value="">Select member...</option></select></div><div class="form-group"><label>Account *</label><select id="pp-account" onchange="fillPPDeal()"><option value="">Select account...</option></select></div></div>
-  <div class="form-row"><div class="form-group"><label>Member ID</label><input id="pp-mid" readonly style="background:#f8fafc"></div><div class="form-group"><label>Month *</label><input id="pp-month" placeholder="May 2026"></div></div>
-  <div class="form-group"><label>SKU Ref <span style="font-size:10px;color:#6b7280">(e.g. ALI-1042, MB-SKU-07)</span></label><input id="pp-sku" placeholder="Member initials + item no"></div>
-  <div style="background:#f0f7ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px;margin-bottom:10px">
-    <div style="font-size:11px;font-weight:700;color:#185FA5;margin-bottom:8px">Revenue (Auto-calculates)</div>
-    <div class="form-row" style="margin-bottom:8px"><div class="form-group"><label>Gross Revenue ($) *</label><input id="pp-gross" type="number" placeholder="0" oninput="calcPP()"></div><div class="form-group"><label>COGS ($) *</label><input id="pp-cogs" type="number" placeholder="0" oninput="calcPP()"></div></div>
-    <div class="form-row" style="margin-bottom:0"><div class="form-group"><label>Net Profit ($)</label><input id="pp-net" readonly style="background:#f0fff4;font-weight:700;color:#16a34a"></div><div class="form-group"><label>Deal %</label><input id="pp-deal" readonly style="background:#f8fafc"></div></div>
-    <div class="form-row" style="margin-bottom:0;margin-top:8px"><div class="form-group"><label>Personal Commission ($)</label><input id="pp-comm" readonly style="background:#f0fff4;font-weight:700;color:#2E8B57"></div></div>
-  </div>
-  <div class="form-group"><label>Notes</label><input id="pp-notes"></div>
-  <input type="hidden" id="pp-row-num">
-  <div class="form-btns"><button class="btn-cancel" onclick="closeModal('ppModal')">Cancel</button><button class="btn-save" id="ppSaveBtn" onclick="savePP()">Save Record</button></div>
 </div></div>
 
 <!-- TASK MODAL -->
@@ -578,6 +582,45 @@ tr:hover td{background:#f8fafc}
   <div class="form-btns"><button class="btn-cancel" onclick="closeModal('uploadModal')">Cancel</button><button class="btn-save" id="uploadSaveBtn" onclick="saveUploadAndGenerate()" style="background:#0f2044">Generate Report with Image</button></div>
 </div></div>
 
+<!-- TARGET MODAL -->
+<div class="modal-bg" id="targetModal"><div class="modal">
+  <div class="modal-title" id="targetModalTitle">Set Monthly Target</div>
+  <div class="form-row">
+    <div class="form-group"><label>Client *</label><select id="tgt-client-select" onchange="fillTargetClient()"><option value="">Select client...</option></select></div>
+    <div class="form-group"><label>Month *</label><input id="tgt-month" placeholder="Jun 2026"></div>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label>Client ID</label><input id="tgt-cid" readonly style="background:#f8fafc"></div>
+    <div class="form-group"><label>Department</label><input id="tgt-dept" readonly style="background:#f8fafc"></div>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label>Deal %</label><input id="tgt-deal" readonly style="background:#f8fafc"></div>
+    <div class="form-group"><label>Account Manager ID</label><input id="tgt-mgr-id" readonly style="background:#f8fafc"></div>
+  </div>
+  <div style="background:#f0f7ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px;margin-bottom:10px">
+    <div style="font-size:11px;font-weight:700;color:#185FA5;margin-bottom:8px">Monthly Targets</div>
+    <div class="form-row" style="margin-bottom:8px">
+      <div class="form-group"><label>Target Gross Revenue ($) *</label><input id="tgt-gross" type="number" placeholder="15000" oninput="calcTargetCommission()"></div>
+      <div class="form-group"><label>Target Net Profit ($) *</label><input id="tgt-net" type="number" placeholder="5000" oninput="calcTargetCommission()"></div>
+    </div>
+    <div class="form-row" style="margin-bottom:0">
+      <div class="form-group"><label>Target Orders</label><input id="tgt-orders" type="number" placeholder="300"></div>
+      <div class="form-group"><label>Target ROI %</label><input id="tgt-roi" type="number" placeholder="35"></div>
+    </div>
+  </div>
+  <div style="background:#f0fff4;border:1px solid #86efac;border-radius:8px;padding:10px;margin-bottom:10px">
+    <div style="font-size:11px;font-weight:700;color:#16a34a;margin-bottom:4px">Expected PYB Commission (Auto)</div>
+    <div style="font-size:18px;font-weight:700;color:#16a34a" id="tgt-exp-comm-preview">$0</div>
+    <div style="font-size:10px;color:#6b7280;margin-top:2px">= Target Net Profit x Deal %</div>
+  </div>
+  <div class="form-group"><label>Notes</label><input id="tgt-notes" placeholder="Any notes for this target..."></div>
+  <input type="hidden" id="tgt-row-num">
+  <div class="form-btns">
+    <button class="btn-cancel" onclick="closeModal('targetModal')">Cancel</button>
+    <button class="btn-save" id="targetSaveBtn" onclick="saveTarget()" style="background:#7c3aed">Save Target</button>
+  </div>
+</div></div>
+
 <!-- CONFIRM -->
 <div class="modal-bg" id="confirmModal"><div class="modal-sm">
   <div style="font-size:28px;margin-bottom:8px">⚠️</div>
@@ -588,11 +631,11 @@ tr:hover td{background:#f8fafc}
 
 <div class="toast" id="toast"></div>
 <script>
-const SCRIPT='https://script.google.com/macros/s/AKfycbxB-agQsU_ZqC49e-U_7_jjoe5haDeFb7w-tmtGjiZdKTH6PDw5C4bp2ganLMKKScT93A/exec';
+const SCRIPT='https://script.google.com/macros/s/AKfycbwrfxVlXshZxtrOIX_IL5CXLPm2RWk5AX8oKzr2JVNZcwoaXPyWkFeSx53wos4C4yQy8Q/exec';
 const SHEET_ID='1X6FaHYrSs96XYZMLkWBwzp23zCTjSDk13YAVp_TfYwg';
 const API_KEY='AIzaSyBevUeL-MqrlyKFxQ6VfbBDH19uAnma4nU';
 const ADMIN_USER='admin',ADMIN_PASS='admin123';
-let allClients=[],allPayments=[],allProgress=[],allTeam=[],allTasks=[],allAttendance=[],allUpdates=[];
+let allClients=[],allPayments=[],allProgress=[],allTeam=[],allTasks=[],allAttendance=[],allUpdates=[],allTargets=[];
 let editMode=false,editRowNum=null,currentUser=null;
 
 async function doLogin(){
@@ -652,19 +695,16 @@ function doLogout(){
 
 async function gRead(range){
   const r=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(range)+'?key='+API_KEY);
-  if(!r.ok)return[];
+  if(!r.ok)throw new Error('Read failed');
   const d=await r.json();return d.values||[];
 }
 
 async function gAction(params){
   const url=SCRIPT+'?'+Object.entries(params).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');
   const r=await fetch(url);
-  if(!r.ok)throw new Error('Network error: '+r.status);
   const text=await r.text();
-  let d;
-  try{d=JSON.parse(text);}catch(e){throw new Error('Invalid response: '+text.substring(0,100));}
-  if(d.status==='error')throw new Error(d.msg||'Script error');
-  return d;
+  try{const d=JSON.parse(text);if(d.status==='error')throw new Error(d.msg);return d;}
+  catch(e){return{status:'success'};}
 }
 
 function toObj(rows){
@@ -677,23 +717,20 @@ function toObj(rows){
   });
 }
 
-let allPersonalProgress=[],allAssignments=[];
-
 async function loadAll(silent=false){
   try{
     if(!silent)showToast('Loading...','info');
-    const safeRead=async(range)=>{try{return await gRead(range);}catch(e){console.warn('Sheet read failed:',range,e);return[];}};
-    const[cr,pr,pgr,tm,tk,at,ud,pp,as]=await Promise.all([
-      safeRead('Clients!A:O'),safeRead('Payments!A:J'),safeRead('Progress!A:L'),
-      safeRead('Team!A:L'),safeRead('Tasks!A:M'),safeRead('Attendance!A:H'),safeRead('DailyUpdates!A:H'),
-      safeRead('PersonalProgress!A:K'),safeRead('TeamAssignments!A:F')
+    const[cr,pr,pgr,tm,tk,at,ud,tg]=await Promise.all([
+      gRead('Clients!A:O'),gRead('Payments!A:J'),gRead('Progress!A:L'),
+      gRead('Team!A:K'),gRead('Tasks!A:M'),gRead('Attendance!A:H'),gRead('DailyUpdates!A:H'),
+      gRead('Targets!A:N').catch(()=>[])
     ]);
-    allClients=toObj(cr).map(c=>{c['ID']=c['Client ID']||c['ID']||'';return c;});allPayments=toObj(pr);allProgress=toObj(pgr);
+    allClients=toObj(cr);allPayments=toObj(pr);allProgress=toObj(pgr);
     allTeam=toObj(tm);allTasks=toObj(tk);allAttendance=toObj(at);allUpdates=toObj(ud);
-    allPersonalProgress=toObj(pp);allAssignments=toObj(as);
+    allTargets=toObj(tg);
     populateSelects();
     if(currentUser){
-      if(currentUser.isAdmin){renderDashboard();renderMaster();renderPayments();renderProgress();renderTeam();renderTasks();renderAttendance();renderUpdates();renderPP();}
+      if(currentUser.isAdmin){renderDashboard();renderMaster();renderPayments();renderProgress();renderTeam();renderTasks();renderAttendance();renderUpdates();}
       else renderMemberDashboard();
     }
     if(!silent)showToast('Data loaded!','success');
@@ -704,20 +741,18 @@ function populateSelects(){
   const mo=allTeam.filter(m=>m['Status']==='Active').map(m=>'<option value="'+m['Full Name']+'">'+m['Full Name']+' ('+m['Role']+')</option>').join('');
   ['task-member-filter','upd-member-filter'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML='<option value="">All Members</option>'+mo;});
   ['t-assigned'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML='<option value="">Select member...</option>'+mo;});
-  const moOpts=allTeam.filter(m=>m['Status']==='Active').map(m=>'<option value="'+m['Member ID']+'">'+m['Full Name']+'</option>').join('');
-  ['pp-member','as-member'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML='<option value="">Select member...</option>'+moOpts;});
-  const ppMF=document.getElementById('pp-member-filter');
-  if(ppMF)ppMF.innerHTML='<option value="">All Members</option>'+allTeam.map(m=>'<option value="'+m['Member ID']+'">'+m['Full Name']+'</option>').join('');
-  const ppMonths=[...new Set(allPersonalProgress.map(p=>p['Month']).filter(Boolean))];
-  const ppMoF=document.getElementById('pp-month-filter');
-  if(ppMoF)ppMoF.innerHTML='<option value="">All Months</option>'+ppMonths.map(m=>'<option value="'+m+'">'+m+'</option>').join('');
   const co=allClients.map(c=>'<option value="'+c['ID']+'">'+c['ID']+' - '+c['Client Name']+'</option>').join('');
   const tc=document.getElementById('t-client');if(tc)tc.innerHTML='<option value="">No client</option>'+co;
-  const asc=document.getElementById('as-client');if(asc)asc.innerHTML='<option value="">Select account...</option>'+co;
   const pcs=document.getElementById('p-client-select');
   if(pcs)pcs.innerHTML='<option value="">Select client...</option>'+allClients.map(c=>'<option value="'+c['ID']+'">'+c['ID']+' - '+c['Client Name']+'</option>').join('');
   const prcs=document.getElementById('pr-client-select');
   if(prcs)prcs.innerHTML='<option value="">Select client...</option>'+allClients.map(c=>'<option value="'+c['ID']+'">'+c['ID']+' - '+c['Client Name']+'</option>').join('');
+  // Populate target client select
+  const tcSel=document.getElementById('tgt-client-select');
+  if(tcSel)tcSel.innerHTML='<option value="">Select client...</option>'+allClients.map(c=>'<option value="'+c['ID']+'">'+c['ID']+' - '+c['Client Name']+'</option>').join('');
+  // Populate target month filter
+  const tmf=document.getElementById('tgt-month-filter');
+  if(tmf){const tMonths=[...new Set(allTargets.map(t=>t['Month']).filter(Boolean))];const tcur=tmf.value;tmf.innerHTML='<option value="">All Months</option>'+tMonths.map(m=>'<option value="'+m+'"'+(m===tcur?' selected':'')+'>'+m+'</option>').join('');}
   const mf=document.getElementById('prog-month-filter');
   if(mf){const months=[...new Set(allProgress.map(p=>p['Month']).filter(Boolean))];mf.innerHTML='<option value="">All Months</option>'+months.map(m=>'<option value="'+m+'">'+m+'</option>').join('');}
 }
@@ -827,6 +862,12 @@ function renderProgress(data){
   document.getElementById('prog-net').textContent=fmt(net);
   document.getElementById('prog-comm').textContent=fmt(comm);
   document.getElementById('prog-count').textContent=list.length;
+  // Populate target client select
+  const tcSel=document.getElementById('tgt-client-select');
+  if(tcSel)tcSel.innerHTML='<option value="">Select client...</option>'+allClients.map(c=>'<option value="'+c['ID']+'">'+c['ID']+' - '+c['Client Name']+'</option>').join('');
+  // Populate target month filter
+  const tmf=document.getElementById('tgt-month-filter');
+  if(tmf){const tMonths=[...new Set(allTargets.map(t=>t['Month']).filter(Boolean))];const tcur=tmf.value;tmf.innerHTML='<option value="">All Months</option>'+tMonths.map(m=>'<option value="'+m+'"'+(m===tcur?' selected':'')+'>'+m+'</option>').join('');}
   const mf=document.getElementById('prog-month-filter');
   if(mf){const months=[...new Set(allProgress.map(p=>p['Month']).filter(Boolean))];const cur=mf.value;mf.innerHTML='<option value="">All Months</option>'+months.map(m=>'<option value="'+m+'"'+(m===cur?' selected':'')+'>'+m+'</option>').join('');}
   document.getElementById('prog-body').innerHTML=list.length===0?'<tr><td colspan="13"><div class="empty-state"><p>No progress records yet. Add your first record!</p></div></td></tr>':list.map(p=>'<tr><td style="color:#6b7280;font-size:10px">'+(p['Client ID']||'?')+'</td><td><b>'+(p['Client Name']||'?')+'</b></td><td>'+tag(p['Department'])+'</td><td>'+(p['Month']||'?')+'</td><td>'+fmt(p['Gross Revenue'])+'</td><td>'+fmt(p['Cost of Goods'])+'</td><td style="color:#16a34a;font-weight:700">'+fmt(p['Net Profit'])+'</td><td style="color:#185FA5;font-weight:700">'+(p['Deal %']||'?')+'</td><td style="color:#d97706;font-weight:700">'+fmt(p['PYB Commission'])+'</td><td>'+(p['Orders']||'?')+'</td><td>'+pill(p['Performance'])+'</td><td style="color:#6b7280;font-size:10px">'+(p['Notes']||'?')+'</td><td style="white-space:nowrap"><button class="btn-edit" onclick="openEditProgressForm('+p._row+')">Edit</button><button class="btn-upload-ic" onclick="openUploadModal('+p._row+')" title="Upload screenshot and generate PDF">📸</button><button class="btn-pdf" onclick="generateProgressPDF('+p._row+',null)" title="Generate progress report PDF">📊</button><button class="btn-email-ic" onclick="openEmailModal(\'progress\','+p._row+')" title="Send report via email">📧</button><button class="btn-del" onclick="confirmDelete(\'Progress\','+p._row+',\'record\')">Del</button></td></tr>').join('');
@@ -884,50 +925,8 @@ function viewMember(id){
   const mt=allTasks.filter(t=>t['Assigned To']===m['Full Name']);
   const mu=allUpdates.filter(u=>u['Member Name']===m['Full Name']);
   const ma=allAttendance.filter(a=>a['Member Name']===m['Full Name']);
-  const mpp=allPersonalProgress.filter(p=>p['Member ID']===m['Member ID']);
-  const mas=allAssignments.filter(a=>a['Member ID']===m['Member ID']);
   const idx=allTeam.indexOf(m);
-  const dealPct=m['Personal Deal %']||'Not set';
-  const totalComm=mpp.reduce((a,p)=>a+(parseFloat(p['Commission'])||0),0);
-  const totalNet=mpp.reduce((a,p)=>a+(parseFloat(p['Net Profit'])||0),0);
-  const assignedAccounts=mas.map(a=>{const cl=allClients.find(x=>x['ID']===a['Client ID']);return cl?{...a,storeName:cl['Store Name']||a['Client ID'],dept:cl['Department']||''}:null;}).filter(Boolean);
-
-  const assignTab='<div id="mv-assignments" class="tab-content active"><div style="display:flex;justify-content:flex-end;margin-bottom:8px"><button class="btn-add" style="font-size:11px" onclick="openAssignForm(\''+m['Member ID']+'\')">+ Assign Account</button></div>'+(assignedAccounts.length===0?'<div class="empty-state"><p>No accounts assigned yet</p></div>':'<div class="table-wrap"><table><thead><tr><th>Client ID</th><th>Store Name</th><th>Dept</th><th>Role</th><th>Deal %</th><th>Start Date</th><th>Del</th></tr></thead><tbody>'+assignedAccounts.map(a=>'<tr><td style="color:#6b7280;font-size:10px">'+a['Client ID']+'</td><td><b>'+a.storeName+'</b></td><td>'+tag(a.dept)+'</td><td>'+(a['Role']||'?')+'</td><td style="color:#185FA5;font-weight:700">'+(a['Deal %']||a['Personal Deal %']||'—')+'%</td><td>'+(a['Start Date']||'?')+'</td><td><button class="btn-del" onclick="confirmDelete(\'TeamAssignments\','+a._row+',\'assignment\')">Del</button></td></tr>').join('')+'</tbody></table></div>')+'</div>';
-
-  const ppRows=mpp.length===0?'<tr><td colspan="9"><div class="empty-state"><p>No personal progress records yet</p></div></td></tr>':mpp.slice().reverse().map(p=>'<tr><td style="color:#6b7280;font-size:10px">'+p['Account (Client ID)']+'</td><td>'+(p['Month']||'?')+'</td><td style="color:#6b7280;font-size:11px">'+(p['SKU Ref']||'?')+'</td><td>'+fmt(p['Gross Revenue'])+'</td><td>'+fmt(p['COGS'])+'</td><td style="color:#16a34a;font-weight:700">'+fmt(p['Net Profit'])+'</td><td style="color:#185FA5">'+(p['Deal %']||'?')+'</td><td style="color:#2E8B57;font-weight:700">'+fmt(p['Commission'])+'</td><td><button class="btn-edit" onclick="openEditPPForm('+p._row+')">Edit</button><button class="btn-del" onclick="confirmDelete(\'PersonalProgress\','+p._row+',\'record\')">Del</button></td></tr>').join('');
-  const ppTab='<div id="mv-pp" class="tab-content"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div style="display:flex;gap:10px"><div style="background:#f0fff4;border:1px solid #bbf7d0;border-radius:8px;padding:8px 14px;font-size:12px"><span style="color:#6b7280">Total Net Profit: </span><b style="color:#16a34a">'+fmt(totalNet)+'</b></div><div style="background:#f0fff4;border:1px solid #bbf7d0;border-radius:8px;padding:8px 14px;font-size:12px"><span style="color:#6b7280">Total Commission: </span><b style="color:#2E8B57">'+fmt(totalComm)+'</b></div></div><button class="btn-add" style="font-size:11px" onclick="openPPFormForMember(\''+m['Member ID']+'\')">+ Add Record</button></div><div class="table-wrap"><table><thead><tr><th>Account</th><th>Month</th><th>SKU Ref</th><th>Gross ($)</th><th>COGS ($)</th><th>Net Profit ($)</th><th>Deal %</th><th>Commission ($)</th><th>Actions</th></tr></thead><tbody>'+ppRows+'</tbody></table></div></div>';
-
-  pv.innerHTML='<button class="back-btn" onclick="backToTeamList()">&#8592; Back to Team</button>'
-  +'<div class="profile-header"><div class="profile-avatar" style="background:'+aColor(idx)+'">'+ini(m['Full Name'])+'</div>'
-  +'<div style="flex:1"><div style="font-size:9px;color:#2E8B57;font-weight:700;margin-bottom:3px">'+(m['Member ID']||'?')+'</div>'
-  +'<div class="profile-name">'+(m['Full Name']||'?')+'</div>'
-  +'<div class="profile-meta">'+(m['Role']||'?')+' · '+(m['Department']||'?')+' · '+(m['Phone']||'?')+'</div>'
-  +'<div class="profile-meta">'+(m['Email']||'?')+' · Joined: '+(m['Join Date']||'?')+'</div>'
-  +'<div style="margin-top:5px"><span style="font-size:11px;background:#e0f2fe;color:#0369a1;padding:3px 10px;border-radius:20px;font-weight:700">Personal Deal: '+dealPct+'%</span></div>'
-  +'</div><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">'
-  +'<button class="btn-update" onclick="openEditMemberForm(\''+m['Member ID']+'\')">Edit</button>'
-  +'<button class="btn-add" onclick="openTaskFormForMember(\''+m['Full Name']+'\')">+ Assign Task</button>'
-  +'</div></div>'
-  +'<div class="kpi-grid" style="margin-bottom:14px">'
-  +'<div class="kpi-card"><div class="kpi-label">Accounts Assigned</div><div class="kpi-val">'+mas.length+'</div></div>'
-  +'<div class="kpi-card"><div class="kpi-label">Personal Commission</div><div class="kpi-val kpi-up">'+fmt(totalComm)+'</div></div>'
-  +'<div class="kpi-card"><div class="kpi-label">Tasks Done</div><div class="kpi-val kpi-up">'+mt.filter(t=>t['Status']==='Done').length+'</div></div>'
-  +'<div class="kpi-card"><div class="kpi-label">Attendance Days</div><div class="kpi-val">'+ma.filter(a=>a['Status']==='Present'||a['Status']==='Remote').length+'</div></div>'
-  +'</div>'
-  +'<div class="tabs">'
-  +'<div class="tab active" onclick="swTab(\'mv\',\'assignments\',this)">Accounts ('+mas.length+')</div>'
-  +'<div class="tab" onclick="swTab(\'mv\',\'pp\',this)">Personal Progress ('+mpp.length+')</div>'
-  +'<div class="tab" onclick="swTab(\'mv\',\'clients\',this)">Managed Clients ('+mc.length+')</div>'
-  +'<div class="tab" onclick="swTab(\'mv\',\'tasks\',this)">Tasks ('+mt.length+')</div>'
-  +'<div class="tab" onclick="swTab(\'mv\',\'updates\',this)">Updates ('+mu.length+')</div>'
-  +'<div class="tab" onclick="swTab(\'mv\',\'att\',this)">Attendance ('+ma.length+')</div>'
-  +'</div>'
-  +assignTab
-  +ppTab
-  +'<div id="mv-clients" class="tab-content">'+(mc.length===0?'<div class="empty-state"><p>No clients assigned</p></div>':'<div class="table-wrap"><table><thead><tr><th>ID</th><th>Client</th><th>Dept</th><th>Store</th><th>Deal %</th><th>Status</th></tr></thead><tbody>'+mc.map(c=>'<tr><td>'+c['ID']+'</td><td><b>'+(c['Client Name']||'?')+'</b></td><td>'+tag(c['Department'])+'</td><td>'+(c['Store Name']||'?')+'</td><td>'+(c['Deal %']||'?')+'</td><td>'+pill(c['Status'])+'</td></tr>').join('')+'</tbody></table></div>')+'</div>'
-  +'<div id="mv-tasks" class="tab-content">'+(mt.length===0?'<div class="empty-state"><p>No tasks</p></div>':mt.map(t=>'<div class="task-card '+(t['Priority']||'').toLowerCase()+' '+(isOverdue(t['Due Date'])&&t['Status']!=='Done'?'overdue':'')+'"><div class="task-title">'+(t['Task Title']||'?')+(isOverdue(t['Due Date'])&&t['Status']!=='Done'?'<span class="status-pill pill-red" style="margin-left:6px">OVERDUE</span>':'')+'</div><div class="task-meta">Due: '+(t['Due Date']||'?')+'</div><div class="task-footer"><span class="pdot pdot-'+(t['Priority']||'low').toLowerCase()+'"></span>'+(t['Priority']||'?')+'<div>'+pill(t['Status'])+'</div></div></div>').join(''))+'</div>'
-  +'<div id="mv-updates" class="tab-content">'+(mu.length===0?'<div class="empty-state"><p>No updates</p></div>':mu.slice().reverse().map(u=>'<div class="upd-card"><div class="upd-date">'+u['Date']+' - '+u['Hours Worked']+'h</div><div class="upd-lbl">Work Done</div><div class="upd-text">'+(u['Work Done Today']||'?')+'</div>'+(u['Issues Faced']?'<div class="upd-lbl">Issues</div><div class="upd-text kpi-down">'+u['Issues Faced']+'</div>':'')+'</div>').join(''))+'</div>'
-  +'<div id="mv-att" class="tab-content">'+(ma.length===0?'<div class="empty-state"><p>No attendance records</p></div>':'<div class="table-wrap"><table><thead><tr><th>Date</th><th>Status</th><th>Check In</th><th>Check Out</th><th>Hours</th></tr></thead><tbody>'+ma.slice().reverse().map(a=>'<tr><td>'+a['Date']+'</td><td>'+pill(a['Status'])+'</td><td>'+(a['Check In']||'?')+'</td><td>'+(a['Check Out']||'?')+'</td><td>'+(a['Hours Worked']||'?')+'</td></tr>').join('')+'</tbody></table></div>')+'</div>';
+  pv.innerHTML='<button class="back-btn" onclick="backToTeamList()">Back to Team</button><div class="profile-header"><div class="profile-avatar" style="background:'+aColor(idx)+'">'+ini(m['Full Name'])+'</div><div style="flex:1"><div style="font-size:9px;color:#2E8B57;font-weight:700;margin-bottom:3px">'+(m['Member ID']||'?')+'</div><div class="profile-name">'+(m['Full Name']||'?')+'</div><div class="profile-meta">'+(m['Role']||'?')+' · '+(m['Department']||'?')+' · '+(m['Phone']||'?')+'</div><div class="profile-meta">'+(m['Email']||'?')+' · Joined: '+(m['Join Date']||'?')+'</div></div><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end"><button class="btn-update" onclick="openEditMemberForm(\''+m['Member ID']+'\')">Edit</button><button class="btn-add" onclick="openTaskFormForMember(\''+m['Full Name']+'\')">+ Assign Task</button></div></div><div class="kpi-grid" style="margin-bottom:14px"><div class="kpi-card"><div class="kpi-label">Clients</div><div class="kpi-val">'+mc.length+'</div></div><div class="kpi-card"><div class="kpi-label">Tasks Done</div><div class="kpi-val kpi-up">'+mt.filter(t=>t['Status']==='Done').length+'</div></div><div class="kpi-card"><div class="kpi-label">Updates</div><div class="kpi-val">'+mu.length+'</div></div><div class="kpi-card"><div class="kpi-label">Attendance</div><div class="kpi-val">'+ma.filter(a=>a['Status']==='Present'||a['Status']==='Remote').length+' days</div></div></div><div class="tabs"><div class="tab active" onclick="swTab(\'mv\',\'clients\',this)">Clients ('+mc.length+')</div><div class="tab" onclick="swTab(\'mv\',\'tasks\',this)">Tasks ('+mt.length+')</div><div class="tab" onclick="swTab(\'mv\',\'updates\',this)">Updates ('+mu.length+')</div><div class="tab" onclick="swTab(\'mv\',\'att\',this)">Attendance ('+ma.length+')</div></div><div id="mv-clients" class="tab-content active">'+(mc.length===0?'<div class="empty-state"><p>No clients assigned</p></div>':'<div class="table-wrap"><table><thead><tr><th>ID</th><th>Client</th><th>Dept</th><th>Store</th><th>Deal %</th><th>Status</th></tr></thead><tbody>'+mc.map(c=>'<tr><td>'+c['ID']+'</td><td><b>'+(c['Client Name']||'?')+'</b></td><td>'+tag(c['Department'])+'</td><td>'+(c['Store Name']||'?')+'</td><td>'+(c['Deal %']||'?')+'</td><td>'+pill(c['Status'])+'</td></tr>').join('')+'</tbody></table></div>')+'</div><div id="mv-tasks" class="tab-content">'+(mt.length===0?'<div class="empty-state"><p>No tasks</p></div>':mt.map(t=>'<div class="task-card '+(t['Priority']||'').toLowerCase()+' '+(isOverdue(t['Due Date'])&&t['Status']!=='Done'?'overdue':'')+'"><div class="task-title">'+(t['Task Title']||'?')+(isOverdue(t['Due Date'])&&t['Status']!=='Done'?'<span class="status-pill pill-red" style="margin-left:6px">OVERDUE</span>':'')+'</div><div class="task-meta">Due: '+(t['Due Date']||'?')+'</div><div class="task-footer"><span class="pdot pdot-'+(t['Priority']||'low').toLowerCase()+'"></span>'+(t['Priority']||'?')+'<div>'+pill(t['Status'])+'</div></div></div>').join(''))+'</div><div id="mv-updates" class="tab-content">'+(mu.length===0?'<div class="empty-state"><p>No updates</p></div>':mu.slice().reverse().map(u=>'<div class="upd-card"><div class="upd-date">'+u['Date']+' - '+u['Hours Worked']+'h</div><div class="upd-lbl">Work Done</div><div class="upd-text">'+(u['Work Done Today']||'?')+'</div>'+(u['Issues Faced']?'<div class="upd-lbl">Issues</div><div class="upd-text kpi-down">'+u['Issues Faced']+'</div>':'')+'</div>').join(''))+'</div><div id="mv-att" class="tab-content">'+(ma.length===0?'<div class="empty-state"><p>No attendance records</p></div>':'<div class="table-wrap"><table><thead><tr><th>Date</th><th>Status</th><th>Check In</th><th>Check Out</th><th>Hours</th></tr></thead><tbody>'+ma.slice().reverse().map(a=>'<tr><td>'+a['Date']+'</td><td>'+pill(a['Status'])+'</td><td>'+(a['Check In']||'?')+'</td><td>'+(a['Check Out']||'?')+'</td><td>'+(a['Hours Worked']||'?')+'</td></tr>').join('')+'</tbody></table></div>')+'</div>';
 }
 function backToTeamList(){document.getElementById('team-list-view').style.display='block';document.getElementById('team-profile-view').style.display='none';}
 function swTab(p,t,el){document.querySelectorAll('[id^="'+p+'-"]').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.getElementById(p+'-'+t).classList.add('active');el.classList.add('active');}
@@ -976,46 +975,22 @@ function filterUpdates(){const s=document.getElementById('upd-search').value.toL
 function renderMemberDashboard(){
   if(!currentUser||currentUser.isAdmin)return;
   const name=currentUser.name;
-  const m=allTeam.find(x=>x['Username']===currentUser.username||x['Full Name']===name);
-  const mid=m?m['Member ID']:'';
   const mc=allClients.filter(c=>c['Account Manager']===name);
   const mt=allTasks.filter(t=>t['Assigned To']===name);
   const mp=mt.filter(t=>t['Status']!=='Done');
   const md=mt.filter(t=>t['Status']==='Done');
   const mo=mt.filter(t=>t['Status']!=='Done'&&isOverdue(t['Due Date']));
   const ma=allAttendance.filter(a=>a['Member Name']===name&&(a['Status']==='Present'||a['Status']==='Remote'));
-  const mpp=allPersonalProgress.filter(p=>p['Member ID']===mid);
-  const mas=allAssignments.filter(a=>a['Member ID']===mid);
-  const totalPPComm=mpp.reduce((a,p)=>a+(parseFloat(p['Commission'])||0),0);
-  const totalPPNet=mpp.reduce((a,p)=>a+(parseFloat(p['Net Profit'])||0),0);
   document.getElementById('my-welcome').textContent='Welcome, '+name+'!';
-  document.getElementById('my-role-text').textContent=(currentUser.role||'Team Member')+' - '+new Date().toDateString();
-  document.getElementById('my-clients-count').textContent=mas.length||mc.length;
+  document.getElementById('my-role-text').textContent=currentUser.role+' - '+new Date().toDateString();
+  document.getElementById('my-clients-count').textContent=mc.length;
   document.getElementById('my-tasks-count').textContent=mp.length;
   document.getElementById('my-overdue-count').textContent=mo.length+' overdue';
   document.getElementById('my-done-count').textContent=md.length;
   document.getElementById('my-att-count').textContent=ma.length;
   document.getElementById('my-task-preview').innerHTML=mp.length===0?'<div class="empty-state"><p>No pending tasks!</p></div>':mp.slice(0,4).map(t=>'<div class="pay-row"><div><div class="pay-name">'+(t['Task Title']||'?')+'</div><div class="pay-dept">Due: '+(t['Due Date']||'?')+(isOverdue(t['Due Date'])?' <span class="status-pill pill-red">OVERDUE</span>':'')+'</div></div>'+pill(t['Priority'])+'</div>').join('');
-  // Assigned accounts (store name only — no client name)
-  const assignedHTML=mas.length===0
-    ?'<div class="empty-state"><p>No accounts assigned yet</p></div>'
-    :mas.map(a=>{const cl=allClients.find(x=>x['ID']===a['Client ID']);return'<div class="pay-row"><div><div class="pay-name" style="font-size:11px;color:#6b7280">'+a['Client ID']+'</div><div class="pay-dept">'+tag(cl?.['Department']||'')+'&nbsp;·&nbsp;<b>'+(cl?.['Store Name']||a['Client ID'])+'</b></div></div><span style="font-size:10px;color:#6b7280">'+(a['Role']||'')+'</span></div>';}).join('');
-  document.getElementById('my-client-preview').innerHTML=assignedHTML;
-  // my-clients section: show assigned accounts (store name only)
-  const myAccBody=document.getElementById('my-clients-body');
-  if(myAccBody)myAccBody.innerHTML=mas.length===0?'<tr><td colspan="5"><div class="empty-state"><p>No accounts assigned yet</p></div></td></tr>':mas.map(a=>{const cl=allClients.find(x=>x['ID']===a['Client ID']);return'<tr><td style="color:#6b7280;font-size:10px;font-weight:700">'+a['Client ID']+'</td><td>'+tag(cl?.['Department']||'')+'</td><td><b>'+(cl?.['Store Name']||'?')+'</b></td><td>'+(a['Role']||'?')+'</td><td>'+pill('Active')+'</td></tr>';}).join('');
-  // Personal progress section in my-dashboard
-  const ppPreview=document.getElementById('my-pp-preview');
-  if(ppPreview){
-    ppPreview.innerHTML='<div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap">'
-    +'<div style="background:#f0fff4;border:1px solid #bbf7d0;border-radius:8px;padding:8px 14px;font-size:12px"><span style="color:#6b7280">Net Profit: </span><b style="color:#16a34a">'+fmt(totalPPNet)+'</b></div>'
-    +'<div style="background:#e0f2fe;border:1px solid #bae6fd;border-radius:8px;padding:8px 14px;font-size:12px"><span style="color:#6b7280">My Commission: </span><b style="color:#0369a1">'+fmt(totalPPComm)+'</b></div>'
-    +'</div>'
-    +(mpp.length===0?'<div class="empty-state"><p>No personal progress records yet</p></div>'
-    :'<div class="table-wrap"><table><thead><tr><th>Account</th><th>Month</th><th>SKU Ref</th><th>Net Profit</th><th>Deal %</th><th>Commission</th></tr></thead><tbody>'
-    +mpp.slice().reverse().slice(0,10).map(p=>'<tr><td style="color:#185FA5;font-size:11px">'+p['Account (Client ID)']+'</td><td>'+(p['Month']||'?')+'</td><td style="color:#6b7280;font-size:11px">'+(p['SKU Ref']||'—')+'</td><td style="color:#16a34a;font-weight:700">'+fmt(p['Net Profit'])+'</td><td>'+(p['Deal %']||'?')+'%</td><td style="color:#2E8B57;font-weight:700">'+fmt(p['Commission'])+'</td></tr>').join('')
-    +'</tbody></table></div>');
-  }
+  document.getElementById('my-client-preview').innerHTML=mc.length===0?'<div class="empty-state"><p>No clients assigned yet</p></div>':mc.map(c=>'<div class="pay-row"><div><div class="pay-name" style="font-size:11px;color:#6b7280">'+c['ID']+'</div><div class="pay-dept">'+tag(c['Department'])+' · <b>'+(c['Store Name']||'?')+'</b></div></div>'+pill(c['Status'])+'</div>').join('');
+  document.getElementById('my-clients-body').innerHTML=mc.length===0?'<tr><td colspan="5"><div class="empty-state"><p>No clients assigned yet</p></div></td></tr>':mc.map(c=>'<tr><td style="color:#6b7280;font-size:10px;font-weight:700">'+c['ID']+'</td><td>'+tag(c['Department'])+'</td><td><b>'+(c['Store Name']||'?')+'</b></td><td>'+(c['Deal %']||'?')+'</td><td>'+pill(c['Status'])+'</td></tr>').join('');
   const myAtt=allAttendance.filter(a=>a['Member Name']===name);
   document.getElementById('my-att-body').innerHTML=myAtt.length===0?'<tr><td colspan="6"><div class="empty-state"><p>No attendance records yet</p></div></td></tr>':myAtt.slice().reverse().map(a=>'<tr><td>'+(a['Date']||'?')+'</td><td>'+pill(a['Status'])+'</td><td>'+(a['Check In']||'?')+'</td><td>'+(a['Check Out']||'?')+'</td><td>'+(a['Hours Worked']||'?')+'</td><td style="color:#6b7280;font-size:10px">'+(a['Notes']||'?')+'</td></tr>').join('');
   const myUpd=allUpdates.filter(u=>u['Member Name']===name);
@@ -1033,18 +1008,14 @@ function renderMyTasks(tasks){
 }
 function filterMyTasks(){const s=document.getElementById('my-task-search').value.toLowerCase();const st=document.getElementById('my-task-status').value;renderMyTasks(allTasks.filter(t=>t['Assigned To']===currentUser?.name&&(!s||Object.values(t).join(' ').toLowerCase().includes(s))&&(!st||t['Status']===st)));}
 
-function renderDept(dept,searchVal){
+function renderDept(dept){
   const dn=dept==='ebay'?'eBay':dept==='walmart'?'Walmart':'TikTok';
-  const s=(searchVal||document.getElementById(dept+'-search-inp')?.value||'').toLowerCase();
-  let dc=allClients.filter(c=>c['Department']===dn);
-  if(s)dc=dc.filter(c=>Object.values(c).join(' ').toLowerCase().includes(s));
-  const act=allClients.filter(c=>c['Department']===dn&&c['Status']==='Active').length;
+  const dc=allClients.filter(c=>c['Department']===dn);
+  const act=dc.filter(c=>c['Status']==='Active').length;
   const dp=allProgress.filter(p=>p['Department']===dn);
   const dGross=dp.reduce((a,p)=>a+(parseFloat(p['Gross Revenue'])||0),0);
   const dComm=dp.reduce((a,p)=>a+(parseFloat(p['PYB Commission'])||0),0);
-  document.getElementById(dept+'-list').innerHTML='<div class="kpi-grid" style="margin-bottom:12px"><div class="kpi-card"><div class="kpi-label">Total Clients</div><div class="kpi-val">'+allClients.filter(c=>c['Department']===dn).length+'</div><div class="kpi-sub kpi-up">'+act+' active</div></div><div class="kpi-card"><div class="kpi-label">Gross Revenue Generated</div><div class="kpi-val">'+fmt(dGross)+'</div></div><div class="kpi-card"><div class="kpi-label">PYB Commission</div><div class="kpi-val kpi-up">'+fmt(dComm)+'</div></div><div class="kpi-card"><div class="kpi-label">Inactive/Hold</div><div class="kpi-val kpi-down">'+(allClients.filter(c=>c['Department']===dn).length-act)+'</div></div></div>'
-  +'<div class="search-bar"><input type="text" id="'+dept+'-search-inp" placeholder="Search '+dn+' clients..." value="'+(s||'')+'" oninput="renderDept(\''+dept+'\')"><select id="'+dept+'-status-filter" onchange="renderDept(\''+dept+'\')" style="font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff"><option value="">All Status</option><option>Active</option><option>Inactive</option><option>Hold</option></select><button class="btn-add" onclick="openClientForm(\''+dn+'\')">+ Add Client</button></div>'
-  +'<div class="table-wrap"><table><thead><tr><th>ID</th><th>Client</th><th>Type</th><th>Country</th><th>Store</th><th>Deal %</th><th>Manager</th><th>Status</th><th>Actions</th></tr></thead><tbody>'+(dc.length===0?'<tr><td colspan="9"><div class="empty-state"><p>No '+dn+' clients found</p></div></td></tr>':dc.map(c=>'<tr><td style="color:#6b7280;font-size:10px">'+c['ID']+'</td><td><b>'+(c['Client Name']||'?')+'</b></td><td>'+ctp(c['Client Type'])+'</td><td>'+(c['Country']||'?')+'</td><td>'+(c['Store Name']||'?')+'</td><td style="color:#185FA5;font-weight:700">'+(c['Deal %']||'?')+'</td><td>'+(c['Account Manager']||'?')+'</td><td>'+pill(c['Status'])+'</td><td><button class="btn-view" onclick="viewClient(\''+c['ID']+'\',\''+dept+'\')">View</button><button class="btn-edit" onclick="openEditClientForm(\''+c['ID']+'\')">Edit</button><button class="btn-del" onclick="confirmDelete(\'Clients\','+c._row+',\''+c['Client Name']+'\')">Del</button></td></tr>').join(''))+'</tbody></table></div>';
+  document.getElementById(dept+'-list').innerHTML='<div class="kpi-grid" style="margin-bottom:12px"><div class="kpi-card"><div class="kpi-label">Total Clients</div><div class="kpi-val">'+dc.length+'</div><div class="kpi-sub kpi-up">'+act+' active</div></div><div class="kpi-card"><div class="kpi-label">Gross Revenue Generated</div><div class="kpi-val">'+fmt(dGross)+'</div></div><div class="kpi-card"><div class="kpi-label">PYB Commission</div><div class="kpi-val kpi-up">'+fmt(dComm)+'</div></div><div class="kpi-card"><div class="kpi-label">Inactive/Hold</div><div class="kpi-val kpi-down">'+(dc.length-act)+'</div></div></div><div class="search-bar"><input type="text" placeholder="Search..."><button class="btn-add" onclick="openClientForm(\''+dn+'\')">+ Add Client</button></div><div class="table-wrap"><table><thead><tr><th>ID</th><th>Client</th><th>Type</th><th>Country</th><th>Store</th><th>Deal %</th><th>Manager</th><th>Status</th><th>Actions</th></tr></thead><tbody>'+(dc.length===0?'<tr><td colspan="9"><div class="empty-state"><p>No '+dn+' clients yet</p></div></td></tr>':dc.map(c=>'<tr><td style="color:#6b7280;font-size:10px">'+c['ID']+'</td><td><b>'+(c['Client Name']||'?')+'</b></td><td>'+ctp(c['Client Type'])+'</td><td>'+(c['Country']||'?')+'</td><td>'+(c['Store Name']||'?')+'</td><td style="color:#185FA5;font-weight:700">'+(c['Deal %']||'?')+'</td><td>'+(c['Account Manager']||'?')+'</td><td>'+pill(c['Status'])+'</td><td><button class="btn-view" onclick="viewClient(\''+c['ID']+'\',\''+dept+'\')">View</button><button class="btn-edit" onclick="openEditClientForm(\''+c['ID']+'\')">Edit</button><button class="btn-del" onclick="confirmDelete(\'Clients\','+c._row+',\''+c['Client Name']+'\')">Del</button></td></tr>').join(''))+'</tbody></table></div>';
 }
 
 function viewClient(id,dept){
@@ -1072,11 +1043,11 @@ function nav(id,el){
   if(el)el.classList.add('active');
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   const sec=document.getElementById('sec-'+id);if(sec)sec.classList.add('active');
-  const titles={dashboard:'Dashboard',master:'Master Record',payments:'Payments',progress:'Progress Tracker',ebay:'eBay Department',walmart:'Walmart Department',tiktok:'TikTok Department',team:'Team Members','personal-progress':'Personal Progress',tasks:'Task Board',attendance:'Attendance',updates:'Daily Updates',growth:'Growth Report','my-dashboard':'My Dashboard','my-tasks':'My Tasks','my-clients':'My Clients','my-attendance':'My Attendance','my-updates':'My Daily Updates'};
+  const titles={dashboard:'Dashboard',master:'Master Record',payments:'Payments',progress:'Progress Tracker',ebay:'eBay Department',walmart:'Walmart Department',tiktok:'TikTok Department',team:'Team Members',tasks:'Task Board',attendance:'Attendance',updates:'Daily Updates',growth:'Growth Report',targets:'Targets & KPIs','my-dashboard':'My Dashboard','my-tasks':'My Tasks','my-clients':'My Clients','my-attendance':'My Attendance','my-updates':'My Daily Updates'};
   document.getElementById('pageTitle').textContent=titles[id]||id;
   if(['ebay','walmart','tiktok'].includes(id)){document.getElementById(id+'-list').style.display='block';document.getElementById(id+'-profile').style.display='none';renderDept(id);}
   if(id==='growth')renderGrowth();
-  if(id==='personal-progress')renderPP();
+  if(id==='targets')renderTargets();
   if(id==='my-dashboard'&&currentUser&&!currentUser.isAdmin)renderMemberDashboard();
   if(id==='my-tasks'&&currentUser&&!currentUser.isAdmin)renderMyTasks();
 }
@@ -1138,7 +1109,14 @@ function openPaymentForm(){
 function fillPaymentClient(){
   const sel=document.getElementById('p-client-select');
   const c=allClients.find(x=>x['ID']===sel.value);
-  if(c){document.getElementById('p-client').value=c['Client Name']||'';document.getElementById('p-dept-text').value=c['Department']||'';document.getElementById('p-dept').value=c['Department']||'';document.getElementById('p-client-id').value=c['ID']||'';}
+  if(c){
+    document.getElementById('p-client').value=c['Client Name']||'';
+    document.getElementById('p-dept-text').value=c['Department']||'';
+    document.getElementById('p-dept').value=c['Department']||'';
+    // Store client ID for accurate invoice generation
+    const hiddenId=document.getElementById('p-client-id-hidden');
+    if(hiddenId)hiddenId.value=c['ID']||'';
+  }
 }
 
 function openEditPaymentForm(rowNum){
@@ -1150,8 +1128,6 @@ function openEditPaymentForm(rowNum){
   const pcs=document.getElementById('p-client-select');
   pcs.innerHTML='<option value="">Select client...</option>'+allClients.map(c=>'<option value="'+c['ID']+'">'+c['ID']+' - '+c['Client Name']+'</option>').join('');
   document.getElementById('p-client').value=p['Client Name']||p['Client']||'';
-  document.getElementById('p-client-id').value=p['Client ID']||'';
-  document.getElementById('p-client-select').value=p['Client ID']||'';
   document.getElementById('p-dept-text').value=p['Department']||p['Dept']||'';
   document.getElementById('p-dept').value=p['Department']||p['Dept']||'';
   document.getElementById('p-inv').value=p['Invoice No']||p['Invoice']||'';
@@ -1162,6 +1138,20 @@ function openEditPaymentForm(rowNum){
   document.getElementById('p-status').value=p['Status']||'Pending';
   document.getElementById('p-notes').value=p['Notes']||'';
   document.getElementById('p-row-num').value=rowNum;
+  // Restore client ID for accurate invoice lookup
+  const hidEl=document.getElementById('p-client-id-hidden');
+  if(hidEl){
+    // Try to find client ID from stored data or from client name match with department
+    const dept=p['Department']||p['Dept']||'';
+    const cName=p['Client Name']||p['Client']||'';
+    const storedId=p['Client ID']||p['client_id']||'';
+    if(storedId){hidEl.value=storedId;}
+    else{
+      // Find by name AND department to avoid duplicate name issue
+      const matchedClient=allClients.find(x=>x['Client Name']===cName&&(!dept||x['Department']===dept));
+      hidEl.value=matchedClient?matchedClient['ID']:'';
+    }
+  }
   document.getElementById('paymentModal').classList.add('open');
 }
 
@@ -1224,7 +1214,7 @@ function openMemberForm(){
   document.getElementById('memberModalTitle').textContent='Add Team Member';
   document.getElementById('memberSaveBtn').textContent='Save Member';
   document.getElementById('memberSaveBtn').className='btn-save';
-  ['m-name','m-phone','m-email','m-notes','m-id','m-username','m-password','m-deal-pct'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['m-name','m-phone','m-email','m-notes','m-id','m-username','m-password'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('m-join').value=today();
   document.getElementById('m-status').value='Active';
   document.getElementById('memberModal').classList.add('open');
@@ -1244,7 +1234,6 @@ function openEditMemberForm(id){
   document.getElementById('m-join').value=m['Join Date']||'';
   document.getElementById('m-status').value=m['Status']||'Active';
   document.getElementById('m-notes').value=m['Notes']||'';
-  document.getElementById('m-deal-pct').value=m['Personal Deal %']||'';
   document.getElementById('m-id').value=m['Member ID']||'';
   document.getElementById('m-username').value=m['Username']||'';
   document.getElementById('m-password').value=m['Password']||'';
@@ -1328,14 +1317,14 @@ function openEmailModal(type,rowNum){
   document.getElementById('email-row-num').value=rowNum;
   if(type==='invoice'){
     const p=allPayments.find(x=>x._row===rowNum);
-    const c=p?allClients.find(x=>x['ID']===(p['Client ID']||p['ID']))||allClients.find(x=>x['Client Name']===(p['Client Name']||p['Client'])):null;
+    const c=p?allClients.find(x=>x['Client Name']===(p['Client Name']||p['Client'])):null;
     document.getElementById('emailModalTitle').textContent='Send Invoice via Email';
     document.getElementById('email-to').value=c?c['Email']||'':'';
     document.getElementById('email-subject').value='Invoice - Pak Youth Builders - '+(p?p['Month']||'':'');
     document.getElementById('email-body').value='Dear Client,\n\nPlease find attached your invoice from Pak Youth Builders.\n\nFor any queries please contact us.\n\nRegards,\nPak Youth Builders Team';
   }else{
     const p=allProgress.find(x=>x._row===rowNum);
-    const c=p?allClients.find(x=>x['ID']===p['Client ID'])||allClients.find(x=>x['Client Name']===p['Client Name']):null;
+    const c=p?allClients.find(x=>x['Client Name']===p['Client Name']||x['ID']===p['Client ID']):null;
     document.getElementById('emailModalTitle').textContent='Send Progress Report via Email';
     document.getElementById('email-to').value=c?c['Email']||'':'';
     document.getElementById('email-subject').value='Monthly Performance Report - '+(p?p['Month']||'':'') +' - Pak Youth Builders';
@@ -1432,227 +1421,14 @@ async function savePayment(){
   if(!amount){showToast('Amount is required!','error');return;}
   const btn=document.getElementById('paySaveBtn');const orig=btn.textContent;
   btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
-  const row=[document.getElementById('p-client-id').value||'',document.getElementById('p-inv').value||'INV-'+Date.now(),client,document.getElementById('p-dept').value||document.getElementById('p-dept-text').value,document.getElementById('p-month').value,amount||'0',document.getElementById('p-comm').value||'0',document.getElementById('p-date').value,document.getElementById('p-status').value,document.getElementById('p-notes').value];
+  const pClientId=document.getElementById('p-client-id-hidden')?document.getElementById('p-client-id-hidden').value:'';
+  const row=[document.getElementById('p-inv').value||'INV-'+Date.now(),client,document.getElementById('p-dept').value||document.getElementById('p-dept-text').value,document.getElementById('p-month').value,amount||'0',document.getElementById('p-comm').value||'0',document.getElementById('p-date').value,document.getElementById('p-status').value,document.getElementById('p-notes').value,pClientId];
   try{
     if(editMode&&editRowNum)await gAction({action:'update',sheet:'Payments',rowNum:editRowNum,row:JSON.stringify(row)});
     else await gAction({action:'write',sheet:'Payments',row:JSON.stringify(row)});
     closeModal('paymentModal');showToast('Payment saved!','success');setTimeout(()=>loadAll(true),3000);
   }catch(e){showToast('Error: '+e.message,'error');}
   btn.innerHTML=orig;btn.disabled=false;
-}
-
-// ========== TEAM ASSIGNMENT FUNCTIONS ==========
-function openAssignForm(memberId){
-  editMode=false;editRowNum=null;
-  document.getElementById('assignModalTitle').textContent='Assign Account to Member';
-  document.getElementById('assignSaveBtn').textContent='Save Assignment';
-  document.getElementById('assignSaveBtn').className='btn-save';
-  document.getElementById('as-row-num').value='';
-  document.getElementById('as-start').value=today();
-  document.getElementById('as-role').value='Account Manager';
-  document.getElementById('as-deal-pct').value='';
-  const msel=document.getElementById('as-member');
-  if(memberId){msel.value=memberId;}else{msel.value='';}
-  document.getElementById('as-client').value='';
-  document.getElementById('assignModal').classList.add('open');
-}
-
-async function saveAssignment(){
-  const mid=document.getElementById('as-member').value;
-  const cid=document.getElementById('as-client').value;
-  if(!mid){showToast('Select a member!','error');return;}
-  if(!cid){showToast('Select an account!','error');return;}
-  const duplicate=allAssignments.find(a=>a['Member ID']===mid&&a['Client ID']===cid);
-  if(duplicate&&!editMode){showToast('Already assigned to this account!','error');return;}
-  const btn=document.getElementById('assignSaveBtn');const orig=btn.textContent;
-  btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
-  const m=allTeam.find(x=>x['Member ID']===mid);
-  const dealPct=document.getElementById('as-deal-pct').value||'';
-  const row=[mid,m?m['Full Name']:'',cid,document.getElementById('as-role').value,document.getElementById('as-start').value,dealPct];
-  try{
-    await gAction({action:'write',sheet:'TeamAssignments',row:JSON.stringify(row)});
-    closeModal('assignModal');
-    showToast('Account assigned!','success');
-    setTimeout(()=>loadAll(true),2000);
-  }catch(e){
-    showToast('Error: '+e.message,'error');
-    console.error('saveAssignment failed:',e);
-  }
-  btn.innerHTML=orig;btn.disabled=false;
-}
-
-// ========== PERSONAL PROGRESS FUNCTIONS ==========
-function openPPForm(){
-  editMode=false;editRowNum=null;
-  document.getElementById('ppModalTitle').textContent='Add Personal Progress';
-  document.getElementById('ppSaveBtn').textContent='Save Record';
-  document.getElementById('ppSaveBtn').className='btn-save';
-  ['pp-mid','pp-month','pp-sku','pp-gross','pp-cogs','pp-net','pp-deal','pp-comm','pp-notes','pp-row-num'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  document.getElementById('pp-member').value='';
-  document.getElementById('pp-account').value='';
-  document.getElementById('ppModal').classList.add('open');
-}
-
-function openPPFormForMember(memberId){
-  openPPForm();
-  const msel=document.getElementById('pp-member');
-  msel.value=memberId;
-  fillPPMember();
-}
-
-function openEditPPForm(rowNum){
-  const p=allPersonalProgress.find(x=>x._row===rowNum);if(!p)return;
-  editMode=true;editRowNum=rowNum;
-  document.getElementById('ppModalTitle').textContent='Edit Personal Progress';
-  document.getElementById('ppSaveBtn').textContent='Update';
-  document.getElementById('ppSaveBtn').className='btn-update';
-  document.getElementById('pp-member').value=p['Member ID']||'';
-  fillPPMember();
-  document.getElementById('pp-account').value=p['Account (Client ID)']||'';
-  document.getElementById('pp-mid').value=p['Member ID']||'';
-  document.getElementById('pp-month').value=p['Month']||'';
-  document.getElementById('pp-sku').value=p['SKU Ref']||'';
-  document.getElementById('pp-gross').value=p['Gross Revenue']||'';
-  document.getElementById('pp-cogs').value=p['COGS']||'';
-  document.getElementById('pp-net').value=p['Net Profit']||'';
-  document.getElementById('pp-deal').value=p['Deal %']||'';
-  document.getElementById('pp-comm').value=p['Commission']||'';
-  document.getElementById('pp-notes').value=p['Notes']||'';
-  document.getElementById('pp-row-num').value=rowNum;
-  document.getElementById('ppModal').classList.add('open');
-}
-
-function fillPPMember(){
-  const mid=document.getElementById('pp-member').value;
-  document.getElementById('pp-mid').value=mid;
-  const memberAssignments=allAssignments.filter(a=>a['Member ID']===mid);
-  const accSel=document.getElementById('pp-account');
-  if(memberAssignments.length>0){
-    accSel.innerHTML='<option value="">Select account...</option>'+memberAssignments.map(a=>{
-      const cl=allClients.find(x=>x['ID']===a['Client ID']);
-      return'<option value="'+a['Client ID']+'" data-deal="'+(a['Deal %']||a['Personal Deal %']||'')+'">'+a['Client ID']+(cl?' - '+cl['Store Name']:'')+'</option>';
-    }).join('');
-  }else{
-    accSel.innerHTML='<option value="">No accounts assigned yet</option>';
-  }
-  document.getElementById('pp-deal').value='';
-  calcPP();
-}
-
-function fillPPDeal(){
-  const accSel=document.getElementById('pp-account');
-  const selected=accSel.options[accSel.selectedIndex];
-  const dealFromAssignment=selected?selected.getAttribute('data-deal'):'';
-  if(dealFromAssignment){
-    document.getElementById('pp-deal').value=dealFromAssignment;
-  }else{
-    // fallback to member level deal%
-    const mid=document.getElementById('pp-member').value;
-    const m=allTeam.find(x=>x['Member ID']===mid);
-    document.getElementById('pp-deal').value=m&&m['Personal Deal %']?m['Personal Deal %']:'';
-  }
-  calcPP();
-}
-
-function calcPP(){
-  const gross=parseFloat(document.getElementById('pp-gross').value)||0;
-  const cogs=parseFloat(document.getElementById('pp-cogs').value)||0;
-  const deal=parseFloat(document.getElementById('pp-deal').value)||0;
-  const net=gross-cogs;
-  const comm=(net*deal)/100;
-  document.getElementById('pp-net').value=net>=0?net.toFixed(2):'0';
-  document.getElementById('pp-comm').value=comm>=0?comm.toFixed(2):'0';
-}
-
-async function savePP(){
-  const mid=document.getElementById('pp-member').value;
-  const acc=document.getElementById('pp-account').value;
-  const month=document.getElementById('pp-month').value.trim();
-  const gross=document.getElementById('pp-gross').value;
-  if(!mid){showToast('Select a member!','error');return;}
-  if(!acc){showToast('Select an account!','error');return;}
-  if(!month){showToast('Month is required!','error');return;}
-  if(!gross){showToast('Gross Revenue is required!','error');return;}
-  const m=allTeam.find(x=>x['Member ID']===mid);
-  const btn=document.getElementById('ppSaveBtn');const orig=btn.textContent;
-  btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
-  const row=[mid,m?m['Full Name']:'',acc,month,document.getElementById('pp-sku').value,document.getElementById('pp-gross').value||'0',document.getElementById('pp-cogs').value||'0',document.getElementById('pp-net').value||'0',document.getElementById('pp-deal').value||'0',document.getElementById('pp-comm').value||'0',document.getElementById('pp-notes').value];
-  try{
-    if(editMode&&editRowNum)await gAction({action:'update',sheet:'PersonalProgress',rowNum:editRowNum,row:JSON.stringify(row)});
-    else await gAction({action:'write',sheet:'PersonalProgress',row:JSON.stringify(row)});
-    closeModal('ppModal');showToast('Record saved!','success');setTimeout(()=>loadAll(true),2000);
-  }catch(e){showToast('Error: '+e.message,'error');}
-  btn.innerHTML=orig;btn.disabled=false;
-}
-
-function renderPP(data){
-  const list=data||allPersonalProgress;
-  const gross=list.reduce((a,p)=>a+(parseFloat(p['Gross Revenue'])||0),0);
-  const net=list.reduce((a,p)=>a+(parseFloat(p['Net Profit'])||0),0);
-  const comm=list.reduce((a,p)=>a+(parseFloat(p['Commission'])||0),0);
-  const ppKpiCount=document.getElementById('pp-kpi-count');if(ppKpiCount)ppKpiCount.textContent=list.length;
-  const ppKpiGross=document.getElementById('pp-kpi-gross');if(ppKpiGross)ppKpiGross.textContent=fmt(gross);
-  const ppKpiNet=document.getElementById('pp-kpi-net');if(ppKpiNet)ppKpiNet.textContent=fmt(net);
-  const ppKpiComm=document.getElementById('pp-kpi-comm');if(ppKpiComm)ppKpiComm.textContent=fmt(comm);
-  const mf=document.getElementById('pp-member-filter');
-  if(mf){const cur=mf.value;mf.innerHTML='<option value="">All Members</option>'+allTeam.map(m=>'<option value="'+m['Member ID']+'"'+(m['Member ID']===cur?' selected':'')+'>'+m['Full Name']+'</option>').join('');}
-  const moF=document.getElementById('pp-month-filter');
-  if(moF){const months=[...new Set(allPersonalProgress.map(p=>p['Month']).filter(Boolean))];const cur=moF.value;moF.innerHTML='<option value="">All Months</option>'+months.map(m=>'<option value="'+m+'"'+(m===cur?' selected':'')+'>'+m+'</option>').join('');}
-  const tbody=document.getElementById('pp-body');if(!tbody)return;
-  tbody.innerHTML=list.length===0?'<tr><td colspan="11"><div class="empty-state"><p>No personal progress records yet. Add the first record!</p></div></td></tr>':list.map(p=>{
-    const m=allTeam.find(x=>x['Member ID']===p['Member ID']);
-    return'<tr><td><b>'+(p['Member Name']||m?.['Full Name']||'?')+'</b><div style="font-size:9px;color:#6b7280">'+(p['Member ID']||'?')+'</div></td>'
-    +'<td style="color:#185FA5;font-size:11px">'+(p['Account (Client ID)']||'?')+'</td>'
-    +'<td>'+(p['Month']||'?')+'</td>'
-    +'<td style="color:#6b7280;font-size:11px">'+(p['SKU Ref']||'—')+'</td>'
-    +'<td>'+fmt(p['Gross Revenue'])+'</td>'
-    +'<td>'+fmt(p['COGS'])+'</td>'
-    +'<td style="color:#16a34a;font-weight:700">'+fmt(p['Net Profit'])+'</td>'
-    +'<td style="color:#185FA5">'+(p['Deal %']||'?')+'%</td>'
-    +'<td style="color:#2E8B57;font-weight:700">'+fmt(p['Commission'])+'</td>'
-    +'<td style="color:#6b7280;font-size:11px">'+(p['Notes']||'—')+'</td>'
-    +'<td style="white-space:nowrap"><button class="btn-edit" onclick="openEditPPForm('+p._row+')">Edit</button><button class="btn-del" onclick="confirmDelete(\'PersonalProgress\','+p._row+',\'record\')">Del</button></td></tr>';
-  }).join('');
-}
-
-function filterPP(){
-  const s=(document.getElementById('pp-search')?.value||'').toLowerCase();
-  const m=document.getElementById('pp-member-filter')?.value||'';
-  const mo=document.getElementById('pp-month-filter')?.value||'';
-  renderPP(allPersonalProgress.filter(p=>{
-    if(s&&!Object.values(p).join(' ').toLowerCase().includes(s))return false;
-    if(m&&p['Member ID']!==m)return false;
-    if(mo&&p['Month']!==mo)return false;
-    return true;
-  }));
-}
-
-function exportPP(){
-  const list=allPersonalProgress;
-  if(!list.length){showToast('No data to export','error');return;}
-  const h=['Member ID','Member Name','Account','Month','SKU Ref','Gross Revenue','COGS','Net Profit','Deal %','Commission','Notes'];
-  const rows=list.map(p=>[p['Member ID'],p['Member Name'],p['Account (Client ID)'],p['Month'],p['SKU Ref'],p['Gross Revenue'],p['COGS'],p['Net Profit'],p['Deal %'],p['Commission'],p['Notes']].map(v=>(v||'').replace(/,/g,' ')).join(','));
-  const csv=[h.join(','),...rows].join('\n');
-  const a=document.createElement('a');a.href='data:text/csv,'+encodeURIComponent(csv);a.download='personal_progress.csv';a.click();
-}
-
-// ========== SEARCH FUNCTIONS ==========
-function filterClients(){
-  const s=document.getElementById('client-search')?.value.toLowerCase()||'';
-  const d=document.getElementById('client-dept-filter')?.value||'';
-  const st=document.getElementById('client-status-filter')?.value||'';
-  const list=allClients.filter(c=>{
-    if(s&&!Object.values(c).join(' ').toLowerCase().includes(s))return false;
-    if(d&&c['Department']!==d)return false;
-    if(st&&c['Status']!==st)return false;
-    return true;
-  });
-  renderClientCards(list);
-}
-
-function renderClientCards(list){
-  const grid=document.getElementById('clients-grid');if(!grid)return;
-  grid.innerHTML=list.length===0?'<div class="empty-state" style="grid-column:1/-1"><p>No clients found</p></div>':list.map(c=>'<div class="client-card" onclick="viewClient(\''+c['ID']+'\',\''+c['Department'].toLowerCase()+'\')"><div class="cc-header"><div><div class="cc-id">'+c['ID']+'</div><div class="cc-name">'+(c['Client Name']||'?')+'</div></div>'+pill(c['Status'])+'</div><div class="cc-store">'+(c['Store Name']||'No store')+'</div><div class="cc-footer">'+tag(c['Department'])+'<span style="color:#185FA5;font-weight:700">'+(c['Deal %']||'?')+'</span></div></div>').join('');
 }
 
 async function saveProgress(){
@@ -1669,7 +1445,8 @@ async function saveProgress(){
   const nv=gv-cv;
   const dp=parseFloat((document.getElementById('pr-deal').value||'0').replace('%',''))||0;
   const cmv=(nv*dp)/100;
-  const row=[document.getElementById('pr-id').value,c?c['Client Name']:'',document.getElementById('pr-dept').value,month,gv.toFixed(2),cv.toFixed(2),nv.toFixed(2),document.getElementById('pr-deal').value,cmv.toFixed(2),document.getElementById('pr-orders').value||'0',document.getElementById('pr-perf').value,document.getElementById('pr-notes').value];
+  const correctClientId=document.getElementById('pr-id').value||clientSel;
+  const row=[correctClientId,c?c['Client Name']:'',document.getElementById('pr-dept').value,month,gv.toFixed(2),cv.toFixed(2),nv.toFixed(2),document.getElementById('pr-deal').value,cmv.toFixed(2),document.getElementById('pr-orders').value||'0',document.getElementById('pr-perf').value,document.getElementById('pr-notes').value];
   try{
     if(editMode&&editRowNum)await gAction({action:'update',sheet:'Progress',rowNum:editRowNum,row:JSON.stringify(row)});
     else await gAction({action:'write',sheet:'Progress',row:JSON.stringify(row)});
@@ -1684,8 +1461,7 @@ async function saveMember(){
   const btn=document.getElementById('memberSaveBtn');const orig=btn.textContent;
   btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
   const mid=editMode?(document.getElementById('m-id').value||genMemberId()):genMemberId();
-  const dealPct=document.getElementById('m-deal-pct').value||'';
-  const row=[mid,name,document.getElementById('m-role').value,document.getElementById('m-dept').value,document.getElementById('m-phone').value,document.getElementById('m-email').value,document.getElementById('m-join').value,document.getElementById('m-status').value,document.getElementById('m-notes').value,document.getElementById('m-username').value,document.getElementById('m-password').value,dealPct];
+  const row=[mid,name,document.getElementById('m-role').value,document.getElementById('m-dept').value,document.getElementById('m-phone').value,document.getElementById('m-email').value,document.getElementById('m-join').value,document.getElementById('m-status').value,document.getElementById('m-notes').value,document.getElementById('m-username').value,document.getElementById('m-password').value];
   try{
     if(editMode&&editRowNum)await gAction({action:'update',sheet:'Team',rowNum:editRowNum,row:JSON.stringify(row)});
     else await gAction({action:'write',sheet:'Team',row:JSON.stringify(row)});
@@ -1779,8 +1555,13 @@ function generateInvoicePDF(rowNum){
   const p=allPayments.find(x=>x._row===rowNum);
   if(!p){showToast('Payment not found','error');return;}
   const clientName=p['Client Name']||p['Client']||'';
-  const clientId=p['Client ID']||p['ID']||'';
-  const c=allClients.find(x=>clientId&&x['ID']===clientId)||allClients.find(x=>x['Client Name']===clientName);
+  const dept=p['Department']||p['Dept']||'';
+  // Use stored client ID column (index 9) or match by name+department
+  const storedClientId=p['Client ID']||p['client_id']||'';
+  let c=null;
+  if(storedClientId){c=allClients.find(x=>x['ID']===storedClientId);}
+  if(!c&&dept){c=allClients.find(x=>x['Client Name']===clientName&&x['Department']===dept);}
+  if(!c){c=allClients.find(x=>x['Client Name']===clientName);}
   const manager=c?allTeam.find(m=>m['Full Name']===c['Account Manager']):null;
   const managerId=manager?manager['Member ID']:'--';
   const invNo=p['Invoice No']||p['Invoice']||'INV-001';
@@ -1852,7 +1633,12 @@ function generateProgressPDF(rowNum,imgData){
   const p=allProgress.find(x=>x._row===rowNum);
   if(!p){showToast('Progress record not found','error');return;}
   const clientId=p['Client ID']||'--';
-  const c=allClients.find(x=>x['ID']===clientId)||allClients.find(x=>x['Client Name']===p['Client Name']);
+  const dept=p['Department']||'';
+  // Match by ID first, then by name+department to avoid duplicate name issue
+  let c=null;
+  if(clientId&&clientId!=='--'){c=allClients.find(x=>x['ID']===clientId);}
+  if(!c&&dept){c=allClients.find(x=>x['Client Name']===p['Client Name']&&x['Department']===dept);}
+  if(!c){c=allClients.find(x=>x['Client Name']===p['Client Name']);}
   const manager=c?allTeam.find(m=>m['Full Name']===c['Account Manager']):null;
   const managerId=manager?manager['Member ID']:'--';
   const dept=p['Department']||c?.['Department']||'--';
@@ -1938,6 +1724,247 @@ function generateProgressPDF(rowNum,imgData){
   doc.setTextColor(120,160,210);doc.setFontSize(7);doc.text('Confidential report prepared for Client ID: '+clientId,W/2,292,{align:'center'});
   doc.save('PYB_Progress_'+clientId+'_'+month.replace(/\s/g,'_')+'.pdf');
   showToast('Progress report generated!','success');
+}
+
+
+// =============================================
+// TARGETS & KPIs SYSTEM
+// =============================================
+function fillTargetClient(){
+  const sel=document.getElementById('tgt-client-select');
+  const c=allClients.find(x=>x['ID']===sel.value);
+  if(c){
+    document.getElementById('tgt-cid').value=c['ID']||'';
+    document.getElementById('tgt-dept').value=c['Department']||'';
+    document.getElementById('tgt-deal').value=c['Deal %']||'';
+    const mgr=allTeam.find(m=>m['Full Name']===c['Account Manager']);
+    document.getElementById('tgt-mgr-id').value=mgr?mgr['Member ID']:'--';
+    calcTargetCommission();
+  }
+}
+
+function calcTargetCommission(){
+  const net=parseFloat(document.getElementById('tgt-net').value)||0;
+  const deal=parseFloat((document.getElementById('tgt-deal').value||'0').replace('%',''))||0;
+  const exp=(net*deal)/100;
+  document.getElementById('tgt-exp-comm-preview').textContent='$'+exp.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+function openTargetForm(){
+  editMode=false;editRowNum=null;
+  document.getElementById('targetModalTitle').textContent='Set Monthly Target';
+  document.getElementById('targetSaveBtn').textContent='Save Target';
+  document.getElementById('targetSaveBtn').className='btn-save';
+  document.getElementById('targetSaveBtn').style.background='#7c3aed';
+  const tcSel=document.getElementById('tgt-client-select');
+  tcSel.innerHTML='<option value="">Select client...</option>'+allClients.map(c=>'<option value="'+c['ID']+'">'+c['ID']+' - '+c['Client Name']+'</option>').join('');
+  ['tgt-cid','tgt-dept','tgt-deal','tgt-mgr-id','tgt-month','tgt-gross','tgt-net','tgt-orders','tgt-roi','tgt-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('tgt-exp-comm-preview').textContent='$0';
+  document.getElementById('tgt-row-num').value='';
+  // Default month to next month
+  const now=new Date();const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('tgt-month').value=months[now.getMonth()]+' '+now.getFullYear();
+  document.getElementById('targetModal').classList.add('open');
+}
+
+function openEditTargetForm(rowNum){
+  const t=allTargets.find(x=>x._row===rowNum);if(!t)return;
+  editMode=true;editRowNum=rowNum;
+  document.getElementById('targetModalTitle').textContent='Edit Target';
+  document.getElementById('targetSaveBtn').textContent='Update Target';
+  const tcSel=document.getElementById('tgt-client-select');
+  tcSel.innerHTML='<option value="">Select client...</option>'+allClients.map(c=>'<option value="'+c['ID']+'">'+c['ID']+' - '+c['Client Name']+'</option>').join('');
+  document.getElementById('tgt-client-select').value=t['Client ID']||'';
+  document.getElementById('tgt-cid').value=t['Client ID']||'';
+  document.getElementById('tgt-dept').value=t['Department']||'';
+  document.getElementById('tgt-deal').value=t['Deal %']||'';
+  document.getElementById('tgt-mgr-id').value=t['Manager ID']||'';
+  document.getElementById('tgt-month').value=t['Month']||'';
+  document.getElementById('tgt-gross').value=t['Target Gross']||'';
+  document.getElementById('tgt-net').value=t['Target Net']||'';
+  document.getElementById('tgt-orders').value=t['Target Orders']||'';
+  document.getElementById('tgt-roi').value=t['Target ROI']||'';
+  document.getElementById('tgt-notes').value=t['Notes']||'';
+  calcTargetCommission();
+  document.getElementById('tgt-row-num').value=rowNum;
+  document.getElementById('targetModal').classList.add('open');
+}
+
+async function saveTarget(){
+  const clientId=document.getElementById('tgt-cid').value;
+  const month=document.getElementById('tgt-month').value.trim();
+  const gross=document.getElementById('tgt-gross').value;
+  const net=document.getElementById('tgt-net').value;
+  if(!clientId){showToast('Select a client!','error');return;}
+  if(!month){showToast('Month is required!','error');return;}
+  if(!gross||!net){showToast('Target Gross and Net are required!','error');return;}
+  const c=allClients.find(x=>x['ID']===clientId);
+  const deal=parseFloat((document.getElementById('tgt-deal').value||'0').replace('%',''))||0;
+  const expComm=((parseFloat(net)||0)*deal)/100;
+  const btn=document.getElementById('targetSaveBtn');const orig=btn.textContent;
+  btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
+  const row=[clientId,c?c['Client Name']:'',document.getElementById('tgt-dept').value,month,document.getElementById('tgt-deal').value,document.getElementById('tgt-mgr-id').value,gross,net,document.getElementById('tgt-orders').value||'0',document.getElementById('tgt-roi').value||'0',expComm.toFixed(2),document.getElementById('tgt-notes').value,'',''];
+  try{
+    if(editMode&&editRowNum)await gAction({action:'update',sheet:'Targets',rowNum:editRowNum,row:JSON.stringify(row)});
+    else await gAction({action:'write',sheet:'Targets',row:JSON.stringify(row)});
+    closeModal('targetModal');showToast('Target saved!','success');setTimeout(()=>loadAll(true).then(()=>renderTargets()),3000);
+  }catch(e){showToast('Error: '+e.message,'error');}
+  btn.innerHTML=orig;btn.disabled=false;
+}
+
+function getTargetStatus(achPct,isAtRisk){
+  if(isAtRisk)return{label:'At Risk',cls:'pill-red',score:0};
+  if(achPct>=90)return{label:'Achieved',cls:'pill-green',score:Math.min(100,achPct)};
+  if(achPct>=70)return{label:'On Track',cls:'pill-amber',score:achPct};
+  if(achPct>=40)return{label:'Behind',cls:'pill-red',score:achPct};
+  return{label:'Critical',cls:'pill-red',score:achPct};
+}
+
+function getScoreColor(score){
+  if(score>=80)return'#16a34a';
+  if(score>=50)return'#d97706';
+  return'#dc2626';
+}
+
+function calcAchPct(target,actual){
+  if(!target||parseFloat(target)===0)return 0;
+  return Math.round((parseFloat(actual)||0)/(parseFloat(target))*100);
+}
+
+function renderTargets(data){
+  const list=data||allTargets;
+  const now=new Date();
+  const curMonth=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][now.getMonth()]+' '+now.getFullYear();
+  document.getElementById('tgt-month-label').textContent=curMonth;
+
+  // Calculate At Risk accounts (missed target 2+ months in a row)
+  const clientIds=[...new Set(allTargets.map(t=>t['Client ID']))];
+  const atRiskIds=clientIds.filter(id=>{
+    const clientTargets=allTargets.filter(t=>t['Client ID']===id).slice(-3);
+    let missCount=0;
+    for(const t of clientTargets){
+      const prog=allProgress.find(p=>p['Client ID']===t['Client ID']&&p['Month']===t['Month']);
+      if(prog){const ach=calcAchPct(t['Target Net'],prog['Net Profit']);if(ach<70)missCount++;}
+      else missCount++;
+    }
+    return missCount>=2;
+  });
+  document.getElementById('tgt-at-risk').textContent=atRiskIds.length;
+
+  // Forecast by dept
+  const curTargets=allTargets.filter(t=>t['Month']===curMonth);
+  const totalForecast=curTargets.reduce((a,t)=>a+(parseFloat(t['Expected Commission'])||0),0);
+  const eForecastByDept=dept=>curTargets.filter(t=>t['Department']===dept).reduce((a,t)=>a+(parseFloat(t['Expected Commission'])||0),0);
+  document.getElementById('tgt-forecast-total').textContent=fmt(totalForecast);
+  document.getElementById('tgt-forecast-ebay').textContent=fmt(eForecastByDept('eBay'));
+  document.getElementById('tgt-forecast-walmart').textContent=fmt(eForecastByDept('Walmart'));
+  document.getElementById('tgt-forecast-tiktok').textContent=fmt(eForecastByDept('TikTok'));
+  document.getElementById('tgt-count').textContent=curTargets.length;
+  document.getElementById('tgt-expected-comm').textContent=fmt(curTargets.reduce((a,t)=>a+(parseFloat(t['Expected Commission'])||0),0));
+
+  // Actual commission from progress for current month
+  const curProgress=allProgress.filter(p=>p['Month']===curMonth);
+  document.getElementById('tgt-actual-comm').textContent=fmt(curProgress.reduce((a,p)=>a+(parseFloat(p['PYB Commission'])||0),0));
+
+  // Render table
+  if(list.length===0){
+    document.getElementById('tgt-body').innerHTML='<tr><td colspan="17"><div class="empty-state"><p>No targets set yet. Click "+ Set Target" to add your first target.</p></div></td></tr>';
+    document.getElementById('tgt-team-kpi').innerHTML='<div class="empty-state"><p>No targets yet</p></div>';
+    return;
+  }
+
+  document.getElementById('tgt-body').innerHTML=list.map(t=>{
+    const prog=allProgress.find(p=>(p['Client ID']===t['Client ID']||p['Client Name']===t['Client Name'])&&p['Month']===t['Month']);
+    const actGross=prog?parseFloat(prog['Gross Revenue'])||0:null;
+    const actNet=prog?parseFloat(prog['Net Profit'])||0:null;
+    const actComm=prog?parseFloat(prog['PYB Commission'])||0:null;
+    const actCogs=prog?parseFloat(prog['Cost of Goods'])||0:0;
+    const salesAch=actGross!==null?calcAchPct(t['Target Gross'],actGross):null;
+    const profAch=actNet!==null?calcAchPct(t['Target Net'],actNet):null;
+    const actRoi=actNet!==null&&actCogs>0?((actNet/actCogs)*100).toFixed(1):null;
+    const isAtRisk=atRiskIds.includes(t['Client ID']);
+    const mainAch=profAch!==null?profAch:0;
+    const status=getTargetStatus(mainAch,isAtRisk);
+    const score=prog?Math.round((salesAch+profAch)/2):0;
+    const c=allClients.find(x=>x['ID']===t['Client ID']);
+    const storeName=c?c['Store Name']:t['Client Name']||'--';
+
+    const achBadge=(pct)=>{
+      if(pct===null)return'<span style="color:#9ca3af;font-size:10px">No data</span>';
+      const col=pct>=90?'#16a34a':pct>=70?'#d97706':'#dc2626';
+      return'<span style="color:'+col+';font-weight:700;font-size:11px">'+pct+'%</span>';
+    };
+
+    return'<tr>'+
+      '<td style="color:#6b7280;font-size:10px;font-weight:700">'+t['Client ID']+'</td>'+
+      '<td><b style="font-size:11px">'+storeName+'</b></td>'+
+      '<td>'+tag(t['Department'])+'</td>'+
+      '<td style="font-size:11px">'+t['Month']+'</td>'+
+      '<td style="color:#6b7280">'+fmt(t['Target Gross'])+'</td>'+
+      '<td style="font-weight:700">'+(actGross!==null?fmt(actGross):'<span style="color:#9ca3af;font-size:10px">Pending</span>')+'</td>'+
+      '<td>'+achBadge(salesAch)+'</td>'+
+      '<td style="color:#6b7280">'+fmt(t['Target Net'])+'</td>'+
+      '<td style="font-weight:700;color:#16a34a">'+(actNet!==null?fmt(actNet):'<span style="color:#9ca3af;font-size:10px">Pending</span>')+'</td>'+
+      '<td>'+achBadge(profAch)+'</td>'+
+      '<td style="color:#6b7280">'+(t['Target ROI']||'--')+'%</td>'+
+      '<td style="font-weight:700">'+(actRoi!==null?actRoi+'%':'<span style="color:#9ca3af;font-size:10px">--</span>')+'</td>'+
+      '<td style="color:#7c3aed;font-weight:700">'+fmt(t['Expected Commission'])+'</td>'+
+      '<td style="color:#16a34a;font-weight:700">'+(actComm!==null?fmt(actComm):'<span style="color:#9ca3af;font-size:10px">Pending</span>')+'</td>'+
+      '<td><span style="font-weight:700;font-size:13px;color:'+getScoreColor(score)+'">'+score+'</span><span style="font-size:9px;color:#9ca3af">/100</span></td>'+
+      '<td><span class="status-pill '+status.cls+'">'+status.label+'</span>'+(isAtRisk?'<span class="status-pill pill-red" style="margin-left:3px;font-size:8px">AT RISK</span>':'')+'</td>'+
+      '<td style="white-space:nowrap"><button class="btn-edit" onclick="openEditTargetForm('+t._row+')">Edit</button><button class="btn-del" onclick="confirmDelete('Targets','+t._row+','target')">Del</button></td>'+
+    '</tr>';
+  }).join('');
+
+  // Team KPI Summary
+  const memberNames=[...new Set(allTeam.filter(m=>m['Status']==='Active').map(m=>m['Full Name']))];
+  document.getElementById('tgt-team-kpi').innerHTML=memberNames.length===0?'<div class="empty-state"><p>No team members</p></div>':'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">'+memberNames.map(name=>{
+    const m=allTeam.find(x=>x['Full Name']===name);
+    const memberClients=allClients.filter(c=>c['Account Manager']===name);
+    const memberTargets=allTargets.filter(t=>memberClients.some(c=>c['ID']===t['Client ID'])&&t['Month']===curMonth);
+    let totalAch=0,counted=0;
+    memberTargets.forEach(t=>{
+      const prog=allProgress.find(p=>(p['Client ID']===t['Client ID'])&&p['Month']===t['Month']);
+      if(prog){totalAch+=calcAchPct(t['Target Net'],prog['Net Profit']);counted++;}
+    });
+    const avgAch=counted>0?Math.round(totalAch/counted):null;
+    const expComm=memberTargets.reduce((a,t)=>a+(parseFloat(t['Expected Commission'])||0),0);
+    const actComm=memberTargets.reduce((a,t)=>{const prog=allProgress.find(p=>p['Client ID']===t['Client ID']&&p['Month']===t['Month']);return a+(prog?parseFloat(prog['PYB Commission'])||0:0);},0);
+    const sc=avgAch!==null?getScoreColor(avgAch):'#6b7280';
+    return'<div class="card" style="margin-bottom:0;border-left:3px solid '+sc+'"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px"><div><div style="font-size:10px;color:#2E8B57;font-weight:700">'+(m?m['Member ID']:'--')+'</div><div style="font-size:12px;font-weight:700;color:#0f2044">'+name+'</div><div style="font-size:10px;color:#6b7280">'+(m?m['Role']:'')+'</div></div><div style="text-align:right"><div style="font-size:18px;font-weight:700;color:'+sc+'">'+(avgAch!==null?avgAch+'%':'--')+'</div><div style="font-size:9px;color:#6b7280">Avg Achievement</div></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px"><div><div style="color:#6b7280">Accounts</div><div style="font-weight:700">'+memberClients.length+'</div></div><div><div style="color:#6b7280">Targets Set</div><div style="font-weight:700">'+memberTargets.length+'</div></div><div><div style="color:#6b7280">Exp. Commission</div><div style="font-weight:700;color:#7c3aed">'+fmt(expComm)+'</div></div><div><div style="color:#6b7280">Actual Commission</div><div style="font-weight:700;color:#16a34a">'+fmt(actComm)+'</div></div></div></div>';
+  }).join('')+'</div>';
+}
+
+function filterTargets(){
+  const m=document.getElementById('tgt-month-filter').value;
+  const d=document.getElementById('tgt-dept-filter').value;
+  const s=document.getElementById('tgt-status-filter').value;
+  const now=new Date();
+  const curMonth=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][now.getMonth()]+' '+now.getFullYear();
+  const clientIds=[...new Set(allTargets.map(t=>t['Client ID']))];
+  const atRiskIds=clientIds.filter(id=>{
+    const ct=allTargets.filter(t=>t['Client ID']===id).slice(-3);
+    let mc=0;
+    for(const t of ct){const p=allProgress.find(p=>p['Client ID']===t['Client ID']&&p['Month']===t['Month']);if(p){const a=calcAchPct(t['Target Net'],p['Net Profit']);if(a<70)mc++;}else mc++;}
+    return mc>=2;
+  });
+  let list=allTargets.filter(t=>{
+    if(m&&t['Month']!==m)return false;
+    if(d&&t['Department']!==d)return false;
+    if(s){
+      const prog=allProgress.find(p=>p['Client ID']===t['Client ID']&&p['Month']===t['Month']);
+      const ach=prog?calcAchPct(t['Target Net'],prog['Net Profit']):0;
+      const isAtRisk=atRiskIds.includes(t['Client ID']);
+      const st=getTargetStatus(ach,isAtRisk);
+      if(s==='achieved'&&st.label!=='Achieved')return false;
+      if(s==='on_track'&&st.label!=='On Track')return false;
+      if(s==='behind'&&st.label!=='Behind')return false;
+      if(s==='critical'&&st.label!=='Critical')return false;
+      if(s==='at_risk'&&!isAtRisk)return false;
+    }
+    return true;
+  });
+  renderTargets(list);
 }
 
 function showToast(msg,type='info'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast toast-'+type;t.style.display='block';setTimeout(()=>t.style.display='none',4000);}
