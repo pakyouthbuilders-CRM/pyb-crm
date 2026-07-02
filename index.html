@@ -639,27 +639,38 @@ let allClients=[],allPayments=[],allProgress=[],allTeam=[],allTasks=[],allAttend
 let editMode=false,editRowNum=null,currentUser=null;
 
 async function doLogin(){
-  const user=document.getElementById('loginUser').value.trim();
-  const pass=document.getElementById('loginPass').value.trim();
-  const err=document.getElementById('loginError');
+  var user=document.getElementById('loginUser').value.trim();
+  var pass=document.getElementById('loginPass').value.trim();
+  var err=document.getElementById('loginError');
   err.style.display='none';
-  if(!user||!pass){err.textContent='Please enter username and password!';err.style.display='block';return;}
-  const btn=document.querySelector('.login-btn');
-  btn.textContent='Please wait...';btn.disabled=true;
-  try{await loadAll(true);}catch(e){console.log('preload error',e);}
+  if(!user||!pass){err.textContent='Please enter credentials!';err.style.display='block';return;}
+  var btn=document.querySelector('.login-btn');
+  btn.textContent='Loading...';btn.disabled=true;
+  // Admin check first - no data load needed
   if(user===ADMIN_USER&&pass===ADMIN_PASS){
     currentUser={name:'Admin',role:'Admin / Owner',isAdmin:true,memberData:null};
+    try{await loadAll(true);}catch(e){console.error('Data load error:',e);}
     btn.textContent='Login';btn.disabled=false;
-    loginSuccess();return;
+    loginSuccess();
+    return;
   }
-  const member=allTeam.find(m=>m['Username']&&m['Username'].trim()===user&&m['Password']&&m['Password'].trim()===pass&&m['Status']==='Active');
+  // Load team data for member login
+  try{await loadAll(true);}catch(e){console.error('Load error:',e);}
+  var member=null;
+  for(var i=0;i<allTeam.length;i++){
+    var m=allTeam[i];
+    if(m['Username']&&m['Username'].trim()===user&&m['Password']&&m['Password'].trim()===pass&&m['Status']==='Active'){
+      member=m;break;
+    }
+  }
   if(member){
     currentUser={name:member['Full Name'],role:member['Role'],isAdmin:false,memberData:member};
     btn.textContent='Login';btn.disabled=false;
-    loginSuccess();return;
+    loginSuccess();
+    return;
   }
   err.textContent='Invalid username or password!';err.style.display='block';
-  btn.textContent='Login';btn.disabled=false;
+  btn.textContent='Login →';btn.disabled=false;
 }
 
 function loginSuccess(){
@@ -1558,12 +1569,12 @@ function generateInvoicePDF(rowNum){
   const p=allPayments.find(x=>x._row===rowNum);
   if(!p){showToast('Payment not found','error');return;}
   const clientName=p['Client Name']||p['Client']||'';
-  const dept=p['Department']||p['Dept']||'';
-  // Use stored client ID column (index 9) or match by name+department
+  const pDept=p['Department']||p['Dept']||'';
+  // Use stored client ID or match by name+department
   const storedClientId=p['Client ID']||p['client_id']||'';
   let c=null;
   if(storedClientId){c=allClients.find(x=>x['ID']===storedClientId);}
-  if(!c&&dept){c=allClients.find(x=>x['Client Name']===clientName&&x['Department']===dept);}
+  if(!c&&pDept){c=allClients.find(x=>x['Client Name']===clientName&&x['Department']===pDept);}
   if(!c){c=allClients.find(x=>x['Client Name']===clientName);}
   const manager=c?allTeam.find(m=>m['Full Name']===c['Account Manager']):null;
   const managerId=manager?manager['Member ID']:'--';
@@ -1636,11 +1647,10 @@ function generateProgressPDF(rowNum,imgData){
   const p=allProgress.find(x=>x._row===rowNum);
   if(!p){showToast('Progress record not found','error');return;}
   const clientId=p['Client ID']||'--';
-  const dept=p['Department']||'';
   // Match by ID first, then by name+department to avoid duplicate name issue
   let c=null;
   if(clientId&&clientId!=='--'){c=allClients.find(x=>x['ID']===clientId);}
-  if(!c&&dept){c=allClients.find(x=>x['Client Name']===p['Client Name']&&x['Department']===dept);}
+  if(!c&&p['Department']){c=allClients.find(x=>x['Client Name']===p['Client Name']&&x['Department']===p['Department']);}
   if(!c){c=allClients.find(x=>x['Client Name']===p['Client Name']);}
   const manager=c?allTeam.find(m=>m['Full Name']===c['Account Manager']):null;
   const managerId=manager?manager['Member ID']:'--';
