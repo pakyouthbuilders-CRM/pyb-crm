@@ -1156,13 +1156,13 @@ function openEditPaymentForm(rowNum){
   const hidEl=document.getElementById('p-client-id-hidden');
   if(hidEl){
     // Try to find client ID from stored data or from client name match with department
-    const dept=p['Department']||p['Dept']||'';
+    const editDept=p['Department']||p['Dept']||'';
     const cName=p['Client Name']||p['Client']||'';
     const storedId=p['Client ID']||p['client_id']||'';
     if(storedId){hidEl.value=storedId;}
     else{
       // Find by name AND department to avoid duplicate name issue
-      const matchedClient=allClients.find(x=>x['Client Name']===cName&&(!dept||x['Department']===dept));
+      const matchedClient=allClients.find(x=>x['Client Name']===cName&&(!editDept||x['Department']===editDept));
       hidEl.value=matchedClient?matchedClient['ID']:'';
     }
   }
@@ -1579,7 +1579,6 @@ function generateInvoicePDF(rowNum){
   const manager=c?allTeam.find(m=>m['Full Name']===c['Account Manager']):null;
   const managerId=manager?manager['Member ID']:'--';
   const invNo=p['Invoice No']||p['Invoice']||'INV-001';
-  const dept=p['Department']||p['Dept']||'--';
   const month=p['Month']||'--';
   const status=p['Status']||'--';
   const dateRec=p['Date Received']||p['Date']||today();
@@ -1594,7 +1593,7 @@ function generateInvoicePDF(rowNum){
   doc.setFillColor(...navy);doc.rect(0,0,W,42,'F');
   doc.setFillColor(...green);doc.circle(24,21,11,'F');
   doc.setTextColor(255,255,255);doc.setFontSize(9);doc.setFont('helvetica','bold');doc.text('PYB',24,19,{align:'center'});
-  doc.setFontSize(6.5);doc.setFont('helvetica','normal');doc.text('Together',24,24,{align:'center'});
+  doc.setFontSize(5.5);doc.setFont('helvetica','normal');doc.text('We Build',24,24,{align:'center'});doc.text('We Rise',24,28,{align:'center'});
   doc.setTextColor(255,255,255);doc.setFontSize(18);doc.setFont('helvetica','bold');doc.text('Pak Youth Builders',39,18);
   doc.setFontSize(9);doc.setFont('helvetica','normal');doc.setTextColor(180,210,255);doc.text('Together We Build, Together We Rise',39,25);
   doc.setTextColor(255,255,255);doc.setFontSize(24);doc.setFont('helvetica','bold');doc.text('INVOICE',W-14,18,{align:'right'});
@@ -1606,7 +1605,7 @@ function generateInvoicePDF(rowNum){
   doc.text('BILLED TO',15,55);doc.text('INVOICE DETAILS',W/2+5,55);
   doc.setTextColor(15,15,15);doc.setFontSize(13);doc.setFont('helvetica','bold');doc.text(clientName,15,63);
   doc.setFontSize(9);doc.setFont('helvetica','normal');doc.setTextColor(80,80,80);
-  doc.text(dept+' Department',15,70);doc.text('Store: '+storeName,15,77);
+  doc.text(pDept+' Department',15,70);doc.text('Store: '+storeName,15,77);
   doc.setFontSize(9);doc.setTextColor(60,60,60);
   doc.text('Period: '+month,W/2+5,63);doc.text('Deal Type: '+dealType,W/2+5,70);
   doc.text('Deal Rate: '+dealPct,W/2+5,77);doc.text('Manager ID: '+managerId,W/2+5,84);
@@ -1654,7 +1653,7 @@ function generateProgressPDF(rowNum,imgData){
   if(!c){c=allClients.find(x=>x['Client Name']===p['Client Name']);}
   const manager=c?allTeam.find(m=>m['Full Name']===c['Account Manager']):null;
   const managerId=manager?manager['Member ID']:'--';
-  const dept=p['Department']||c?.['Department']||'--';
+  const progDept=p['Department']||c?.['Department']||'--';
   const storeName=c?c['Store Name']:'--';
   const month=p['Month']||'--';
   const perf=p['Performance']||'Good';
@@ -1682,7 +1681,7 @@ function generateProgressPDF(rowNum,imgData){
   doc.setFillColor(...green);doc.rect(0,42,W*0.6,3,'F');doc.setFillColor(10,80,130);doc.rect(W*0.6,42,W*0.4,3,'F');
   doc.setFillColor(248,250,251);doc.rect(0,45,W,18,'F');
   doc.setDrawColor(220,220,220);doc.setLineWidth(0.2);doc.line(0,63,W,63);
-  const fields=[['CLIENT ID',clientId],['DEPARTMENT',dept],['STORE',storeName],['MANAGER ID',managerId],['PERFORMANCE',perf]];
+  const fields=[['CLIENT ID',clientId],['DEPARTMENT',progDept],['STORE',storeName],['MANAGER ID',managerId],['PERFORMANCE',perf]];
   fields.forEach((f,i)=>{
     const x=14+i*40;
     doc.setTextColor(130,130,130);doc.setFontSize(7);doc.setFont('helvetica','normal');doc.text(f[0],x,52);
