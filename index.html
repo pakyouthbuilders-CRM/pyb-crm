@@ -742,6 +742,12 @@ async function loadAll(silent=false){
     allClients=toObj(cr);allPayments=toObj(pr);allProgress=toObj(pgr);
     allTeam=toObj(tm);allTasks=toObj(tk);allAttendance=toObj(at);allUpdates=toObj(ud);
     allTargets=toObj(tg);
+    // Sheet column A is "Client ID" - map it to 'ID' for consistency
+    allClients.forEach(c=>{
+      if(!c['ID']||c['ID']===''||c['ID']==='undefined'){
+        c['ID']=c['Client ID']||'';
+      }
+    });
     populateSelects();
     if(currentUser){
       if(currentUser.isAdmin){renderDashboard();renderMaster();renderPayments();renderProgress();renderTeam();renderTasks();renderAttendance();renderUpdates();}
