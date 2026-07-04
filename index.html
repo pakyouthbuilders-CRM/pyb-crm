@@ -1012,14 +1012,48 @@ function viewMember(id){
   const mu=allUpdates.filter(u=>u['Member Name']===m['Full Name']);
   const ma=allAttendance.filter(a=>a['Member Name']===m['Full Name']);
   const mpp=allPersonalProgress.filter(p=>p['Member ID']===id);
-  const idx2=allTeam.indexOf(m);
+  const i2=allTeam.indexOf(m);
   const assignedIds=allTeamAssignments.filter(a=>a['Member ID']===id).map(a=>a['Client ID']).join(', ')||'None';
   const totalComm=mpp.reduce((a,p)=>a+(parseFloat(p['Commission'])||0),0);
+
+  const clientsHtml=mc.length===0
+    ?'<div class="empty-state"><p>No accounts assigned. Use + Assign Account button.</p></div>'
+    :'<div class="table-wrap"><table><thead><tr><th>Client ID</th><th>Client</th><th>Dept</th><th>Store</th><th>Deal %</th><th>Status</th><th>Action</th></tr></thead><tbody>'+
+    mc.map(function(c){
+      var asgn=allTeamAssignments.find(function(a){return a['Member ID']===id&&(a['Client ID']===c['ID']||a['Client ID']===c['Client ID']);});
+      return '<tr><td>'+c['ID']+'</td><td><b>'+(c['Client Name']||'?')+'</b></td><td>'+tag(c['Department'])+'</td><td>'+(c['Store Name']||'?')+'</td><td style="color:#185FA5;font-weight:700">'+(asgn?asgn['Deal %']:c['Deal %']||'?')+'</td><td>'+pill(c['Status'])+'</td><td><button class="btn-del" onclick="removeAssignment(''+id+'',''+c['ID']+'')">Remove</button></td></tr>';
+    }).join('')+'</tbody></table></div>';
+
+  const ppHtml=mpp.length===0
+    ?'<div class="empty-state"><p>No personal progress records yet.</p></div>'
+    :'<div class="kpi-grid" style="margin-bottom:12px">'+
+      '<div class="kpi-card"><div class="kpi-label">Total Records</div><div class="kpi-val">'+mpp.length+'</div></div>'+
+      '<div class="kpi-card"><div class="kpi-label">Total Commission</div><div class="kpi-val kpi-up">'+fmt(totalComm)+'</div></div>'+
+      '<div class="kpi-card"><div class="kpi-label">Total Orders</div><div class="kpi-val">'+mpp.reduce(function(a,p){return a+(parseInt(p['Orders'])||0);},0)+'</div></div>'+
+      '<div class="kpi-card"><div class="kpi-label">Accounts Worked</div><div class="kpi-val">'+(new Set(mpp.map(function(p){return p['Account (Client ID)']||p['Client ID']||'';}))  ).size+'</div></div>'+
+    '</div>'+
+    '<div class="table-wrap"><table><thead><tr><th>Month</th><th>Client ID</th><th>SKU Ref</th><th>Gross</th><th>COGS</th><th>Net Profit</th><th>Deal %</th><th>Commission</th><th>Notes</th><th>Del</th></tr></thead><tbody>'+
+    mpp.map(function(p){
+      return '<tr><td>'+(p['Month']||'?')+'</td><td style="color:#6b7280;font-size:10px;font-weight:700">'+(p['Account (Client ID)']||p['Client ID']||'?')+'</td><td style="font-size:10px">'+(p['SKU Ref']||'--')+'</td><td>'+fmt(p['Gross Revenue'])+'</td><td>'+fmt(p['COGS'])+'</td><td style="color:#16a34a;font-weight:700">'+fmt(p['Net Profit'])+'</td><td style="color:#185FA5;font-weight:700">'+(p['Deal %']||'?')+'</td><td style="color:#d97706;font-weight:700">'+fmt(p['Commission'])+'</td><td style="font-size:10px;color:#6b7280">'+(p['Notes']||'--')+'</td><td><button class="btn-del" onclick="confirmDelete('PersonalProgress','+p._row+','record')">Del</button></td></tr>';
+    }).join('')+'</tbody></table></div>';
+
+  const tasksHtml=mt.length===0?'<div class="empty-state"><p>No tasks</p></div>':mt.map(function(t){
+    return '<div class="task-card '+(t['Priority']||'').toLowerCase()+' '+(isOverdue(t['Due Date'])&&t['Status']!=='Done'?'overdue':'')+'"><div class="task-title">'+(t['Task Title']||'?')+(isOverdue(t['Due Date'])&&t['Status']!=='Done'?'<span class="status-pill pill-red" style="margin-left:6px">OVERDUE</span>':'')+'</div><div class="task-meta">Due: '+(t['Due Date']||'?')+'</div><div class="task-footer"><span class="pdot pdot-'+(t['Priority']||'low').toLowerCase()+'"></span>'+(t['Priority']||'?')+pill(t['Status'])+'</div></div>';
+  }).join('');
+
+  const updatesHtml=mu.length===0?'<div class="empty-state"><p>No updates</p></div>':mu.slice().reverse().map(function(u){
+    return '<div class="upd-card"><div class="upd-date">'+u['Date']+' - '+u['Hours Worked']+'h</div><div class="upd-lbl">Work Done</div><div class="upd-text">'+(u['Work Done Today']||'?')+'</div>'+(u['Issues Faced']?'<div class="upd-lbl">Issues</div><div class="upd-text kpi-down">'+u['Issues Faced']+'</div>':'')+'</div>';
+  }).join('');
+
+  const attHtml=ma.length===0?'<div class="empty-state"><p>No attendance records</p></div>':
+    '<div class="table-wrap"><table><thead><tr><th>Date</th><th>Status</th><th>Check In</th><th>Check Out</th><th>Hours</th></tr></thead><tbody>'+
+    ma.slice().reverse().map(function(a){return '<tr><td>'+a['Date']+'</td><td>'+pill(a['Status'])+'</td><td>'+(a['Check In']||'?')+'</td><td>'+(a['Check Out']||'?')+'</td><td>'+(a['Hours Worked']||'?')+'</td></tr>';}).join('')+
+    '</tbody></table></div>';
 
   pv.innerHTML=
     '<button class="back-btn" onclick="backToTeamList()">&#8592; Back to Team</button>'+
     '<div class="profile-header">'+
-      '<div class="profile-avatar" style="background:'+aColor(idx2)+'">'+ini(m['Full Name'])+'</div>'+
+      '<div class="profile-avatar" style="background:'+aColor(i2)+'">'+ini(m['Full Name'])+'</div>'+
       '<div style="flex:1">'+
         '<div style="font-size:9px;color:#2E8B57;font-weight:700;margin-bottom:3px">'+(m['Member ID']||'?')+'</div>'+
         '<div class="profile-name">'+(m['Full Name']||'?')+'</div>'+
@@ -1029,16 +1063,16 @@ function viewMember(id){
       '</div>'+
       '<div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">'+
         '<button class="btn-update" onclick="openEditMemberForm(''+id+'')">Edit</button>'+
-        '<button class="btn-add" onclick="openTaskFormForMember(''+m['Full Name']+'')">+ Assign Task</button>'+
-        '<button class="btn-add" style="background:#7c3aed" onclick="openAssignAccountModal(''+id+'',''+m['Full Name']+'')">+ Assign Account</button>'+
-        '<button class="btn-add" style="background:#16a34a" onclick="openPersonalProgressModal(''+id+'',''+m['Full Name']+'')">+ Personal Progress</button>'+
+        '<button class="btn-add" onclick="openTaskFormForMember(''+m['Full Name'].replace(/'/g,"\'")+'')">+ Assign Task</button>'+
+        '<button class="btn-add" style="background:#7c3aed" onclick="openAssignAccountModal(''+id+'',''+m['Full Name'].replace(/'/g,"\'")+'')">+ Assign Account</button>'+
+        '<button class="btn-add" style="background:#16a34a" onclick="openPersonalProgressModal(''+id+'',''+m['Full Name'].replace(/'/g,"\'")+'')">+ Personal Progress</button>'+
       '</div>'+
     '</div>'+
     '<div class="kpi-grid" style="margin-bottom:14px">'+
       '<div class="kpi-card"><div class="kpi-label">Assigned Clients</div><div class="kpi-val">'+mc.length+'</div></div>'+
-      '<div class="kpi-card"><div class="kpi-label">Tasks Done</div><div class="kpi-val kpi-up">'+mt.filter(t=>t['Status']==='Done').length+'</div></div>'+
+      '<div class="kpi-card"><div class="kpi-label">Tasks Done</div><div class="kpi-val kpi-up">'+mt.filter(function(t){return t['Status']==='Done';}).length+'</div></div>'+
       '<div class="kpi-card"><div class="kpi-label">Total Commission</div><div class="kpi-val kpi-up">'+fmt(totalComm)+'</div></div>'+
-      '<div class="kpi-card"><div class="kpi-label">Attendance Days</div><div class="kpi-val">'+ma.filter(a=>a['Status']==='Present'||a['Status']==='Remote').length+'</div></div>'+
+      '<div class="kpi-card"><div class="kpi-label">Attendance Days</div><div class="kpi-val">'+ma.filter(function(a){return a['Status']==='Present'||a['Status']==='Remote';}).length+'</div></div>'+
     '</div>'+
     '<div class="tabs">'+
       '<div class="tab active" onclick="swTab('mv','clients',this)">Clients ('+mc.length+')</div>'+
@@ -1047,61 +1081,11 @@ function viewMember(id){
       '<div class="tab" onclick="swTab('mv','updates',this)">Updates ('+mu.length+')</div>'+
       '<div class="tab" onclick="swTab('mv','att',this)">Attendance ('+ma.length+')</div>'+
     '</div>'+
-    // CLIENTS TAB
-    '<div id="mv-clients" class="tab-content active">'+
-      (mc.length===0?'<div class="empty-state"><p>No accounts assigned yet. Use "+ Assign Account" to assign.</p></div>':
-        '<div class="table-wrap"><table><thead><tr><th>Client ID</th><th>Client</th><th>Dept</th><th>Store</th><th>Deal %</th><th>Status</th><th>Action</th></tr></thead><tbody>'+
-        mc.map(c=>{
-          const asgn=allTeamAssignments.find(a=>a['Member ID']===id&&(a['Client ID']===c['ID']||a['Client ID']===c['Client ID']));
-          return '<tr><td>'+c['ID']+'</td><td><b>'+(c['Client Name']||'?')+'</b></td><td>'+tag(c['Department'])+'</td><td>'+(c['Store Name']||'?')+'</td><td style="color:#185FA5;font-weight:700">'+(asgn?asgn['Deal %']:c['Deal %']||'?')+'</td><td>'+pill(c['Status'])+'</td><td><button class="btn-del" onclick="removeAssignment(''+id+'',''+c['ID']+'')">Remove</button></td></tr>';
-        }).join('')+
-        '</tbody></table></div>')+
-    '</div>'+
-    // PERSONAL PROGRESS TAB
-    '<div id="mv-personal" class="tab-content">'+
-      (mpp.length===0?'<div class="empty-state"><p>No personal progress records yet.</p></div>':
-        '<div class="kpi-grid" style="margin-bottom:12px">'+
-          '<div class="kpi-card"><div class="kpi-label">Total Records</div><div class="kpi-val">'+mpp.length+'</div></div>'+
-          '<div class="kpi-card"><div class="kpi-label">Total Commission</div><div class="kpi-val kpi-up">'+fmt(totalComm)+'</div></div>'+
-          '<div class="kpi-card"><div class="kpi-label">Total Orders</div><div class="kpi-val">'+mpp.reduce((a,p)=>a+(parseInt(p['Orders'])||0),0)+'</div></div>'+
-          '<div class="kpi-card"><div class="kpi-label">Accounts Worked</div><div class="kpi-val">'+(new Set(mpp.map(p=>p['Account (Client ID)']||p['Client ID']))).size+'</div></div>'+
-        '</div>'+
-        '<div class="table-wrap"><table><thead><tr><th>Month</th><th>Client ID</th><th>SKU Ref</th><th>Gross Revenue</th><th>COGS</th><th>Net Profit</th><th>Deal %</th><th>Commission</th><th>Notes</th><th>Del</th></tr></thead><tbody>'+
-        mpp.map(p=>'<tr>'+
-          '<td>'+(p['Month']||'?')+'</td>'+
-          '<td style="color:#6b7280;font-size:10px;font-weight:700">'+(p['Account (Client ID)']||p['Client ID']||'?')+'</td>'+
-          '<td style="font-size:10px">'+(p['SKU Ref']||'--')+'</td>'+
-          '<td>'+fmt(p['Gross Revenue'])+'</td>'+
-          '<td>'+fmt(p['COGS'])+'</td>'+
-          '<td style="color:#16a34a;font-weight:700">'+fmt(p['Net Profit'])+'</td>'+
-          '<td style="color:#185FA5;font-weight:700">'+(p['Deal %']||'?')+'</td>'+
-          '<td style="color:#d97706;font-weight:700">'+fmt(p['Commission'])+'</td>'+
-          '<td style="font-size:10px;color:#6b7280">'+(p['Notes']||'--')+'</td>'+
-          '<td><button class="btn-del" onclick="confirmDelete('PersonalProgress','+p._row+','record')">Del</button></td>'+
-        '</tr>').join('')+
-        '</tbody></table></div>')+
-    '</div>'+
-    // TASKS TAB
-    '<div id="mv-tasks" class="tab-content">'+
-      (mt.length===0?'<div class="empty-state"><p>No tasks</p></div>':
-        mt.map(t=>'<div class="task-card '+(t['Priority']||'').toLowerCase()+' '+(isOverdue(t['Due Date'])&&t['Status']!=='Done'?'overdue':'')+'">'+
-          '<div class="task-title">'+(t['Task Title']||'?')+(isOverdue(t['Due Date'])&&t['Status']!=='Done'?'<span class="status-pill pill-red" style="margin-left:6px">OVERDUE</span>':'')+'</div>'+
-          '<div class="task-meta">Due: '+(t['Due Date']||'?')+'</div>'+
-          '<div class="task-footer"><span class="pdot pdot-'+(t['Priority']||'low').toLowerCase()+'"></span>'+(t['Priority']||'?')+pill(t['Status'])+'</div>'+
-        '</div>').join(''))+
-    '</div>'+
-    // UPDATES TAB
-    '<div id="mv-updates" class="tab-content">'+
-      (mu.length===0?'<div class="empty-state"><p>No updates</p></div>':
-        mu.slice().reverse().map(u=>'<div class="upd-card"><div class="upd-date">'+u['Date']+' - '+u['Hours Worked']+'h</div><div class="upd-lbl">Work Done</div><div class="upd-text">'+(u['Work Done Today']||'?')+'</div>'+(u['Issues Faced']?'<div class="upd-lbl">Issues</div><div class="upd-text kpi-down">'+u['Issues Faced']+'</div>':'')+'</div>').join(''))+
-    '</div>'+
-    // ATTENDANCE TAB
-    '<div id="mv-att" class="tab-content">'+
-      (ma.length===0?'<div class="empty-state"><p>No attendance records</p></div>':
-        '<div class="table-wrap"><table><thead><tr><th>Date</th><th>Status</th><th>Check In</th><th>Check Out</th><th>Hours</th></tr></thead><tbody>'+
-        ma.slice().reverse().map(a=>'<tr><td>'+a['Date']+'</td><td>'+pill(a['Status'])+'</td><td>'+(a['Check In']||'?')+'</td><td>'+(a['Check Out']||'?')+'</td><td>'+(a['Hours Worked']||'?')+'</td></tr>').join('')+
-        '</tbody></table></div>')+
-    '</div>';
+    '<div id="mv-clients" class="tab-content active">'+clientsHtml+'</div>'+
+    '<div id="mv-personal" class="tab-content">'+ppHtml+'</div>'+
+    '<div id="mv-tasks" class="tab-content">'+tasksHtml+'</div>'+
+    '<div id="mv-updates" class="tab-content">'+updatesHtml+'</div>'+
+    '<div id="mv-att" class="tab-content">'+attHtml+'</div>';
 }
 function backToTeamList(){document.getElementById('team-list-view').style.display='block';document.getElementById('team-profile-view').style.display='none';}
 function swTab(p,t,el){document.querySelectorAll('[id^="'+p+'-"]').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.getElementById(p+'-'+t).classList.add('active');el.classList.add('active');}
