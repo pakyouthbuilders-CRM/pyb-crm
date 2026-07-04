@@ -621,6 +621,72 @@ tr:hover td{background:#f8fafc}
   </div>
 </div></div>
 
+
+<!-- ASSIGN ACCOUNT MODAL -->
+<div class="modal-bg" id="assignAccountModal"><div class="modal">
+  <div class="modal-title">Assign Account to Member</div>
+  <div style="background:#f3e8ff;border:1px solid #7c3aed;border-radius:8px;padding:10px;margin-bottom:12px;font-size:12px;color:#7c3aed;font-weight:700" id="assign-member-label">Member: --</div>
+  <div class="form-group"><label>Select Account *</label>
+    <select id="assign-client-select" onchange="fillAssignClient()">
+      <option value="">Select client...</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label>Client ID</label><input id="assign-client-id" readonly style="background:#f8fafc"></div>
+    <div class="form-group"><label>Department</label><input id="assign-client-dept" readonly style="background:#f8fafc"></div>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label>Deal % for this member *</label><input id="assign-deal-pct" type="number" placeholder="e.g. 15"></div>
+    <div class="form-group"><label>Role on this account</label><input id="assign-role" placeholder="e.g. Account Manager"></div>
+  </div>
+  <div class="form-group"><label>Start Date</label><input id="assign-start-date" type="date"></div>
+  <input type="hidden" id="assign-member-id">
+  <input type="hidden" id="assign-member-name">
+  <div class="form-btns">
+    <button class="btn-cancel" onclick="closeModal('assignAccountModal')">Cancel</button>
+    <button class="btn-save" id="assignSaveBtn" onclick="saveAssignment()" style="background:#7c3aed">Assign Account</button>
+  </div>
+</div></div>
+
+<!-- PERSONAL PROGRESS MODAL -->
+<div class="modal-bg" id="personalProgressModal"><div class="modal">
+  <div class="modal-title">Add Personal Progress Record</div>
+  <div style="background:#f0f9f4;border:1px solid #2E8B57;border-radius:8px;padding:10px;margin-bottom:12px;font-size:12px;color:#16a34a;font-weight:700" id="pp-member-label">Member: --</div>
+  <div class="form-row">
+    <div class="form-group"><label>Month *</label><input id="pp-month" placeholder="Jul 2026"></div>
+    <div class="form-group"><label>Account (Client ID) *</label>
+      <select id="pp-client-select" onchange="fillPPClient()">
+        <option value="">Select assigned account...</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label>SKU Ref</label><input id="pp-sku" placeholder="Optional SKU reference"></div>
+    <div class="form-group"><label>Orders</label><input id="pp-orders" type="number" placeholder="0"></div>
+  </div>
+  <div style="background:#f0f7ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px;margin-bottom:10px">
+    <div style="font-size:11px;font-weight:700;color:#185FA5;margin-bottom:8px">Revenue (Auto-calculates commission)</div>
+    <div class="form-row" style="margin-bottom:8px">
+      <div class="form-group"><label>Gross Revenue ($)</label><input id="pp-gross" type="number" placeholder="0" oninput="calcPPCommission()"></div>
+      <div class="form-group"><label>COGS ($)</label><input id="pp-cogs" type="number" placeholder="0" oninput="calcPPCommission()"></div>
+    </div>
+    <div class="form-row" style="margin-bottom:0">
+      <div class="form-group"><label>Net Profit ($)</label><input id="pp-net" readonly style="background:#f0fff4;font-weight:700;color:#16a34a"></div>
+      <div class="form-group"><label>Deal %</label><input id="pp-deal" type="number" placeholder="0" oninput="calcPPCommission()"></div>
+    </div>
+  </div>
+  <div style="background:#f0fff4;border:1px solid #86efac;border-radius:8px;padding:10px;margin-bottom:10px">
+    <div style="font-size:11px;font-weight:700;color:#16a34a;margin-bottom:4px">Commission (Auto)</div>
+    <div style="font-size:18px;font-weight:700;color:#16a34a" id="pp-comm-preview">$0.00</div>
+  </div>
+  <div class="form-group"><label>Notes</label><input id="pp-notes" placeholder="Optional notes..."></div>
+  <input type="hidden" id="pp-member-id-hidden">
+  <input type="hidden" id="pp-member-name-hidden">
+  <div class="form-btns">
+    <button class="btn-cancel" onclick="closeModal('personalProgressModal')">Cancel</button>
+    <button class="btn-save" id="ppSaveBtn" onclick="savePersonalProgress()" style="background:#16a34a">Save Record</button>
+  </div>
+</div></div>
 <!-- CONFIRM -->
 <div class="modal-bg" id="confirmModal"><div class="modal-sm">
   <div style="font-size:28px;margin-bottom:8px">⚠️</div>
@@ -635,7 +701,7 @@ const SCRIPT='https://script.google.com/macros/s/AKfycbwrfxVlXshZxtrOIX_IL5CXLPm
 const SHEET_ID='1X6FaHYrSs96XYZMLkWBwzp23zCTjSDk13YAVp_TfYwg';
 const API_KEY='AIzaSyBevUeL-MqrlyKFxQ6VfbBDH19uAnma4nU';
 const ADMIN_USER='admin',ADMIN_PASS='admin123';
-let allClients=[],allPayments=[],allProgress=[],allTeam=[],allTasks=[],allAttendance=[],allUpdates=[],allTargets=[];
+let allClients=[],allPayments=[],allProgress=[],allTeam=[],allTasks=[],allAttendance=[],allUpdates=[],allTargets=[],allTeamAssignments=[],allPersonalProgress=[];
 let editMode=false,editRowNum=null,currentUser=null;
 
 async function doLogin(){
@@ -734,14 +800,14 @@ function toObj(rows){
 async function loadAll(silent=false){
   try{
     if(!silent)showToast('Loading...','info');
-    const[cr,pr,pgr,tm,tk,at,ud,tg]=await Promise.all([
+    const[cr,pr,pgr,tm,tk,at,ud,tg,ta,pp]=await Promise.all([
       gRead('Clients!A:O'),gRead('Payments!A:J'),gRead('Progress!A:L'),
       gRead('Team!A:K'),gRead('Tasks!A:M'),gRead('Attendance!A:H'),gRead('DailyUpdates!A:H'),
-      gRead('Targets!A:L')
+      gRead('Targets!A:L'),gRead('TeamAssignments!A:G'),gRead('PersonalProgress!A:K')
     ]);
     allClients=toObj(cr);allPayments=toObj(pr);allProgress=toObj(pgr);
     allTeam=toObj(tm);allTasks=toObj(tk);allAttendance=toObj(at);allUpdates=toObj(ud);
-    allTargets=toObj(tg);
+    allTargets=toObj(tg);allTeamAssignments=toObj(ta);allPersonalProgress=toObj(pp);
     // Sheet column A is "Client ID" - map it to 'ID' for consistency
     allClients.forEach(c=>{
       if(!c['ID']||c['ID']===''||c['ID']==='undefined'){
@@ -941,12 +1007,101 @@ function viewMember(id){
   const m=allTeam.find(x=>x['Member ID']===id);if(!m)return;
   document.getElementById('team-list-view').style.display='none';
   const pv=document.getElementById('team-profile-view');pv.style.display='block';
-  const mc=allClients.filter(c=>c['Account Manager']===m['Full Name']);
+  const mc=allClients.filter(c=>allTeamAssignments.some(a=>a['Member ID']===id&&(a['Client ID']===c['ID']||a['Client ID']===c['Client ID'])));
   const mt=allTasks.filter(t=>t['Assigned To']===m['Full Name']);
   const mu=allUpdates.filter(u=>u['Member Name']===m['Full Name']);
   const ma=allAttendance.filter(a=>a['Member Name']===m['Full Name']);
-  const idx=allTeam.indexOf(m);
-  pv.innerHTML='<button class="back-btn" onclick="backToTeamList()">Back to Team</button><div class="profile-header"><div class="profile-avatar" style="background:'+aColor(idx)+'">'+ini(m['Full Name'])+'</div><div style="flex:1"><div style="font-size:9px;color:#2E8B57;font-weight:700;margin-bottom:3px">'+(m['Member ID']||'?')+'</div><div class="profile-name">'+(m['Full Name']||'?')+'</div><div class="profile-meta">'+(m['Role']||'?')+' · '+(m['Department']||'?')+' · '+(m['Phone']||'?')+'</div><div class="profile-meta">'+(m['Email']||'?')+' · Joined: '+(m['Join Date']||'?')+'</div></div><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end"><button class="btn-update" onclick="openEditMemberForm(\''+m['Member ID']+'\')">Edit</button><button class="btn-add" onclick="openTaskFormForMember(\''+m['Full Name']+'\')">+ Assign Task</button></div></div><div class="kpi-grid" style="margin-bottom:14px"><div class="kpi-card"><div class="kpi-label">Clients</div><div class="kpi-val">'+mc.length+'</div></div><div class="kpi-card"><div class="kpi-label">Tasks Done</div><div class="kpi-val kpi-up">'+mt.filter(t=>t['Status']==='Done').length+'</div></div><div class="kpi-card"><div class="kpi-label">Updates</div><div class="kpi-val">'+mu.length+'</div></div><div class="kpi-card"><div class="kpi-label">Attendance</div><div class="kpi-val">'+ma.filter(a=>a['Status']==='Present'||a['Status']==='Remote').length+' days</div></div></div><div class="tabs"><div class="tab active" onclick="swTab(\'mv\',\'clients\',this)">Clients ('+mc.length+')</div><div class="tab" onclick="swTab(\'mv\',\'tasks\',this)">Tasks ('+mt.length+')</div><div class="tab" onclick="swTab(\'mv\',\'updates\',this)">Updates ('+mu.length+')</div><div class="tab" onclick="swTab(\'mv\',\'att\',this)">Attendance ('+ma.length+')</div></div><div id="mv-clients" class="tab-content active">'+(mc.length===0?'<div class="empty-state"><p>No clients assigned</p></div>':'<div class="table-wrap"><table><thead><tr><th>ID</th><th>Client</th><th>Dept</th><th>Store</th><th>Deal %</th><th>Status</th></tr></thead><tbody>'+mc.map(c=>'<tr><td>'+c['ID']+'</td><td><b>'+(c['Client Name']||'?')+'</b></td><td>'+tag(c['Department'])+'</td><td>'+(c['Store Name']||'?')+'</td><td>'+(c['Deal %']||'?')+'</td><td>'+pill(c['Status'])+'</td></tr>').join('')+'</tbody></table></div>')+'</div><div id="mv-tasks" class="tab-content">'+(mt.length===0?'<div class="empty-state"><p>No tasks</p></div>':mt.map(t=>'<div class="task-card '+(t['Priority']||'').toLowerCase()+' '+(isOverdue(t['Due Date'])&&t['Status']!=='Done'?'overdue':'')+'"><div class="task-title">'+(t['Task Title']||'?')+(isOverdue(t['Due Date'])&&t['Status']!=='Done'?'<span class="status-pill pill-red" style="margin-left:6px">OVERDUE</span>':'')+'</div><div class="task-meta">Due: '+(t['Due Date']||'?')+'</div><div class="task-footer"><span class="pdot pdot-'+(t['Priority']||'low').toLowerCase()+'"></span>'+(t['Priority']||'?')+'<div>'+pill(t['Status'])+'</div></div></div>').join(''))+'</div><div id="mv-updates" class="tab-content">'+(mu.length===0?'<div class="empty-state"><p>No updates</p></div>':mu.slice().reverse().map(u=>'<div class="upd-card"><div class="upd-date">'+u['Date']+' - '+u['Hours Worked']+'h</div><div class="upd-lbl">Work Done</div><div class="upd-text">'+(u['Work Done Today']||'?')+'</div>'+(u['Issues Faced']?'<div class="upd-lbl">Issues</div><div class="upd-text kpi-down">'+u['Issues Faced']+'</div>':'')+'</div>').join(''))+'</div><div id="mv-att" class="tab-content">'+(ma.length===0?'<div class="empty-state"><p>No attendance records</p></div>':'<div class="table-wrap"><table><thead><tr><th>Date</th><th>Status</th><th>Check In</th><th>Check Out</th><th>Hours</th></tr></thead><tbody>'+ma.slice().reverse().map(a=>'<tr><td>'+a['Date']+'</td><td>'+pill(a['Status'])+'</td><td>'+(a['Check In']||'?')+'</td><td>'+(a['Check Out']||'?')+'</td><td>'+(a['Hours Worked']||'?')+'</td></tr>').join('')+'</tbody></table></div>')+'</div>';
+  const mpp=allPersonalProgress.filter(p=>p['Member ID']===id);
+  const idx2=allTeam.indexOf(m);
+  const assignedIds=allTeamAssignments.filter(a=>a['Member ID']===id).map(a=>a['Client ID']).join(', ')||'None';
+  const totalComm=mpp.reduce((a,p)=>a+(parseFloat(p['Commission'])||0),0);
+
+  pv.innerHTML=
+    '<button class="back-btn" onclick="backToTeamList()">&#8592; Back to Team</button>'+
+    '<div class="profile-header">'+
+      '<div class="profile-avatar" style="background:'+aColor(idx2)+'">'+ini(m['Full Name'])+'</div>'+
+      '<div style="flex:1">'+
+        '<div style="font-size:9px;color:#2E8B57;font-weight:700;margin-bottom:3px">'+(m['Member ID']||'?')+'</div>'+
+        '<div class="profile-name">'+(m['Full Name']||'?')+'</div>'+
+        '<div class="profile-meta">'+(m['Role']||'?')+' &middot; '+(m['Department']||'?')+' &middot; '+(m['Phone']||'?')+'</div>'+
+        '<div class="profile-meta">'+(m['Email']||'?')+' &middot; Joined: '+(m['Join Date']||'?')+'</div>'+
+        '<div class="profile-meta" style="margin-top:4px">Assigned Accounts: <b style="color:#185FA5">'+assignedIds+'</b></div>'+
+      '</div>'+
+      '<div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">'+
+        '<button class="btn-update" onclick="openEditMemberForm(''+id+'')">Edit</button>'+
+        '<button class="btn-add" onclick="openTaskFormForMember(''+m['Full Name']+'')">+ Assign Task</button>'+
+        '<button class="btn-add" style="background:#7c3aed" onclick="openAssignAccountModal(''+id+'',''+m['Full Name']+'')">+ Assign Account</button>'+
+        '<button class="btn-add" style="background:#16a34a" onclick="openPersonalProgressModal(''+id+'',''+m['Full Name']+'')">+ Personal Progress</button>'+
+      '</div>'+
+    '</div>'+
+    '<div class="kpi-grid" style="margin-bottom:14px">'+
+      '<div class="kpi-card"><div class="kpi-label">Assigned Clients</div><div class="kpi-val">'+mc.length+'</div></div>'+
+      '<div class="kpi-card"><div class="kpi-label">Tasks Done</div><div class="kpi-val kpi-up">'+mt.filter(t=>t['Status']==='Done').length+'</div></div>'+
+      '<div class="kpi-card"><div class="kpi-label">Total Commission</div><div class="kpi-val kpi-up">'+fmt(totalComm)+'</div></div>'+
+      '<div class="kpi-card"><div class="kpi-label">Attendance Days</div><div class="kpi-val">'+ma.filter(a=>a['Status']==='Present'||a['Status']==='Remote').length+'</div></div>'+
+    '</div>'+
+    '<div class="tabs">'+
+      '<div class="tab active" onclick="swTab('mv','clients',this)">Clients ('+mc.length+')</div>'+
+      '<div class="tab" onclick="swTab('mv','personal',this)">Personal Progress ('+mpp.length+')</div>'+
+      '<div class="tab" onclick="swTab('mv','tasks',this)">Tasks ('+mt.length+')</div>'+
+      '<div class="tab" onclick="swTab('mv','updates',this)">Updates ('+mu.length+')</div>'+
+      '<div class="tab" onclick="swTab('mv','att',this)">Attendance ('+ma.length+')</div>'+
+    '</div>'+
+    // CLIENTS TAB
+    '<div id="mv-clients" class="tab-content active">'+
+      (mc.length===0?'<div class="empty-state"><p>No accounts assigned yet. Use "+ Assign Account" to assign.</p></div>':
+        '<div class="table-wrap"><table><thead><tr><th>Client ID</th><th>Client</th><th>Dept</th><th>Store</th><th>Deal %</th><th>Status</th><th>Action</th></tr></thead><tbody>'+
+        mc.map(c=>{
+          const asgn=allTeamAssignments.find(a=>a['Member ID']===id&&(a['Client ID']===c['ID']||a['Client ID']===c['Client ID']));
+          return '<tr><td>'+c['ID']+'</td><td><b>'+(c['Client Name']||'?')+'</b></td><td>'+tag(c['Department'])+'</td><td>'+(c['Store Name']||'?')+'</td><td style="color:#185FA5;font-weight:700">'+(asgn?asgn['Deal %']:c['Deal %']||'?')+'</td><td>'+pill(c['Status'])+'</td><td><button class="btn-del" onclick="removeAssignment(''+id+'',''+c['ID']+'')">Remove</button></td></tr>';
+        }).join('')+
+        '</tbody></table></div>')+
+    '</div>'+
+    // PERSONAL PROGRESS TAB
+    '<div id="mv-personal" class="tab-content">'+
+      (mpp.length===0?'<div class="empty-state"><p>No personal progress records yet.</p></div>':
+        '<div class="kpi-grid" style="margin-bottom:12px">'+
+          '<div class="kpi-card"><div class="kpi-label">Total Records</div><div class="kpi-val">'+mpp.length+'</div></div>'+
+          '<div class="kpi-card"><div class="kpi-label">Total Commission</div><div class="kpi-val kpi-up">'+fmt(totalComm)+'</div></div>'+
+          '<div class="kpi-card"><div class="kpi-label">Total Orders</div><div class="kpi-val">'+mpp.reduce((a,p)=>a+(parseInt(p['Orders'])||0),0)+'</div></div>'+
+          '<div class="kpi-card"><div class="kpi-label">Accounts Worked</div><div class="kpi-val">'+(new Set(mpp.map(p=>p['Account (Client ID)']||p['Client ID']))).size+'</div></div>'+
+        '</div>'+
+        '<div class="table-wrap"><table><thead><tr><th>Month</th><th>Client ID</th><th>SKU Ref</th><th>Gross Revenue</th><th>COGS</th><th>Net Profit</th><th>Deal %</th><th>Commission</th><th>Notes</th><th>Del</th></tr></thead><tbody>'+
+        mpp.map(p=>'<tr>'+
+          '<td>'+(p['Month']||'?')+'</td>'+
+          '<td style="color:#6b7280;font-size:10px;font-weight:700">'+(p['Account (Client ID)']||p['Client ID']||'?')+'</td>'+
+          '<td style="font-size:10px">'+(p['SKU Ref']||'--')+'</td>'+
+          '<td>'+fmt(p['Gross Revenue'])+'</td>'+
+          '<td>'+fmt(p['COGS'])+'</td>'+
+          '<td style="color:#16a34a;font-weight:700">'+fmt(p['Net Profit'])+'</td>'+
+          '<td style="color:#185FA5;font-weight:700">'+(p['Deal %']||'?')+'</td>'+
+          '<td style="color:#d97706;font-weight:700">'+fmt(p['Commission'])+'</td>'+
+          '<td style="font-size:10px;color:#6b7280">'+(p['Notes']||'--')+'</td>'+
+          '<td><button class="btn-del" onclick="confirmDelete('PersonalProgress','+p._row+','record')">Del</button></td>'+
+        '</tr>').join('')+
+        '</tbody></table></div>')+
+    '</div>'+
+    // TASKS TAB
+    '<div id="mv-tasks" class="tab-content">'+
+      (mt.length===0?'<div class="empty-state"><p>No tasks</p></div>':
+        mt.map(t=>'<div class="task-card '+(t['Priority']||'').toLowerCase()+' '+(isOverdue(t['Due Date'])&&t['Status']!=='Done'?'overdue':'')+'">'+
+          '<div class="task-title">'+(t['Task Title']||'?')+(isOverdue(t['Due Date'])&&t['Status']!=='Done'?'<span class="status-pill pill-red" style="margin-left:6px">OVERDUE</span>':'')+'</div>'+
+          '<div class="task-meta">Due: '+(t['Due Date']||'?')+'</div>'+
+          '<div class="task-footer"><span class="pdot pdot-'+(t['Priority']||'low').toLowerCase()+'"></span>'+(t['Priority']||'?')+pill(t['Status'])+'</div>'+
+        '</div>').join(''))+
+    '</div>'+
+    // UPDATES TAB
+    '<div id="mv-updates" class="tab-content">'+
+      (mu.length===0?'<div class="empty-state"><p>No updates</p></div>':
+        mu.slice().reverse().map(u=>'<div class="upd-card"><div class="upd-date">'+u['Date']+' - '+u['Hours Worked']+'h</div><div class="upd-lbl">Work Done</div><div class="upd-text">'+(u['Work Done Today']||'?')+'</div>'+(u['Issues Faced']?'<div class="upd-lbl">Issues</div><div class="upd-text kpi-down">'+u['Issues Faced']+'</div>':'')+'</div>').join(''))+
+    '</div>'+
+    // ATTENDANCE TAB
+    '<div id="mv-att" class="tab-content">'+
+      (ma.length===0?'<div class="empty-state"><p>No attendance records</p></div>':
+        '<div class="table-wrap"><table><thead><tr><th>Date</th><th>Status</th><th>Check In</th><th>Check Out</th><th>Hours</th></tr></thead><tbody>'+
+        ma.slice().reverse().map(a=>'<tr><td>'+a['Date']+'</td><td>'+pill(a['Status'])+'</td><td>'+(a['Check In']||'?')+'</td><td>'+(a['Check Out']||'?')+'</td><td>'+(a['Hours Worked']||'?')+'</td></tr>').join('')+
+        '</tbody></table></div>')+
+    '</div>';
 }
 function backToTeamList(){document.getElementById('team-list-view').style.display='block';document.getElementById('team-profile-view').style.display='none';}
 function swTab(p,t,el){document.querySelectorAll('[id^="'+p+'-"]').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.getElementById(p+'-'+t).classList.add('active');el.classList.add('active');}
@@ -995,7 +1150,10 @@ function filterUpdates(){const s=document.getElementById('upd-search').value.toL
 function renderMemberDashboard(){
   if(!currentUser||currentUser.isAdmin)return;
   const name=currentUser.name;
-  const mc=allClients.filter(c=>c['Account Manager']===name);
+  // Use TeamAssignments for accurate member-account mapping
+  const myAssignments=allTeamAssignments.filter(a=>a['Member ID']===currentUser.memberData?.['Member ID']||a['Member Name']===name);
+  const myClientIds=myAssignments.map(a=>a['Client ID']);
+  const mc=allClients.filter(c=>myClientIds.includes(c['ID'])||myClientIds.includes(c['Client ID']));
   const mt=allTasks.filter(t=>t['Assigned To']===name);
   const mp=mt.filter(t=>t['Status']!=='Done');
   const md=mt.filter(t=>t['Status']==='Done');
@@ -1583,7 +1741,7 @@ function generateInvoicePDF(rowNum){
   if(!c&&pDept){c=allClients.find(x=>x['Client Name']===clientName&&x['Department']===pDept);}
   if(!c){c=allClients.find(x=>x['Client Name']===clientName);}
   const manager=c?allTeam.find(m=>m['Full Name']===c['Account Manager']):null;
-  const managerId=manager?manager['Member ID']:'--';
+  const managerId=getAssignedMemberIds(clientId)||manager?manager['Member ID']:'--';
   const invNo=p['Invoice No']||p['Invoice']||'INV-001';
   const month=p['Month']||'--';
   const status=p['Status']||'--';
@@ -1658,7 +1816,8 @@ function generateProgressPDF(rowNum,imgData){
   if(!c&&p['Department']){c=allClients.find(x=>x['Client Name']===p['Client Name']&&x['Department']===p['Department']);}
   if(!c){c=allClients.find(x=>x['Client Name']===p['Client Name']);}
   const manager=c?allTeam.find(m=>m['Full Name']===c['Account Manager']):null;
-  const managerId=manager?manager['Member ID']:'--';
+  const allAssignedIds=getAssignedMemberIds(clientId);
+  const managerId=allAssignedIds!=='--'?allAssignedIds:(manager?manager['Member ID']:'--');
   const progDept=p['Department']||c?.['Department']||'--';
   const storeName=c?c['Store Name']:'--';
   const month=p['Month']||'--';
@@ -1983,6 +2142,133 @@ function filterTargets(){
     return true;
   });
   renderTargets(list);
+}
+
+
+// =============================================
+// TEAM ASSIGNMENTS & PERSONAL PROGRESS
+// =============================================
+function openAssignAccountModal(memberId, memberName){
+  document.getElementById('assign-member-id').value=memberId;
+  document.getElementById('assign-member-name').value=memberName;
+  document.getElementById('assign-member-label').textContent='Assigning to: '+memberName+' ('+memberId+')';
+  const sel=document.getElementById('assign-client-select');
+  sel.innerHTML='<option value="">Select client...</option>'+allClients.map(c=>'<option value="'+c['ID']+'">'+c['ID']+' - '+c['Client Name']+' ('+c['Department']+')</option>').join('');
+  ['assign-client-id','assign-client-dept','assign-deal-pct','assign-role'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('assign-start-date').value=today();
+  document.getElementById('assignAccountModal').classList.add('open');
+}
+
+function fillAssignClient(){
+  const sel=document.getElementById('assign-client-select');
+  const c=allClients.find(x=>x['ID']===sel.value);
+  if(c){
+    document.getElementById('assign-client-id').value=c['ID']||'';
+    document.getElementById('assign-client-dept').value=c['Department']||'';
+    // Auto-fill deal % from client profile
+    document.getElementById('assign-deal-pct').value=(c['Deal %']||'').replace('%','');
+  }
+}
+
+async function saveAssignment(){
+  const memberId=document.getElementById('assign-member-id').value;
+  const memberName=document.getElementById('assign-member-name').value;
+  const clientId=document.getElementById('assign-client-id').value;
+  const dealPct=document.getElementById('assign-deal-pct').value;
+  if(!memberId||!clientId){showToast('Member and client required!','error');return;}
+  if(!dealPct){showToast('Deal % required!','error');return;}
+  // Check if already assigned
+  const exists=allTeamAssignments.find(a=>a['Member ID']===memberId&&a['Client ID']===clientId);
+  if(exists){showToast('This account is already assigned to this member!','error');return;}
+  const btn=document.getElementById('assignSaveBtn');const orig=btn.textContent;
+  btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
+  const row=[memberId,memberName,clientId,document.getElementById('assign-role').value||'Account Manager',document.getElementById('assign-start-date').value,dealPct+'%','Active'];
+  try{
+    await gAction({action:'write',sheet:'TeamAssignments',row:JSON.stringify(row)});
+    closeModal('assignAccountModal');
+    showToast('Account assigned successfully!','success');
+    setTimeout(()=>loadAll(true).then(()=>viewMember(memberId)),3000);
+  }catch(e){showToast('Error: '+e.message,'error');}
+  btn.innerHTML=orig;btn.disabled=false;
+}
+
+async function removeAssignment(memberId, clientId){
+  const asgn=allTeamAssignments.find(a=>a['Member ID']===memberId&&a['Client ID']===clientId);
+  if(!asgn){showToast('Assignment not found','error');return;}
+  if(!confirm('Remove this account assignment?'))return;
+  try{
+    await gAction({action:'delete',sheet:'TeamAssignments',rowNum:asgn._row});
+    showToast('Assignment removed!','success');
+    setTimeout(()=>loadAll(true).then(()=>viewMember(memberId)),3000);
+  }catch(e){showToast('Error: '+e.message,'error');}
+}
+
+function openPersonalProgressModal(memberId, memberName){
+  document.getElementById('pp-member-id-hidden').value=memberId;
+  document.getElementById('pp-member-name-hidden').value=memberName;
+  document.getElementById('pp-member-label').textContent='Adding progress for: '+memberName+' ('+memberId+')';
+  // Show only assigned accounts
+  const assignedClientIds=allTeamAssignments.filter(a=>a['Member ID']===memberId).map(a=>a['Client ID']);
+  const assignedClients=allClients.filter(c=>assignedClientIds.includes(c['ID']));
+  const sel=document.getElementById('pp-client-select');
+  sel.innerHTML='<option value="">Select assigned account...</option>'+assignedClients.map(c=>'<option value="'+c['ID']+'">'+c['ID']+' - '+c['Client Name']+'</option>').join('');
+  ['pp-month','pp-sku','pp-orders','pp-gross','pp-cogs','pp-net','pp-deal','pp-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('pp-comm-preview').textContent='$0.00';
+  const now=new Date();const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('pp-month').value=months[now.getMonth()]+' '+now.getFullYear();
+  document.getElementById('personalProgressModal').classList.add('open');
+}
+
+function fillPPClient(){
+  const sel=document.getElementById('pp-client-select');
+  const memberId=document.getElementById('pp-member-id-hidden').value;
+  const c=allClients.find(x=>x['ID']===sel.value);
+  if(c){
+    // Get member-specific deal % from TeamAssignments
+    const asgn=allTeamAssignments.find(a=>a['Member ID']===memberId&&a['Client ID']===c['ID']);
+    const dealPct=(asgn?asgn['Deal %']:c['Deal %']||'0').replace('%','');
+    document.getElementById('pp-deal').value=dealPct;
+    calcPPCommission();
+  }
+}
+
+function calcPPCommission(){
+  const gross=parseFloat(document.getElementById('pp-gross').value)||0;
+  const cogs=parseFloat(document.getElementById('pp-cogs').value)||0;
+  const deal=parseFloat(document.getElementById('pp-deal').value)||0;
+  const net=gross-cogs;
+  const comm=(net*deal)/100;
+  document.getElementById('pp-net').value=net>0?net.toFixed(2):'0';
+  document.getElementById('pp-comm-preview').textContent='$'+comm.toFixed(2);
+}
+
+async function savePersonalProgress(){
+  const memberId=document.getElementById('pp-member-id-hidden').value;
+  const memberName=document.getElementById('pp-member-name-hidden').value;
+  const clientId=document.getElementById('pp-client-select').value;
+  const month=document.getElementById('pp-month').value.trim();
+  if(!memberId||!clientId||!month){showToast('Member, account and month required!','error');return;}
+  const btn=document.getElementById('ppSaveBtn');const orig=btn.textContent;
+  btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
+  const gross=parseFloat(document.getElementById('pp-gross').value)||0;
+  const cogs=parseFloat(document.getElementById('pp-cogs').value)||0;
+  const net=gross-cogs;
+  const deal=parseFloat(document.getElementById('pp-deal').value)||0;
+  const comm=(net*deal)/100;
+  const row=[memberId,memberName,clientId,month,document.getElementById('pp-sku').value||'',gross.toFixed(2),cogs.toFixed(2),net.toFixed(2),deal+'%',comm.toFixed(2),document.getElementById('pp-notes').value||''];
+  try{
+    await gAction({action:'write',sheet:'PersonalProgress',row:JSON.stringify(row)});
+    closeModal('personalProgressModal');
+    showToast('Personal progress saved!','success');
+    setTimeout(()=>loadAll(true).then(()=>viewMember(memberId)),3000);
+  }catch(e){showToast('Error: '+e.message,'error');}
+  btn.innerHTML=orig;btn.disabled=false;
+}
+
+// Update progress report PDF to show all assigned member IDs
+function getAssignedMemberIds(clientId){
+  const ids=allTeamAssignments.filter(a=>a['Client ID']===clientId).map(a=>a['Member ID']);
+  return ids.length>0?ids.join(', '):'--';
 }
 
 function showToast(msg,type='info'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast toast-'+type;t.style.display='block';setTimeout(()=>t.style.display='none',4000);}
