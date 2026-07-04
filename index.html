@@ -1065,7 +1065,7 @@ function viewMember(id){
         '<div class="profile-meta" style="margin-top:4px">Assigned Accounts: <b style="color:#185FA5">'+assignedIds+'</b></div>'+
       '</div>'+
       '<div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">'+
-        '<button class="btn-update" data-mid="'+id+'" onclick="openEditMemberForm(this.getAttribute(\'data-mid\'))">Edit</button>'+
+        '<button class="btn-update" data-mid="'+id+'" onclick="openEditMember2(this)">Edit</button>'+
         '<button class="btn-add" data-mid="'+id+'" onclick="openTaskFormForMember2(this)">+ Assign Task</button>'+
         '<button class="btn-add" style="background:#7c3aed" data-mid="'+id+'" onclick="openAssignAccountModal2(this)">+ Assign Account</button>'+
         '<button class="btn-add" style="background:#16a34a" data-mid="'+id+'" onclick="openPersonalProgressModal2(this)">+ Personal Progress</button>'+
@@ -1078,11 +1078,11 @@ function viewMember(id){
       '<div class="kpi-card"><div class="kpi-label">Attendance Days</div><div class="kpi-val">'+ma.filter(function(a){return a['Status']==='Present'||a['Status']==='Remote';}).length+'</div></div>'+
     '</div>'+
     '<div class="tabs">'+
-      '<div class="tab active" onclick="swTab('mv','clients',this)">Clients ('+mc.length+')</div>'+
-      '<div class="tab" onclick="swTab('mv','personal',this)">Personal Progress ('+mpp.length+')</div>'+
-      '<div class="tab" onclick="swTab('mv','tasks',this)">Tasks ('+mt.length+')</div>'+
-      '<div class="tab" onclick="swTab('mv','updates',this)">Updates ('+mu.length+')</div>'+
-      '<div class="tab" onclick="swTab('mv','att',this)">Attendance ('+ma.length+')</div>'+
+      '<div class="tab active" data-tab="clients" onclick="swTab2(this)">Clients ('+mc.length+')</div>'+
+      '<div class="tab" data-tab="personal" onclick="swTab2(this)">Personal Progress ('+mpp.length+')</div>'+
+      '<div class="tab" data-tab="tasks" onclick="swTab2(this)">Tasks ('+mt.length+')</div>'+
+      '<div class="tab" data-tab="updates" onclick="swTab2(this)">Updates ('+mu.length+')</div>'+
+      '<div class="tab" data-tab="att" onclick="swTab2(this)">Attendance ('+ma.length+')</div>'+
     '</div>'+
     '<div id="mv-clients" class="tab-content active">'+clientsHtml+'</div>'+
     '<div id="mv-personal" class="tab-content">'+ppHtml+'</div>'+
@@ -1091,6 +1091,11 @@ function viewMember(id){
     '<div id="mv-att" class="tab-content">'+attHtml+'</div>';
 }
 function backToTeamList(){document.getElementById('team-list-view').style.display='block';document.getElementById('team-profile-view').style.display='none';}
+function openEditMember2(btn){var mid=btn.getAttribute('data-mid')||'';openEditMemberForm(mid);}
+function swTab2(el){
+  var tab=el.getAttribute('data-tab');
+  swTab('mv',tab,el);
+}
 function swTab(p,t,el){document.querySelectorAll('[id^="'+p+'-"]').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.getElementById(p+'-'+t).classList.add('active');el.classList.add('active');}
 
 function renderTasks(data){
