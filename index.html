@@ -1013,6 +1013,7 @@ function viewMember(id){
   const ma=allAttendance.filter(a=>a['Member Name']===m['Full Name']);
   const mpp=allPersonalProgress.filter(p=>p['Member ID']===id);
   const i2=allTeam.indexOf(m);
+  window._currentMember={id:id,name:m['Full Name']};
   const assignedIds=allTeamAssignments.filter(a=>a['Member ID']===id).map(a=>a['Client ID']).join(', ')||'None';
   const totalComm=mpp.reduce((a,p)=>a+(parseFloat(p['Commission'])||0),0);
 
@@ -1021,7 +1022,8 @@ function viewMember(id){
     :'<div class="table-wrap"><table><thead><tr><th>Client ID</th><th>Client</th><th>Dept</th><th>Store</th><th>Deal %</th><th>Status</th><th>Action</th></tr></thead><tbody>'+
     mc.map(function(c){
       var asgn=allTeamAssignments.find(function(a){return a['Member ID']===id&&(a['Client ID']===c['ID']||a['Client ID']===c['Client ID']);});
-      return '<tr><td>'+c['ID']+'</td><td><b>'+(c['Client Name']||'?')+'</b></td><td>'+tag(c['Department'])+'</td><td>'+(c['Store Name']||'?')+'</td><td style="color:#185FA5;font-weight:700">'+(asgn?asgn['Deal %']:c['Deal %']||'?')+'</td><td>'+pill(c['Status'])+'</td><td><button class="btn-del" onclick="removeAssignment(''+id+'',''+c['ID']+'')">Remove</button></td></tr>';
+      var btnHtml='<button class="btn-del" data-mid="'+id+'" data-cid="'+c['ID']+'" onclick="removeAssignmentBtn(this)">Remove</button>';
+      return '<tr><td>'+c['ID']+'</td><td><b>'+(c['Client Name']||'?')+'</b></td><td>'+tag(c['Department'])+'</td><td>'+(c['Store Name']||'?')+'</td><td style="color:#185FA5;font-weight:700">'+(asgn?asgn['Deal %']:c['Deal %']||'?')+'</td><td>'+pill(c['Status'])+'</td><td>'+btnHtml+'</td></tr>';
     }).join('')+'</tbody></table></div>';
 
   const ppHtml=mpp.length===0
@@ -1034,7 +1036,8 @@ function viewMember(id){
     '</div>'+
     '<div class="table-wrap"><table><thead><tr><th>Month</th><th>Client ID</th><th>SKU Ref</th><th>Gross</th><th>COGS</th><th>Net Profit</th><th>Deal %</th><th>Commission</th><th>Notes</th><th>Del</th></tr></thead><tbody>'+
     mpp.map(function(p){
-      return '<tr><td>'+(p['Month']||'?')+'</td><td style="color:#6b7280;font-size:10px;font-weight:700">'+(p['Account (Client ID)']||p['Client ID']||'?')+'</td><td style="font-size:10px">'+(p['SKU Ref']||'--')+'</td><td>'+fmt(p['Gross Revenue'])+'</td><td>'+fmt(p['COGS'])+'</td><td style="color:#16a34a;font-weight:700">'+fmt(p['Net Profit'])+'</td><td style="color:#185FA5;font-weight:700">'+(p['Deal %']||'?')+'</td><td style="color:#d97706;font-weight:700">'+fmt(p['Commission'])+'</td><td style="font-size:10px;color:#6b7280">'+(p['Notes']||'--')+'</td><td><button class="btn-del" onclick="confirmDelete('PersonalProgress','+p._row+','record')">Del</button></td></tr>';
+      var delBtn='<button class="btn-del" data-row="'+p._row+'" onclick="delPP(this)">Del</button>';
+      return '<tr><td>'+(p['Month']||'?')+'</td><td style="color:#6b7280;font-size:10px;font-weight:700">'+(p['Account (Client ID)']||p['Client ID']||'?')+'</td><td style="font-size:10px">'+(p['SKU Ref']||'--')+'</td><td>'+fmt(p['Gross Revenue'])+'</td><td>'+fmt(p['COGS'])+'</td><td style="color:#16a34a;font-weight:700">'+fmt(p['Net Profit'])+'</td><td style="color:#185FA5;font-weight:700">'+(p['Deal %']||'?')+'</td><td style="color:#d97706;font-weight:700">'+fmt(p['Commission'])+'</td><td style="font-size:10px;color:#6b7280">'+(p['Notes']||'--')+'</td><td>'+delBtn+'</td></tr>';
     }).join('')+'</tbody></table></div>';
 
   const tasksHtml=mt.length===0?'<div class="empty-state"><p>No tasks</p></div>':mt.map(function(t){
@@ -1062,10 +1065,10 @@ function viewMember(id){
         '<div class="profile-meta" style="margin-top:4px">Assigned Accounts: <b style="color:#185FA5">'+assignedIds+'</b></div>'+
       '</div>'+
       '<div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">'+
-        '<button class="btn-update" onclick="openEditMemberForm(''+id+'')">Edit</button>'+
-        '<button class="btn-add" onclick="openTaskFormForMember(''+m['Full Name'].replace(/'/g,"\'")+'')">+ Assign Task</button>'+
-        '<button class="btn-add" style="background:#7c3aed" onclick="openAssignAccountModal(''+id+'',''+m['Full Name'].replace(/'/g,"\'")+'')">+ Assign Account</button>'+
-        '<button class="btn-add" style="background:#16a34a" onclick="openPersonalProgressModal(''+id+'',''+m['Full Name'].replace(/'/g,"\'")+'')">+ Personal Progress</button>'+
+        '<button class="btn-update" data-mid="'+id+'" onclick="openEditMemberForm(this.getAttribute(\'data-mid\'))">Edit</button>'+
+        '<button class="btn-add" data-mid="'+id+'" onclick="openTaskFormForMember2(this)">+ Assign Task</button>'+
+        '<button class="btn-add" style="background:#7c3aed" data-mid="'+id+'" onclick="openAssignAccountModal2(this)">+ Assign Account</button>'+
+        '<button class="btn-add" style="background:#16a34a" data-mid="'+id+'" onclick="openPersonalProgressModal2(this)">+ Personal Progress</button>'+
       '</div>'+
     '</div>'+
     '<div class="kpi-grid" style="margin-bottom:14px">'+
@@ -2176,8 +2179,39 @@ async function saveAssignment(){
   btn.innerHTML=orig;btn.disabled=false;
 }
 
+function delPP(btn){
+  var rowNum=parseInt(btn.getAttribute('data-row'));
+  confirmDelete('PersonalProgress',rowNum,'record');
+}
+
+
+function openTaskFormForMember2(btn){
+  openTaskFormForMember(window._currentMember?window._currentMember.name:'');
+}
+function openAssignAccountModal2(btn){
+  var m=window._currentMember||{};
+  openAssignAccountModal(m.id||btn.getAttribute('data-mid')||'', m.name||'');
+}
+function openPersonalProgressModal2(btn){
+  var m=window._currentMember||{};
+  openPersonalProgressModal(m.id||btn.getAttribute('data-mid')||'', m.name||'');
+}
+
+function removeAssignmentBtn(btn){
+  var memberId=btn.getAttribute('data-mid');
+  var clientId=btn.getAttribute('data-cid');
+  removeAssignment(memberId, clientId);
+}
+
 async function removeAssignment(memberId, clientId){
-  const asgn=allTeamAssignments.find(a=>a['Member ID']===memberId&&a['Client ID']===clientId);
+  var memberId, cId;
+  if(typeof btnOrMemberId==='object'){
+    memberId=btnOrMemberId.getAttribute('data-mid');
+    cId=btnOrMemberId.getAttribute('data-cid');
+  } else {
+    memberId=btnOrMemberId; cId=clientId;
+  }
+  const asgn=allTeamAssignments.find(a=>a['Member ID']===memberId&&a['Client ID']===cId);
   if(!asgn){showToast('Assignment not found','error');return;}
   if(!confirm('Remove this account assignment?'))return;
   try{
