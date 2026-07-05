@@ -192,6 +192,10 @@ tr:hover td{background:#f8fafc}
         <div class="nav-label">Reports</div>
         <div class="nav-item" onclick="nav('growth',this)">&#8593; Growth Report</div>
         <div class="nav-item" onclick="nav('targets',this)">&#127919; Targets & KPIs</div>
+        <div class="nav-item" onclick="nav('leaderboard',this)">&#127942; Leaderboard</div>
+        <div class="nav-item" onclick="nav('alerts',this)">&#128276; Smart Alerts</div>
+        <div class="nav-item" onclick="nav('listing-targets',this)">&#128203; Listing Targets</div>
+        <div class="nav-item" onclick="nav('leaves',this)">&#128197; Leave Management</div>
       </div>
     </div>
     <div id="memberNav" style="display:none">
@@ -420,6 +424,93 @@ tr:hover td{background:#f8fafc}
           <div id="tgt-team-kpi"><div class="loading">Loading...</div></div>
         </div>
       </div>
+
+      <!-- LEADERBOARD -->
+      <div class="section" id="sec-leaderboard">
+        <div class="kpi-grid" style="margin-bottom:14px">
+          <div class="kpi-card" style="border-left:4px solid #f59e0b"><div class="kpi-label">Top Performer</div><div class="kpi-val" id="lb-top">--</div><div class="kpi-sub" id="lb-top-score"></div></div>
+          <div class="kpi-card" style="border-left:4px solid #16a34a"><div class="kpi-label">Most Commission</div><div class="kpi-val" id="lb-comm">--</div><div class="kpi-sub" id="lb-comm-val"></div></div>
+          <div class="kpi-card" style="border-left:4px solid #185FA5"><div class="kpi-label">Best Attendance</div><div class="kpi-val" id="lb-att">--</div><div class="kpi-sub" id="lb-att-val"></div></div>
+          <div class="kpi-card" style="border-left:4px solid #7c3aed"><div class="kpi-label">Most Tasks Done</div><div class="kpi-val" id="lb-tasks">--</div><div class="kpi-sub" id="lb-tasks-val"></div></div>
+        </div>
+        <div class="card"><div class="card-title">&#127942; Team Leaderboard — <span id="lb-month-label"></span></div><div id="leaderboard-table"></div></div>
+      </div>
+
+      <!-- SMART ALERTS -->
+      <div class="section" id="sec-alerts">
+        <div class="kpi-grid" style="margin-bottom:14px">
+          <div class="kpi-card" style="border-left:4px solid #dc2626"><div class="kpi-label">Critical Alerts</div><div class="kpi-val kpi-down" id="alert-critical">0</div></div>
+          <div class="kpi-card" style="border-left:4px solid #d97706"><div class="kpi-label">Warnings</div><div class="kpi-val" id="alert-warning">0</div></div>
+          <div class="kpi-card" style="border-left:4px solid #16a34a"><div class="kpi-label">All Clear</div><div class="kpi-val kpi-up" id="alert-ok">0</div></div>
+          <div class="kpi-card"><div class="kpi-label">Total Members Monitored</div><div class="kpi-val" id="alert-total">0</div></div>
+        </div>
+        <div id="alerts-list"><div class="loading">Checking alerts...</div></div>
+      </div>
+
+      <!-- LISTING TARGETS -->
+      <div class="section" id="sec-listing-targets">
+        <div class="search-bar">
+          <select id="lt-member-filter" onchange="filterListingTargets()" style="font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff"><option value="">All Members</option></select>
+          <select id="lt-status-filter" onchange="filterListingTargets()" style="font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff"><option value="">All Status</option><option>Active</option><option>Inactive</option></select>
+          <button class="btn-add" onclick="openListingTargetModal()" style="background:#0f2044">+ Set Listing Target</button>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Target ID</th><th>Member</th><th>Account</th><th>Start Date</th><th>End Date</th><th>Active Days</th><th>Daily Target</th><th>Notes</th><th>Status</th><th>Actions</th></tr></thead><tbody id="lt-body"></tbody></table></div>
+      </div>
+
+      <!-- LEAVE MANAGEMENT -->
+      <div class="section" id="sec-leaves">
+        <div class="search-bar">
+          <select id="lv-member-filter" onchange="filterLeaves()" style="font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff"><option value="">All Members</option></select>
+          <select id="lv-status-filter" onchange="filterLeaves()" style="font-size:12px;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff"><option value="">All Status</option><option>Pending</option><option>Approved</option><option>Rejected</option></select>
+          <button class="btn-add" onclick="openLeaveModal()" style="background:#0f2044">+ Add Leave</button>
+        </div>
+        <div class="kpi-grid" style="margin-bottom:12px">
+          <div class="kpi-card"><div class="kpi-label">Pending Requests</div><div class="kpi-val" id="lv-pending">0</div></div>
+          <div class="kpi-card"><div class="kpi-label">Approved This Month</div><div class="kpi-val kpi-up" id="lv-approved">0</div></div>
+          <div class="kpi-card"><div class="kpi-label">Rejected</div><div class="kpi-val kpi-down" id="lv-rejected">0</div></div>
+          <div class="kpi-card"><div class="kpi-label">On Leave Today</div><div class="kpi-val" id="lv-today">0</div></div>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Member</th><th>Leave Type</th><th>From</th><th>To</th><th>Days</th><th>Reason</th><th>Status</th><th>Actions</th></tr></thead><tbody id="lv-body"></tbody></table></div>
+      </div>
+
+      <!-- MEMBER PERSONAL PROGRESS -->
+      <div class="section" id="sec-my-progress">
+        <div class="search-bar">
+          <button class="btn-add" style="background:#16a34a" onclick="openPersonalProgressModal(currentUser?.memberData?.['Member ID']||'',currentUser?.name||'')">+ Add My Progress</button>
+        </div>
+        <div class="kpi-grid" style="margin-bottom:12px">
+          <div class="kpi-card"><div class="kpi-label">Total Records</div><div class="kpi-val" id="myp-count">0</div></div>
+          <div class="kpi-card"><div class="kpi-label">This Month Commission</div><div class="kpi-val kpi-up" id="myp-this-comm">$0</div></div>
+          <div class="kpi-card"><div class="kpi-label">Total Commission</div><div class="kpi-val kpi-up" id="myp-total-comm">$0</div></div>
+          <div class="kpi-card"><div class="kpi-label">Accounts Worked</div><div class="kpi-val" id="myp-accounts">0</div></div>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Month</th><th>Client ID</th><th>Gross Revenue</th><th>COGS</th><th>Net Profit</th><th>Deal %</th><th>Commission</th><th>Notes</th><th>Del</th></tr></thead><tbody id="myp-body"></tbody></table></div>
+      </div>
+
+      <!-- MEMBER EARNINGS -->
+      <div class="section" id="sec-my-earnings">
+        <div class="kpi-grid" style="margin-bottom:12px">
+          <div class="kpi-card" style="border-left:4px solid #16a34a"><div class="kpi-label">This Month</div><div class="kpi-val kpi-up" id="earn-this">$0</div></div>
+          <div class="kpi-card" style="border-left:4px solid #185FA5"><div class="kpi-label">Last Month</div><div class="kpi-val" id="earn-last">$0</div></div>
+          <div class="kpi-card" style="border-left:4px solid #7c3aed"><div class="kpi-label">Total Earned</div><div class="kpi-val" id="earn-total">$0</div></div>
+          <div class="kpi-card"><div class="kpi-label">Best Month</div><div class="kpi-val" id="earn-best">$0</div></div>
+        </div>
+        <!-- 3 Month Trend -->
+        <div class="card" style="margin-bottom:12px">
+          <div class="card-title">3 Month Commission Trend</div>
+          <div id="earn-trend-chart" style="padding:10px 0"></div>
+        </div>
+        <!-- Monthly breakdown -->
+        <div class="card"><div class="card-title">Monthly Earnings Breakdown</div><div id="earn-breakdown"></div></div>
+      </div>
+
+      <!-- MEMBER LEAVES -->
+      <div class="section" id="sec-my-leaves">
+        <div class="search-bar">
+          <button class="btn-add" onclick="openMyLeaveModal()">+ Request Leave</button>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Leave Type</th><th>From</th><th>To</th><th>Days</th><th>Reason</th><th>Status</th></tr></thead><tbody id="my-lv-body"></tbody></table></div>
+      </div>
       <!-- MEMBER SECTIONS -->
       <div class="section" id="sec-my-dashboard">
         <div class="my-hero"><h2 id="my-welcome">Welcome!</h2><p id="my-role-text">Your personal dashboard</p></div>
@@ -429,10 +520,17 @@ tr:hover td{background:#f8fafc}
           <div class="kpi-card"><div class="kpi-label">Tasks Done</div><div class="kpi-val kpi-up" id="my-done-count">0</div></div>
           <div class="kpi-card"><div class="kpi-label">Present Days</div><div class="kpi-val" id="my-att-count">0</div></div>
         </div>
+        <div class="kpi-grid">
+          <div class="kpi-card" style="border-left:4px solid #16a34a" id="my-commission-kpi"><div class="kpi-label">My Commission This Month</div><div class="kpi-val kpi-up">$0</div></div>
+          <div class="kpi-card" style="border-left:4px solid #185FA5" id="my-score-kpi"><div class="kpi-label">Performance Score</div><div class="kpi-val">--</div></div>
+          <div class="kpi-card" style="border-left:4px solid #f59e0b" id="my-rank-kpi"><div class="kpi-label">My Rank</div><div class="kpi-val">--</div></div>
+          <div class="kpi-card" style="border-left:4px solid #7c3aed"><div class="kpi-label">Today Listing Targets</div><div id="my-today-targets" style="margin-top:4px;font-size:11px;color:#6b7280">Loading...</div></div>
+        </div>
         <div class="grid-2">
           <div class="card"><div class="card-title">My Pending Tasks</div><div id="my-task-preview"></div></div>
           <div class="card"><div class="card-title">My Clients</div><div id="my-client-preview"></div></div>
         </div>
+        <div class="card"><div class="card-title">My Commission Breakdown — <span id="my-comm-month"></span></div><div id="my-comm-breakdown"><div class="loading">Loading...</div></div></div>
       </div>
       <div class="section" id="sec-my-tasks">
         <div class="search-bar">
@@ -687,6 +785,90 @@ tr:hover td{background:#f8fafc}
     <button class="btn-save" id="ppSaveBtn" onclick="savePersonalProgress()" style="background:#16a34a">Save Record</button>
   </div>
 </div></div>
+
+<!-- LISTING TARGET MODAL -->
+<div class="modal-bg" id="listingTargetModal"><div class="modal">
+  <div class="modal-title" id="ltModalTitle">Set Listing Target</div>
+  <div class="form-row">
+    <div class="form-group"><label>Team Member *</label>
+      <select id="lt-member-sel" onchange="fillLTMember()">
+        <option value="">Select member...</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Account *</label>
+      <select id="lt-client-sel" onchange="fillLTClient()">
+        <option value="">Select account...</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label>Member ID</label><input id="lt-mid" readonly style="background:#f8fafc"></div>
+    <div class="form-group"><label>Client ID</label><input id="lt-cid" readonly style="background:#f8fafc"></div>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label>Start Date *</label><input id="lt-start" type="date"></div>
+    <div class="form-group"><label>End Date *</label><input id="lt-end" type="date"></div>
+  </div>
+  <div class="form-group"><label>Active Days *</label>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+      <label style="font-size:12px;font-weight:400"><input type="checkbox" id="lt-mon" value="Mon"> Mon</label>
+      <label style="font-size:12px;font-weight:400"><input type="checkbox" id="lt-tue" value="Tue"> Tue</label>
+      <label style="font-size:12px;font-weight:400"><input type="checkbox" id="lt-wed" value="Wed"> Wed</label>
+      <label style="font-size:12px;font-weight:400"><input type="checkbox" id="lt-thu" value="Thu"> Thu</label>
+      <label style="font-size:12px;font-weight:400"><input type="checkbox" id="lt-fri" value="Fri"> Fri</label>
+      <label style="font-size:12px;font-weight:400"><input type="checkbox" id="lt-sat" value="Sat"> Sat</label>
+      <label style="font-size:12px;font-weight:400"><input type="checkbox" id="lt-sun" value="Sun"> Sun</label>
+      <button type="button" onclick="checkAllDays()" style="font-size:11px;padding:3px 8px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;background:#f8fafc">Mon-Sat</button>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label>Daily Listing Target *</label><input id="lt-daily" type="number" placeholder="e.g. 15 products"></div>
+    <div class="form-group"><label>Status</label><select id="lt-status-sel"><option>Active</option><option>Inactive</option></select></div>
+  </div>
+  <div class="form-group"><label>Notes</label><input id="lt-notes" placeholder="e.g. Focus on home decor category"></div>
+  <input type="hidden" id="lt-row-num">
+  <div class="form-btns">
+    <button class="btn-cancel" onclick="closeModal('listingTargetModal')">Cancel</button>
+    <button class="btn-save" id="ltSaveBtn" onclick="saveListingTarget()">Save Target</button>
+  </div>
+</div></div>
+
+<!-- LEAVE MODAL -->
+<div class="modal-bg" id="leaveModal"><div class="modal">
+  <div class="modal-title" id="leaveModalTitle">Add Leave Request</div>
+  <div class="form-row">
+    <div class="form-group"><label>Team Member *</label>
+      <select id="lv-member-sel" onchange="fillLVMember()">
+        <option value="">Select member...</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Leave Type *</label>
+      <select id="lv-type">
+        <option>Sick Leave</option>
+        <option>Personal Leave</option>
+        <option>Emergency Leave</option>
+        <option>Annual Leave</option>
+        <option>Other</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label>Member ID</label><input id="lv-mid" readonly style="background:#f8fafc"></div>
+    <div class="form-group"><label>Status</label>
+      <select id="lv-status-sel"><option>Pending</option><option>Approved</option><option>Rejected</option></select>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label>From Date *</label><input id="lv-from" type="date"></div>
+    <div class="form-group"><label>To Date *</label><input id="lv-to" type="date"></div>
+  </div>
+  <div class="form-group"><label>Reason</label><textarea id="lv-reason" rows="2" placeholder="Reason for leave..."></textarea></div>
+  <input type="hidden" id="lv-row-num">
+  <div class="form-btns">
+    <button class="btn-cancel" onclick="closeModal('leaveModal')">Cancel</button>
+    <button class="btn-save" id="lvSaveBtn" onclick="saveLeave()">Save Leave</button>
+  </div>
+</div></div>
 <!-- CONFIRM -->
 <div class="modal-bg" id="confirmModal"><div class="modal-sm">
   <div style="font-size:28px;margin-bottom:8px">⚠️</div>
@@ -701,7 +883,7 @@ const SCRIPT='https://script.google.com/macros/s/AKfycbwrfxVlXshZxtrOIX_IL5CXLPm
 const SHEET_ID='1X6FaHYrSs96XYZMLkWBwzp23zCTjSDk13YAVp_TfYwg';
 const API_KEY='AIzaSyBevUeL-MqrlyKFxQ6VfbBDH19uAnma4nU';
 const ADMIN_USER='admin',ADMIN_PASS='admin123';
-let allClients=[],allPayments=[],allProgress=[],allTeam=[],allTasks=[],allAttendance=[],allUpdates=[],allTargets=[],allTeamAssignments=[],allPersonalProgress=[];
+let allClients=[],allPayments=[],allProgress=[],allTeam=[],allTasks=[],allAttendance=[],allUpdates=[],allTargets=[],allTeamAssignments=[],allPersonalProgress=[],allListingTargets=[],allLeaves=[];
 let editMode=false,editRowNum=null,currentUser=null;
 
 async function doLogin(){
@@ -800,14 +982,16 @@ function toObj(rows){
 async function loadAll(silent=false){
   try{
     if(!silent)showToast('Loading...','info');
-    const[cr,pr,pgr,tm,tk,at,ud,tg,ta,pp]=await Promise.all([
+    const[cr,pr,pgr,tm,tk,at,ud,tg,ta,pp,lt,lv]=await Promise.all([
       gRead('Clients!A:O'),gRead('Payments!A:J'),gRead('Progress!A:L'),
       gRead('Team!A:K'),gRead('Tasks!A:M'),gRead('Attendance!A:H'),gRead('DailyUpdates!A:H'),
-      gRead('Targets!A:L'),gRead('TeamAssignments!A:G'),gRead('PersonalProgress!A:K')
+      gRead('Targets!A:L'),gRead('TeamAssignments!A:G'),gRead('PersonalProgress!A:K'),
+      gRead('ListingTargets!A:J'),gRead('Leaves!A:I')
     ]);
     allClients=toObj(cr);allPayments=toObj(pr);allProgress=toObj(pgr);
     allTeam=toObj(tm);allTasks=toObj(tk);allAttendance=toObj(at);allUpdates=toObj(ud);
     allTargets=toObj(tg);allTeamAssignments=toObj(ta);allPersonalProgress=toObj(pp);
+    allListingTargets=toObj(lt);allLeaves=toObj(lv);
     // Sheet column A is "Client ID" - map it to 'ID' for consistency
     allClients.forEach(c=>{
       if(!c['ID']||c['ID']===''||c['ID']==='undefined'){
@@ -1142,8 +1326,14 @@ function filterUpdates(){const s=document.getElementById('upd-search').value.toL
 function renderMemberDashboard(){
   if(!currentUser||currentUser.isAdmin)return;
   const name=currentUser.name;
-  // Use TeamAssignments for accurate member-account mapping
-  const myAssignments=allTeamAssignments.filter(a=>a['Member ID']===currentUser.memberData?.['Member ID']||a['Member Name']===name);
+  const mid=currentUser.memberData?currentUser.memberData['Member ID']:'';
+  const curMonth=getMonthLabel(0);
+  const myComm=getMemberComm(mid,curMonth);
+  const myScore=getMemberScore(mid);
+  const todayTargets=getTodayListingTargets(mid);
+  const ranked=allTeam.filter(m=>m['Status']==='Active').map(m=>({id:m['Member ID'],score:getMemberScore(m['Member ID'])})).sort((a,b)=>b.score-a.score);
+  const myRank=ranked.findIndex(r=>r.id===mid)+1;
+  const myAssignments=allTeamAssignments.filter(a=>a['Member ID']===mid);
   const myClientIds=myAssignments.map(a=>a['Client ID']);
   const mc=allClients.filter(c=>myClientIds.includes(c['ID'])||myClientIds.includes(c['Client ID']));
   const mt=allTasks.filter(t=>t['Assigned To']===name);
@@ -1158,6 +1348,38 @@ function renderMemberDashboard(){
   document.getElementById('my-overdue-count').textContent=mo.length+' overdue';
   document.getElementById('my-done-count').textContent=md.length;
   document.getElementById('my-att-count').textContent=ma.length;
+  const commMonthEl=document.getElementById('my-comm-month');
+  if(commMonthEl)commMonthEl.textContent=getMonthLabel(0);
+
+  // Update enhanced KPI cards with new data
+  const commEl=document.getElementById('my-commission-kpi');
+  if(commEl)commEl.innerHTML='<div class="kpi-label">My Commission This Month</div><div class="kpi-val kpi-up">'+fmt(myComm)+'</div><div class="kpi-sub">'+curMonth+'</div>';
+  const scoreEl=document.getElementById('my-score-kpi');
+  const scoreColor=myScore>=80?'#16a34a':myScore>=50?'#d97706':'#dc2626';
+  if(scoreEl)scoreEl.innerHTML='<div class="kpi-label">Performance Score</div><div class="kpi-val" style="color:'+scoreColor+'">'+myScore+'<span style="font-size:12px;color:#9ca3af">/100</span></div><div class="kpi-sub">This month</div>';
+  const rankEl=document.getElementById('my-rank-kpi');
+  if(rankEl)rankEl.innerHTML='<div class="kpi-label">My Rank</div><div class="kpi-val">'+(myRank===1?'🥇':myRank===2?'🥈':myRank===3?'🥉':'#'+myRank)+'</div><div class="kpi-sub">of '+ranked.length+' members</div>';
+
+  // Today listing targets
+  const tgtEl=document.getElementById('my-today-targets');
+  if(tgtEl){
+    tgtEl.innerHTML=todayTargets.length===0
+      ?'<div style="font-size:12px;color:#6b7280;padding:10px 0">No listing targets for today</div>'
+      :todayTargets.map(lt=>'<div class="pay-row"><div><div class="pay-name">'+lt['Client ID']+'</div><div class="pay-dept" style="font-size:10px">'+lt['Notes']+'</div></div><div style="font-size:18px;font-weight:700;color:#185FA5">'+lt['Daily Target (listings count)']+'<span style="font-size:11px;color:#6b7280"> listings</span></div></div>').join('');
+  }
+
+  // Commission breakdown this month
+  const commBreak=document.getElementById('my-comm-breakdown');
+  if(commBreak){
+    const myPP=allPersonalProgress.filter(p=>p['Member ID']===mid&&p['Month']===curMonth);
+    commBreak.innerHTML=myPP.length===0
+      ?'<div class="empty-state"><p>No progress records for '+curMonth+' yet</p></div>'
+      :'<div class="table-wrap"><table><thead><tr><th>Client ID</th><th>Net Profit</th><th>Deal %</th><th>Commission</th></tr></thead><tbody>'
+        +myPP.map(p=>'<tr><td style="color:#6b7280;font-size:10px;font-weight:700">'+(p['Account (Client ID)']||p['Client ID']||'?')+'</td><td>'+fmt(p['Net Profit'])+'</td><td style="color:#185FA5;font-weight:700">'+(p['Deal %']||'?')+'</td><td style="color:#d97706;font-weight:700">'+fmt(p['Commission'])+'</td></tr>').join('')
+        +'<tr style="background:#f0fff4"><td colspan="3" style="font-weight:700;text-align:right">Total</td><td style="font-weight:700;color:#16a34a">'+fmt(myComm)+'</td></tr>'
+      +'</tbody></table></div>';
+  }
+
   document.getElementById('my-task-preview').innerHTML=mp.length===0?'<div class="empty-state"><p>No pending tasks!</p></div>':mp.slice(0,4).map(t=>'<div class="pay-row"><div><div class="pay-name">'+(t['Task Title']||'?')+'</div><div class="pay-dept">Due: '+(t['Due Date']||'?')+(isOverdue(t['Due Date'])?' <span class="status-pill pill-red">OVERDUE</span>':'')+'</div></div>'+pill(t['Priority'])+'</div>').join('');
   document.getElementById('my-client-preview').innerHTML=mc.length===0?'<div class="empty-state"><p>No clients assigned yet</p></div>':mc.map(c=>'<div class="pay-row"><div><div class="pay-name" style="font-size:11px;color:#6b7280">'+c['ID']+'</div><div class="pay-dept">'+tag(c['Department'])+' · <b>'+(c['Store Name']||'?')+'</b></div></div>'+pill(c['Status'])+'</div>').join('');
   document.getElementById('my-clients-body').innerHTML=mc.length===0?'<tr><td colspan="5"><div class="empty-state"><p>No clients assigned yet</p></div></td></tr>':mc.map(c=>'<tr><td style="color:#6b7280;font-size:10px;font-weight:700">'+c['ID']+'</td><td>'+tag(c['Department'])+'</td><td><b>'+(c['Store Name']||'?')+'</b></td><td>'+(c['Deal %']||'?')+'</td><td>'+pill(c['Status'])+'</td></tr>').join('');
@@ -1213,11 +1435,18 @@ function nav(id,el){
   if(el)el.classList.add('active');
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   const sec=document.getElementById('sec-'+id);if(sec)sec.classList.add('active');
-  const titles={dashboard:'Dashboard',master:'Master Record',payments:'Payments',progress:'Progress Tracker',ebay:'eBay Department',walmart:'Walmart Department',tiktok:'TikTok Department',team:'Team Members',tasks:'Task Board',attendance:'Attendance',updates:'Daily Updates',growth:'Growth Report',targets:'Targets & KPIs','my-dashboard':'My Dashboard','my-tasks':'My Tasks','my-clients':'My Clients','my-attendance':'My Attendance','my-updates':'My Daily Updates'};
+  const titles={dashboard:'Dashboard',master:'Master Record',payments:'Payments',progress:'Progress Tracker',ebay:'eBay Department',walmart:'Walmart Department',tiktok:'TikTok Department',team:'Team Members',tasks:'Task Board',attendance:'Attendance',updates:'Daily Updates',growth:'Growth Report',targets:'Targets & KPIs',leaderboard:'Team Leaderboard',alerts:'Smart Alerts','listing-targets':'Listing Targets',leaves:'Leave Management','my-progress':'My Progress','my-earnings':'My Earnings','my-leaves':'My Leaves','my-dashboard':'My Dashboard','my-tasks':'My Tasks','my-clients':'My Clients','my-attendance':'My Attendance','my-updates':'My Daily Updates'};
   document.getElementById('pageTitle').textContent=titles[id]||id;
   if(['ebay','walmart','tiktok'].includes(id)){document.getElementById(id+'-list').style.display='block';document.getElementById(id+'-profile').style.display='none';renderDept(id);}
   if(id==='growth')renderGrowth();
   if(id==='targets')renderTargets();
+  if(id==='leaderboard')renderLeaderboard();
+  if(id==='alerts')renderAlerts();
+  if(id==='listing-targets')renderListingTargets();
+  if(id==='leaves')renderLeaves();
+  if(id==='my-progress')renderMyProgress();
+  if(id==='my-earnings')renderMyEarnings();
+  if(id==='my-leaves')renderMyLeaves();
   if(id==='my-dashboard'&&currentUser&&!currentUser.isAdmin)renderMemberDashboard();
   if(id==='my-tasks'&&currentUser&&!currentUser.isAdmin)renderMyTasks();
 }
@@ -2177,8 +2406,10 @@ async function saveAssignment(){
   const row=[memberId,memberName,clientId,document.getElementById('assign-role').value||'Account Manager',document.getElementById('assign-start-date').value,dealPct+'%','Active'];
   try{
     await gAction({action:'write',sheet:'TeamAssignments',row:JSON.stringify(row)});
+    // Auto task generation - Option B: admin chooses tasks
+    await autoGenerateTasks(memberId, memberName, clientId, document.getElementById('assign-role').value||'Account Manager');
     closeModal('assignAccountModal');
-    showToast('Account assigned successfully!','success');
+    showToast('Account assigned! Tasks auto-created.','success');
     setTimeout(()=>loadAll(true).then(()=>viewMember(memberId)),3000);
   }catch(e){showToast('Error: '+e.message,'error');}
   btn.innerHTML=orig;btn.disabled=false;
@@ -2294,6 +2525,491 @@ function getAssignedMemberIds(clientId){
   return ids.length>0?ids.join(', '):'--';
 }
 
+
+// =============================================
+// HELPER FUNCTIONS
+// =============================================
+function getMonthLabel(offset){
+  const d=new Date();d.setMonth(d.getMonth()+offset);
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return months[d.getMonth()]+' '+d.getFullYear();
+}
+function getMemberComm(memberId,month){
+  return allPersonalProgress.filter(p=>p['Member ID']===memberId&&(!month||p['Month']===month)).reduce((a,p)=>a+(parseFloat(p['Commission'])||0),0);
+}
+function getMemberScore(memberId){
+  const now=new Date();
+  const curMonth=getMonthLabel(0);
+  const m=allTeam.find(x=>x['Member ID']===memberId);
+  if(!m)return 0;
+  const name=m['Full Name'];
+  // Tasks score (25pts)
+  const myTasks=allTasks.filter(t=>t['Assigned To']===name);
+  const doneTasks=myTasks.filter(t=>t['Status']==='Done').length;
+  const taskScore=myTasks.length>0?Math.min(25,Math.round((doneTasks/myTasks.length)*25)):25;
+  // Target achievement score (25pts)
+  const myTargets=allTargets.filter(t=>t['Client ID']&&allTeamAssignments.some(a=>a['Member ID']===memberId&&a['Client ID']===t['Client ID'])&&t['Month']===curMonth);
+  let tgtScore=25;
+  if(myTargets.length>0){
+    const achPcts=myTargets.map(t=>{const p=allProgress.find(x=>x['Client ID']===t['Client ID']&&x['Month']===t['Month']);return p?Math.min(100,Math.round((parseFloat(p['Net Profit'])||0)/(parseFloat(t['Target Net'])||1)*100)):0;});
+    tgtScore=Math.min(25,Math.round(achPcts.reduce((a,b)=>a+b,0)/achPcts.length*0.25));
+  }
+  // Attendance score (25pts)
+  const daysInMonth=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  const workdays=Math.round(daysInMonth*6/7);
+  const present=allAttendance.filter(a=>a['Member Name']===name&&(a['Status']==='Present'||a['Status']==='Remote')&&a['Date']&&a['Date'].startsWith(now.getFullYear()+'-'+(String(now.getMonth()+1).padStart(2,'0')))).length;
+  const attScore=Math.min(25,Math.round((present/Math.max(workdays,1))*25));
+  // Updates score (25pts)
+  const updCount=allUpdates.filter(u=>u['Member Name']===name&&u['Date']&&u['Date'].startsWith(now.getFullYear()+'-'+(String(now.getMonth()+1).padStart(2,'0')))).length;
+  const updScore=Math.min(25,Math.round((updCount/Math.max(workdays,1))*25));
+  return taskScore+tgtScore+attScore+updScore;
+}
+
+function getTodayListingTargets(memberId){
+  const today=new Date();
+  const dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const todayDay=dayNames[today.getDay()];
+  const todayStr=today.toISOString().split('T')[0];
+  return allListingTargets.filter(lt=>{
+    if(lt['Member ID']!==memberId)return false;
+    if(lt['Status']==='Inactive')return false;
+    if(lt['Start Date']&&todayStr<lt['Start Date'])return false;
+    if(lt['End Date']&&todayStr>lt['End Date'])return false;
+    const days=(lt['Days (Mon-Sat or specific days)']||lt['Days']||'').split(',').map(d=>d.trim());
+    return days.includes(todayDay);
+  });
+}
+
+// =============================================
+// LEADERBOARD
+// =============================================
+function renderLeaderboard(){
+  const curMonth=getMonthLabel(0);
+  document.getElementById('lb-month-label').textContent=curMonth;
+  const members=allTeam.filter(m=>m['Status']==='Active');
+  const ranked=members.map(m=>{
+    const score=getMemberScore(m['Member ID']);
+    const comm=getMemberComm(m['Member ID'],curMonth);
+    const doneTasks=allTasks.filter(t=>t['Assigned To']===m['Full Name']&&t['Status']==='Done').length;
+    const present=allAttendance.filter(a=>a['Member Name']===m['Full Name']&&(a['Status']==='Present'||a['Status']==='Remote')).length;
+    return{...m,score,comm,doneTasks,present};
+  }).sort((a,b)=>b.score-a.score);
+
+  if(ranked.length>0){
+    document.getElementById('lb-top').textContent=ranked[0]['Full Name'];
+    document.getElementById('lb-top-score').textContent='Score: '+ranked[0].score+'/100';
+    const topComm=ranked.reduce((a,b)=>a.comm>b.comm?a:b);
+    document.getElementById('lb-comm').textContent=topComm['Full Name'];
+    document.getElementById('lb-comm-val').textContent=fmt(topComm.comm);
+    const topAtt=ranked.reduce((a,b)=>a.present>b.present?a:b);
+    document.getElementById('lb-att').textContent=topAtt['Full Name'];
+    document.getElementById('lb-att-val').textContent=topAtt.present+' days';
+    const topTask=ranked.reduce((a,b)=>a.doneTasks>b.doneTasks?a:b);
+    document.getElementById('lb-tasks').textContent=topTask['Full Name'];
+    document.getElementById('lb-tasks-val').textContent=topTask.doneTasks+' tasks';
+  }
+
+  const medals=['🥇','🥈','🥉'];
+  document.getElementById('leaderboard-table').innerHTML=ranked.length===0?'<div class="empty-state"><p>No team members yet</p></div>':
+    '<div class="table-wrap"><table><thead><tr><th>Rank</th><th>Member ID</th><th>Member</th><th>Score</th><th>Commission</th><th>Tasks Done</th><th>Attendance</th><th>Status</th></tr></thead><tbody>'+
+    ranked.map((m,i)=>{
+      const sc=m.score;
+      const scColor=sc>=80?'#16a34a':sc>=50?'#d97706':'#dc2626';
+      return '<tr style="'+(i===0?'background:#fffbeb':i===1?'background:#f8fafc':i===2?'background:#fdf4ff':'')+'">'
+        +'<td style="font-size:18px;text-align:center">'+(medals[i]||'#'+(i+1))+'</td>'
+        +'<td style="color:#6b7280;font-size:10px;font-weight:700">'+m['Member ID']+'</td>'
+        +'<td><b>'+m['Full Name']+'</b><div style="font-size:10px;color:#6b7280">'+m['Role']+'</div></td>'
+        +'<td><span style="font-size:18px;font-weight:700;color:'+scColor+'">'+sc+'</span><span style="font-size:10px;color:#9ca3af">/100</span></td>'
+        +'<td style="color:#16a34a;font-weight:700">'+fmt(m.comm)+'</td>'
+        +'<td style="font-weight:700">'+m.doneTasks+'</td>'
+        +'<td>'+m.present+' days</td>'
+        +'<td>'+pill(m['Status'])+'</td>'
+      +'</tr>';
+    }).join('')+'</tbody></table></div>';
+}
+
+// =============================================
+// SMART ALERTS
+// =============================================
+function renderAlerts(){
+  const now=new Date();
+  const curMonth=getMonthLabel(0);
+  const todayStr=now.toISOString().split('T')[0];
+  const daysInMonth=now.getDate();
+  const alerts=[];
+
+  allTeam.filter(m=>m['Status']==='Active').forEach(m=>{
+    const name=m['Full Name'];
+    const mid=m['Member ID'];
+
+    // Alert 1: No daily update in 2+ days
+    const recentUpdates=allUpdates.filter(u=>u['Member Name']===name&&u['Date']);
+    const lastUpdate=recentUpdates.length>0?recentUpdates.reduce((a,b)=>a['Date']>b['Date']?a:b):null;
+    if(!lastUpdate||(new Date()-new Date(lastUpdate['Date']))/(1000*60*60*24)>=2){
+      alerts.push({type:'critical',member:name,mid:mid,msg:'No daily update submitted for 2+ days',icon:'📝'});
+    }
+
+    // Alert 2: Attendance below 80% this month
+    const present=allAttendance.filter(a=>a['Member Name']===name&&(a['Status']==='Present'||a['Status']==='Remote')&&a['Date']&&a['Date'].startsWith(todayStr.slice(0,7))).length;
+    const workdaysElapsed=Math.ceil(daysInMonth*6/7);
+    const attRate=workdaysElapsed>0?Math.round((present/workdaysElapsed)*100):100;
+    if(attRate<80&&daysInMonth>7){
+      alerts.push({type:'warning',member:name,mid:mid,msg:'Attendance this month: '+attRate+'% (below 80%)',icon:'📅'});
+    }
+
+    // Alert 3: 3+ overdue tasks
+    const overdueTasks=allTasks.filter(t=>t['Assigned To']===name&&t['Status']!=='Done'&&isOverdue(t['Due Date']));
+    if(overdueTasks.length>=3){
+      alerts.push({type:'critical',member:name,mid:mid,msg:overdueTasks.length+' overdue tasks!',icon:'⚠️'});
+    }
+
+    // Alert 4: No personal progress for current month
+    const hasProgress=allPersonalProgress.some(p=>p['Member ID']===mid&&p['Month']===curMonth);
+    if(!hasProgress&&daysInMonth>10){
+      alerts.push({type:'warning',member:name,mid:mid,msg:'No personal progress submitted for '+curMonth,icon:'📊'});
+    }
+
+    // Alert 5: Account target missed 2 months in a row
+    const assignedClients=allTeamAssignments.filter(a=>a['Member ID']===mid).map(a=>a['Client ID']);
+    assignedClients.forEach(cid=>{
+      const lastTwo=[getMonthLabel(-1),getMonthLabel(-2)];
+      const missed=lastTwo.filter(month=>{
+        const tgt=allTargets.find(t=>t['Client ID']===cid&&t['Month']===month);
+        if(!tgt)return false;
+        const prog=allProgress.find(p=>p['Client ID']===cid&&p['Month']===month);
+        if(!prog)return true;
+        return(parseFloat(prog['Net Profit'])||0)<(parseFloat(tgt['Target Net'])||0)*0.7;
+      });
+      if(missed.length>=2){
+        alerts.push({type:'critical',member:name,mid:mid,msg:'Account '+cid+' missed target 2 months in a row',icon:'🎯'});
+      }
+    });
+  });
+
+  const critical=alerts.filter(a=>a.type==='critical');
+  const warnings=alerts.filter(a=>a.type==='warning');
+  const okCount=allTeam.filter(m=>m['Status']==='Active').length-new Set(alerts.map(a=>a.mid)).size;
+
+  document.getElementById('alert-critical').textContent=critical.length;
+  document.getElementById('alert-warning').textContent=warnings.length;
+  document.getElementById('alert-ok').textContent=Math.max(0,okCount);
+  document.getElementById('alert-total').textContent=allTeam.filter(m=>m['Status']==='Active').length;
+
+  document.getElementById('alerts-list').innerHTML=alerts.length===0
+    ?'<div class="card" style="text-align:center;padding:30px"><div style="font-size:40px">✅</div><div style="font-size:14px;font-weight:700;color:#16a34a;margin-top:8px">All Clear! No alerts at this time.</div></div>'
+    :alerts.map(a=>'<div class="card" style="border-left:4px solid '+(a.type==='critical'?'#dc2626':'#d97706')+';margin-bottom:8px;display:flex;align-items:center;gap:12px">'
+      +'<div style="font-size:24px">'+a.icon+'</div>'
+      +'<div style="flex:1">'
+        +'<div style="font-size:11px;font-weight:700;color:'+(a.type==='critical'?'#dc2626':'#d97706')+'">'+a.type.toUpperCase()+'</div>'
+        +'<div style="font-size:13px;font-weight:700;color:#0f2044">'+a.member+' <span style="font-size:10px;color:#6b7280">('+a.mid+')</span></div>'
+        +'<div style="font-size:12px;color:#6b7280">'+a.msg+'</div>'
+      +'</div>'
+      +'<span class="status-pill '+(a.type==='critical'?'pill-red':'pill-amber')+'">'+a.type+'</span>'
+    +'</div>').join('');
+}
+
+// =============================================
+// LISTING TARGETS
+// =============================================
+function renderListingTargets(data){
+  const list=data||allListingTargets;
+  // Populate member filter
+  const mf=document.getElementById('lt-member-filter');
+  if(mf){const names=[...new Set(allTeam.map(m=>m['Full Name']))];const cur=mf.value;mf.innerHTML='<option value="">All Members</option>'+names.map(n=>'<option value="'+n+'"'+(n===cur?' selected':'')+'>'+n+'</option>').join('');}
+  document.getElementById('lt-body').innerHTML=list.length===0
+    ?'<tr><td colspan="10"><div class="empty-state"><p>No listing targets set yet</p></div></td></tr>'
+    :list.map(lt=>'<tr>'
+      +'<td style="color:#6b7280;font-size:10px">'+lt['Target ID']+'</td>'
+      +'<td><b>'+lt['Member Name']+'</b><div style="font-size:10px;color:#6b7280">'+lt['Member ID']+'</div></td>'
+      +'<td>'+lt['Client ID']+'</td>'
+      +'<td>'+lt['Start Date']+'</td>'
+      +'<td>'+lt['End Date']+'</td>'
+      +'<td style="font-size:11px">'+lt['Days (Mon-Sat or specific days)']+'</td>'
+      +'<td style="font-weight:700;color:#185FA5">'+lt['Daily Target (listings count)']+'</td>'
+      +'<td style="font-size:10px;color:#6b7280">'+lt['Notes']+'</td>'
+      +'<td>'+pill(lt['Status (Active/Inactive)']||lt['Status'])+'</td>'
+      +'<td style="white-space:nowrap"><button class="btn-edit" onclick="openEditListingTarget('+lt._row+')">Edit</button><button class="btn-del" onclick="confirmDelete('ListingTargets','+lt._row+','target')">Del</button></td>'
+    +'</tr>').join('');
+}
+function filterListingTargets(){
+  const m=document.getElementById('lt-member-filter').value;
+  const s=document.getElementById('lt-status-filter').value;
+  renderListingTargets(allListingTargets.filter(lt=>(!m||lt['Member Name']===m)&&(!s||(lt['Status (Active/Inactive)']||lt['Status'])===s)));
+}
+
+function checkAllDays(){
+  ['lt-mon','lt-tue','lt-wed','lt-thu','lt-fri','lt-sat'].forEach(id=>document.getElementById(id).checked=true);
+  document.getElementById('lt-sun').checked=false;
+}
+
+function openListingTargetModal(){
+  document.getElementById('ltModalTitle').textContent='Set Listing Target';
+  document.getElementById('ltSaveBtn').textContent='Save Target';
+  document.getElementById('ltSaveBtn').className='btn-save';
+  const mSel=document.getElementById('lt-member-sel');
+  mSel.innerHTML='<option value="">Select member...</option>'+allTeam.filter(m=>m['Status']==='Active').map(m=>'<option value="'+m['Member ID']+'">'+m['Full Name']+' ('+m['Member ID']+')</option>').join('');
+  const cSel=document.getElementById('lt-client-sel');
+  cSel.innerHTML='<option value="">Select account...</option>'+allClients.map(c=>'<option value="'+c['ID']+'">'+c['ID']+' - '+c['Client Name']+'</option>').join('');
+  ['lt-mid','lt-cid','lt-notes','lt-daily'].forEach(id=>document.getElementById(id).value='');
+  ['lt-mon','lt-tue','lt-wed','lt-thu','lt-fri','lt-sat'].forEach(id=>document.getElementById(id).checked=true);
+  document.getElementById('lt-sun').checked=false;
+  document.getElementById('lt-start').value=today();
+  document.getElementById('lt-end').value='';
+  document.getElementById('lt-status-sel').value='Active';
+  document.getElementById('lt-row-num').value='';
+  document.getElementById('listingTargetModal').classList.add('open');
+}
+
+function fillLTMember(){
+  const sel=document.getElementById('lt-member-sel');
+  const m=allTeam.find(x=>x['Member ID']===sel.value);
+  if(m)document.getElementById('lt-mid').value=m['Member ID'];
+  // Show only assigned accounts for this member
+  const assignedIds=allTeamAssignments.filter(a=>a['Member ID']===sel.value).map(a=>a['Client ID']);
+  const cSel=document.getElementById('lt-client-sel');
+  const clients=assignedIds.length>0?allClients.filter(c=>assignedIds.includes(c['ID'])):allClients;
+  cSel.innerHTML='<option value="">Select account...</option>'+clients.map(c=>'<option value="'+c['ID']+'">'+c['ID']+' - '+c['Client Name']+'</option>').join('');
+}
+
+function fillLTClient(){
+  const sel=document.getElementById('lt-client-sel');
+  document.getElementById('lt-cid').value=sel.value;
+}
+
+function openEditListingTarget(rowNum){
+  const lt=allListingTargets.find(x=>x._row===rowNum);if(!lt)return;
+  document.getElementById('ltModalTitle').textContent='Edit Listing Target';
+  document.getElementById('ltSaveBtn').textContent='Update';
+  document.getElementById('ltSaveBtn').className='btn-update';
+  const mSel=document.getElementById('lt-member-sel');
+  mSel.innerHTML='<option value="">Select member...</option>'+allTeam.map(m=>'<option value="'+m['Member ID']+'">'+m['Full Name']+'</option>').join('');
+  mSel.value=lt['Member ID']||'';
+  document.getElementById('lt-mid').value=lt['Member ID']||'';
+  document.getElementById('lt-cid').value=lt['Client ID']||'';
+  document.getElementById('lt-start').value=lt['Start Date']||'';
+  document.getElementById('lt-end').value=lt['End Date']||'';
+  document.getElementById('lt-daily').value=lt['Daily Target (listings count)']||lt['Daily Target']||'';
+  document.getElementById('lt-notes').value=lt['Notes']||'';
+  document.getElementById('lt-status-sel').value=lt['Status (Active/Inactive)']||lt['Status']||'Active';
+  document.getElementById('lt-row-num').value=rowNum;
+  const days=(lt['Days (Mon-Sat or specific days)']||lt['Days']||'').split(',').map(d=>d.trim());
+  ['lt-mon','lt-tue','lt-wed','lt-thu','lt-fri','lt-sat','lt-sun'].forEach(id=>{
+    const d=document.getElementById(id).value;
+    document.getElementById(id).checked=days.includes(d);
+  });
+  document.getElementById('listingTargetModal').classList.add('open');
+}
+
+async function saveListingTarget(){
+  const mid=document.getElementById('lt-mid').value;
+  const cid=document.getElementById('lt-cid').value;
+  const start=document.getElementById('lt-start').value;
+  const end=document.getElementById('lt-end').value;
+  const daily=document.getElementById('lt-daily').value;
+  if(!mid||!cid||!start||!daily){showToast('Member, account, start date and daily target required!','error');return;}
+  const days=['lt-mon','lt-tue','lt-wed','lt-thu','lt-fri','lt-sat','lt-sun'].filter(id=>document.getElementById(id).checked).map(id=>document.getElementById(id).value).join(', ');
+  if(!days){showToast('Select at least one active day!','error');return;}
+  const m=allTeam.find(x=>x['Member ID']===mid);
+  const rowNum=parseInt(document.getElementById('lt-row-num').value)||0;
+  const btn=document.getElementById('ltSaveBtn');const orig=btn.textContent;
+  btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
+  const tid='LT-'+String(allListingTargets.length+1).padStart(3,'0');
+  const row=[rowNum?allListingTargets.find(x=>x._row===rowNum)?.['Target ID']||tid:tid,mid,m?m['Full Name']:'',cid,start,end,days,daily,document.getElementById('lt-notes').value,document.getElementById('lt-status-sel').value];
+  try{
+    if(rowNum)await gAction({action:'update',sheet:'ListingTargets',rowNum:rowNum,row:JSON.stringify(row)});
+    else await gAction({action:'write',sheet:'ListingTargets',row:JSON.stringify(row)});
+    closeModal('listingTargetModal');showToast('Listing target saved!','success');setTimeout(()=>loadAll(true),3000);
+  }catch(e){showToast('Error: '+e.message,'error');}
+  btn.innerHTML=orig;btn.disabled=false;
+}
+
+// =============================================
+// LEAVE MANAGEMENT
+// =============================================
+function renderLeaves(data){
+  const list=data||allLeaves;
+  const mf=document.getElementById('lv-member-filter');
+  if(mf){const names=[...new Set(allTeam.map(m=>m['Full Name']))];const cur=mf.value;mf.innerHTML='<option value="">All Members</option>'+names.map(n=>'<option value="'+n+'"'+(n===cur?' selected':'')+'>'+n+'</option>').join('');}
+  document.getElementById('lv-pending').textContent=list.filter(l=>l['Status']==='Pending').length;
+  document.getElementById('lv-approved').textContent=list.filter(l=>l['Status']==='Approved').length;
+  document.getElementById('lv-rejected').textContent=list.filter(l=>l['Status']==='Rejected').length;
+  const todayStr=today();
+  document.getElementById('lv-today').textContent=list.filter(l=>l['Status']==='Approved'&&l['From Date']<=todayStr&&l['To Date']>=todayStr).length;
+  document.getElementById('lv-body').innerHTML=list.length===0
+    ?'<tr><td colspan="8"><div class="empty-state"><p>No leave requests</p></div></td></tr>'
+    :list.map(l=>{
+      const days=Math.ceil((new Date(l['To Date'])-new Date(l['From Date']))/(1000*60*60*24))+1;
+      return '<tr>'
+        +'<td><b>'+(l['Member Name']||'?')+'</b><div style="font-size:10px;color:#6b7280">'+l['Member ID']+'</div></td>'
+        +'<td>'+l['Leave Type']+'</td>'
+        +'<td>'+l['From Date']+'</td>'
+        +'<td>'+l['To Date']+'</td>'
+        +'<td style="font-weight:700">'+days+'</td>'
+        +'<td style="font-size:11px;color:#6b7280">'+l['Reason']+'</td>'
+        +'<td>'+pill(l['Status'])+'</td>'
+        +'<td style="white-space:nowrap">'
+          +(l['Status']==='Pending'?'<button class="btn-done" onclick="updateLeaveStatus('+l._row+','Approved')">Approve</button><button class="btn-del" onclick="updateLeaveStatus('+l._row+','Rejected')">Reject</button>':'')
+          +'<button class="btn-del" onclick="confirmDelete('Leaves','+l._row+','leave request')">Del</button>'
+        +'</td>'
+      +'</tr>';
+    }).join('');
+}
+function filterLeaves(){
+  const m=document.getElementById('lv-member-filter').value;
+  const s=document.getElementById('lv-status-filter').value;
+  renderLeaves(allLeaves.filter(l=>(!m||l['Member Name']===m)&&(!s||l['Status']===s)));
+}
+
+function openLeaveModal(prefillMember){
+  document.getElementById('leaveModalTitle').textContent='Add Leave Request';
+  document.getElementById('lvSaveBtn').textContent='Save Leave';
+  document.getElementById('lvSaveBtn').className='btn-save';
+  const mSel=document.getElementById('lv-member-sel');
+  if(currentUser&&!currentUser.isAdmin){
+    mSel.innerHTML='<option value="'+currentUser.name+'">'+currentUser.name+'</option>';
+    mSel.disabled=true;
+    const m=currentUser.memberData;
+    document.getElementById('lv-mid').value=m?m['Member ID']:'';
+    document.getElementById('lv-status-sel').value='Pending';
+  } else {
+    mSel.disabled=false;
+    mSel.innerHTML='<option value="">Select member...</option>'+allTeam.filter(m=>m['Status']==='Active').map(m=>'<option value="'+m['Full Name']+'">'+m['Full Name']+'</option>').join('');
+    if(prefillMember)mSel.value=prefillMember;
+    document.getElementById('lv-mid').value='';
+  }
+  ['lv-from','lv-to','lv-reason'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('lv-row-num').value='';
+  document.getElementById('leaveModal').classList.add('open');
+}
+
+function fillLVMember(){
+  const sel=document.getElementById('lv-member-sel');
+  const m=allTeam.find(x=>x['Full Name']===sel.value);
+  if(m)document.getElementById('lv-mid').value=m['Member ID']||'';
+}
+
+function openMyLeaveModal(){openLeaveModal(currentUser?currentUser.name:'');}
+
+async function updateLeaveStatus(rowNum,status){
+  const lv=allLeaves.find(x=>x._row===rowNum);if(!lv)return;
+  const row=[lv['Member ID'],lv['Member Name'],lv['Leave Type'],lv['From Date'],lv['To Date'],lv['Reason'],status,lv['Notes']||'',lv['Admin Notes']||''];
+  try{await gAction({action:'update',sheet:'Leaves',rowNum:rowNum,row:JSON.stringify(row)});showToast('Leave '+status+'!','success');setTimeout(()=>loadAll(true),3000);}
+  catch(e){showToast('Error: '+e.message,'error');}
+}
+
+async function saveLeave(){
+  const member=document.getElementById('lv-member-sel').value;
+  const from=document.getElementById('lv-from').value;
+  const to=document.getElementById('lv-to').value;
+  if(!member||!from||!to){showToast('Member and dates required!','error');return;}
+  const m=allTeam.find(x=>x['Full Name']===member);
+  const btn=document.getElementById('lvSaveBtn');const orig=btn.textContent;
+  btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
+  const row=[m?m['Member ID']:'',member,document.getElementById('lv-type').value,from,to,document.getElementById('lv-reason').value,document.getElementById('lv-status-sel').value,'',''];
+  try{
+    await gAction({action:'write',sheet:'Leaves',row:JSON.stringify(row)});
+    closeModal('leaveModal');showToast('Leave request saved!','success');setTimeout(()=>loadAll(true),3000);
+  }catch(e){showToast('Error: '+e.message,'error');}
+  btn.innerHTML=orig;btn.disabled=false;
+}
+
+// =============================================
+// MEMBER PERSONAL PROGRESS & EARNINGS
+// =============================================
+function renderMyProgress(){
+  if(!currentUser||currentUser.isAdmin)return;
+  const mid=currentUser.memberData?.['Member ID']||'';
+  const mpp=allPersonalProgress.filter(p=>p['Member ID']===mid);
+  const curMonth=getMonthLabel(0);
+  const thisComm=getMemberComm(mid,curMonth);
+  const totalComm=getMemberComm(mid);
+  document.getElementById('myp-count').textContent=mpp.length;
+  document.getElementById('myp-this-comm').textContent=fmt(thisComm);
+  document.getElementById('myp-total-comm').textContent=fmt(totalComm);
+  document.getElementById('myp-accounts').textContent=new Set(mpp.map(p=>p['Account (Client ID)']||p['Client ID'])).size;
+  document.getElementById('myp-body').innerHTML=mpp.length===0
+    ?'<tr><td colspan="9"><div class="empty-state"><p>No personal progress records yet</p></div></td></tr>'
+    :mpp.slice().reverse().map(p=>'<tr>'
+      +'<td>'+p['Month']+'</td>'
+      +'<td style="color:#6b7280;font-size:10px;font-weight:700">'+(p['Account (Client ID)']||p['Client ID']||'?')+'</td>'
+      +'<td>'+fmt(p['Gross Revenue'])+'</td>'
+      +'<td>'+fmt(p['COGS'])+'</td>'
+      +'<td style="color:#16a34a;font-weight:700">'+fmt(p['Net Profit'])+'</td>'
+      +'<td style="color:#185FA5;font-weight:700">'+(p['Deal %']||'?')+'</td>'
+      +'<td style="color:#d97706;font-weight:700">'+fmt(p['Commission'])+'</td>'
+      +'<td style="font-size:10px;color:#6b7280">'+(p['Notes']||'--')+'</td>'
+      +'<td><button class="btn-del" data-row="'+p._row+'" onclick="delPP(this)">Del</button></td>'
+    +'</tr>').join('');
+}
+
+function renderMyEarnings(){
+  if(!currentUser||currentUser.isAdmin)return;
+  const mid=currentUser.memberData?.['Member ID']||'';
+  const months=[getMonthLabel(0),getMonthLabel(-1),getMonthLabel(-2),getMonthLabel(-3),getMonthLabel(-4),getMonthLabel(-5)];
+  const comms=months.map(m=>getMemberComm(mid,m));
+  const thisComm=comms[0],lastComm=comms[1],totalComm=getMemberComm(mid);
+  const bestComm=Math.max(...comms);
+  document.getElementById('earn-this').textContent=fmt(thisComm);
+  document.getElementById('earn-last').textContent=fmt(lastComm);
+  document.getElementById('earn-total').textContent=fmt(totalComm);
+  document.getElementById('earn-best').textContent=fmt(bestComm);
+  // 3 month trend chart (simple bars)
+  const trend3=months.slice(0,3).reverse();
+  const trend3vals=comms.slice(0,3).reverse();
+  const maxVal=Math.max(...trend3vals,1);
+  document.getElementById('earn-trend-chart').innerHTML='<div style="display:flex;align-items:flex-end;gap:12px;height:100px;padding:10px 0">'
+    +trend3.map((m,i)=>{
+      const h=Math.max(8,Math.round((trend3vals[i]/maxVal)*80));
+      const col=i===2?'#0f2044':i===1?'#185FA5':'#2E8B57';
+      return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">'
+        +'<div style="font-size:11px;font-weight:700;color:'+col+'">'+fmt(trend3vals[i])+'</div>'
+        +'<div style="width:100%;height:'+h+'px;background:'+col+';border-radius:4px 4px 0 0"></div>'
+        +'<div style="font-size:10px;color:#6b7280">'+m+'</div>'
+      +'</div>';
+    }).join('')+'</div>';
+  // Monthly breakdown table
+  document.getElementById('earn-breakdown').innerHTML='<div class="table-wrap"><table><thead><tr><th>Month</th><th>Commission Earned</th><th>vs Previous</th></tr></thead><tbody>'
+    +months.map((m,i)=>{
+      const curr=comms[i];const prev=comms[i+1]||0;
+      const diff=curr-prev;const pct=prev>0?Math.round(diff/prev*100):0;
+      return '<tr><td>'+m+'</td><td style="font-weight:700;color:#16a34a">'+fmt(curr)+'</td>'
+        +'<td><span style="color:'+(diff>=0?'#16a34a':'#dc2626')+';font-weight:700">'+(diff>=0?'+':'')+fmt(diff)+' ('+(pct>=0?'+':'')+pct+'%)</span></td></tr>';
+    }).join('')+'</tbody></table></div>';
+}
+
+function renderMyLeaves(){
+  if(!currentUser||currentUser.isAdmin)return;
+  const name=currentUser.name;
+  const myLeaves=allLeaves.filter(l=>l['Member Name']===name);
+  document.getElementById('my-lv-body').innerHTML=myLeaves.length===0
+    ?'<tr><td colspan="6"><div class="empty-state"><p>No leave requests yet</p></div></td></tr>'
+    :myLeaves.slice().reverse().map(l=>{
+      const days=Math.ceil((new Date(l['To Date'])-new Date(l['From Date']))/(1000*60*60*24))+1;
+      return '<tr><td>'+l['Leave Type']+'</td><td>'+l['From Date']+'</td><td>'+l['To Date']+'</td><td>'+days+'</td><td style="font-size:11px;color:#6b7280">'+l['Reason']+'</td><td>'+pill(l['Status'])+'</td></tr>';
+    }).join('');
+}
+
+// =============================================
+// UPDATE nav() TO HANDLE NEW SECTIONS
+// =============================================
+
+async function autoGenerateTasks(memberId, memberName, clientId, role){
+  try{
+    const now=new Date();
+    const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const month=months[now.getMonth()]+' '+now.getFullYear();
+    const lastDay=new Date(now.getFullYear(),now.getMonth()+1,0);
+    const lastDayStr=lastDay.toISOString().split('T')[0];
+    const task5th=new Date(now.getFullYear(),now.getMonth(),5).toISOString().split('T')[0];
+    // Create recurring tasks for this assignment
+    const tasks=[
+      ['TK-AUTO-'+Date.now()+'1','Submit Monthly Progress for '+clientId,'Submit your personal progress record for '+month,memberName,'Admin',clientId,'','','Medium','Pending',task5th,'','Auto-generated on account assignment'],
+    ];
+    for(const t of tasks){
+      await gAction({action:'write',sheet:'Tasks',row:JSON.stringify(t)});
+    }
+  }catch(e){console.log('Auto task error:',e);}
+}
 function showToast(msg,type='info'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast toast-'+type;t.style.display='block';setTimeout(()=>t.style.display='none',4000);}
 window.addEventListener('click',e=>{if(e.target.classList.contains('modal-bg'))e.target.classList.remove('open');});
 loadAll(true);
