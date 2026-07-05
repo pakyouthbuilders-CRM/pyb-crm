@@ -2728,9 +2728,14 @@ function renderListingTargets(data){
       +'<td style="font-weight:700;color:#185FA5">'+lt['Daily Target (listings count)']+'</td>'
       +'<td style="font-size:10px;color:#6b7280">'+lt['Notes']+'</td>'
       +'<td>'+pill(lt['Status (Active/Inactive)']||lt['Status'])+'</td>'
-      +'<td style="white-space:nowrap"><button class="btn-edit" onclick="openEditListingTarget('+lt._row+')">Edit</button><button class="btn-del" onclick="confirmDelete('ListingTargets','+lt._row+','target')">Del</button></td>'
+      +'<td style="white-space:nowrap"><button class="btn-edit" data-row="'+lt._row+'" onclick="editLT(this)">Edit</button><button class="btn-del" data-row="'+lt._row+'" onclick="delLT(this)">Del</button></td>'
     +'</tr>').join('');
 }
+
+function editLT(btn){openEditListingTarget(parseInt(btn.getAttribute('data-row')));}
+function delLT(btn){confirmDelete('ListingTargets',parseInt(btn.getAttribute('data-row')),'target');}
+function updateLeaveBtn(btn){updateLeaveStatus(parseInt(btn.getAttribute('data-row')),btn.getAttribute('data-status'));}
+function delLeave(btn){confirmDelete('Leaves',parseInt(btn.getAttribute('data-row')),'leave request');}
 function filterListingTargets(){
   const m=document.getElementById('lt-member-filter').value;
   const s=document.getElementById('lt-status-filter').value;
@@ -2848,8 +2853,8 @@ function renderLeaves(data){
         +'<td style="font-size:11px;color:#6b7280">'+l['Reason']+'</td>'
         +'<td>'+pill(l['Status'])+'</td>'
         +'<td style="white-space:nowrap">'
-          +(l['Status']==='Pending'?'<button class="btn-done" onclick="updateLeaveStatus('+l._row+','Approved')">Approve</button><button class="btn-del" onclick="updateLeaveStatus('+l._row+','Rejected')">Reject</button>':'')
-          +'<button class="btn-del" onclick="confirmDelete('Leaves','+l._row+','leave request')">Del</button>'
+          +(l['Status']==="Pending"?'<button class="btn-done" data-row="'+l._row+'" data-status="Approved" onclick="updateLeaveBtn(this)">Approve</button><button class="btn-del" data-row="'+l._row+'" data-status="Rejected" onclick="updateLeaveBtn(this)">Reject</button>':'')
+          +'<button class="btn-del" data-row="'+l._row+'" onclick="delLeave(this)">Del</button>'
         +'</td>'
       +'</tr>';
     }).join('');
