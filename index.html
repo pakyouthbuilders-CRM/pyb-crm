@@ -187,15 +187,16 @@ tr:hover td{background:#f8fafc}
         <div class="nav-item" onclick="nav('tasks',this)">&#9989; Task Board</div>
         <div class="nav-item" onclick="nav('attendance',this)">&#128197; Attendance</div>
         <div class="nav-item" onclick="nav('updates',this)">&#128203; Daily Updates</div>
+        <div class="nav-item" onclick="nav('leaderboard',this)" style="padding-left:28px;font-size:11px">&#127942; Leaderboard</div>
+        <div class="nav-item" onclick="nav('alerts',this)" style="padding-left:28px;font-size:11px">&#128276; Smart Alerts</div>
+        <div class="nav-item" onclick="nav('listing-targets',this)" style="padding-left:28px;font-size:11px">&#128203; Listing Targets</div>
+        <div class="nav-item" onclick="nav('leaves',this)" style="padding-left:28px;font-size:11px">&#128197; Leave Management</div>
       </div>
       <div class="nav-section">
         <div class="nav-label">Reports</div>
         <div class="nav-item" onclick="nav('growth',this)">&#8593; Growth Report</div>
         <div class="nav-item" onclick="nav('targets',this)">&#127919; Targets & KPIs</div>
-        <div class="nav-item" onclick="nav('leaderboard',this)">&#127942; Leaderboard</div>
-        <div class="nav-item" onclick="nav('alerts',this)">&#128276; Smart Alerts</div>
-        <div class="nav-item" onclick="nav('listing-targets',this)">&#128203; Listing Targets</div>
-        <div class="nav-item" onclick="nav('leaves',this)">&#128197; Leave Management</div>
+
       </div>
     </div>
     <div id="memberNav" style="display:none">
@@ -314,6 +315,13 @@ tr:hover td{background:#f8fafc}
             <div class="kpi-card"><div class="kpi-label">Open Tasks</div><div class="kpi-val" id="team-tasks">0</div><div class="kpi-sub kpi-down" id="team-overdue"></div></div>
             <div class="kpi-card"><div class="kpi-label">Present Today</div><div class="kpi-val" id="team-present">0</div></div>
             <div class="kpi-card"><div class="kpi-label">Total Clients Managed</div><div class="kpi-val" id="team-rev">0</div></div>
+          </div>
+          <!-- Quick access buttons for team features -->
+          <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+            <button class="btn-add" style="background:#f59e0b" onclick="nav('leaderboard',null);document.querySelectorAll('.nav-item').forEach(n=>{if(n.textContent.includes('Leaderboard'))n.classList.add('active')})">&#127942; Leaderboard</button>
+            <button class="btn-add" style="background:#dc2626" onclick="nav('alerts',null);document.querySelectorAll('.nav-item').forEach(n=>{if(n.textContent.includes('Smart'))n.classList.add('active')})">&#128276; Smart Alerts</button>
+            <button class="btn-add" style="background:#0f2044" onclick="nav('listing-targets',null);document.querySelectorAll('.nav-item').forEach(n=>{if(n.textContent.includes('Listing'))n.classList.add('active')})">&#128203; Listing Targets</button>
+            <button class="btn-add" style="background:#7c3aed" onclick="nav('leaves',null);document.querySelectorAll('.nav-item').forEach(n=>{if(n.textContent.includes('Leave'))n.classList.add('active')})">&#128197; Leave Management</button>
           </div>
           <div id="team-cards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px"></div>
         </div>
