@@ -1824,12 +1824,13 @@ async function saveClient(){
 async function savePayment(){
   const client=document.getElementById('p-client').value.trim();
   const amount=document.getElementById('p-amount').value;
+  const pClientId=document.getElementById('p-client-id-hidden')?document.getElementById('p-client-id-hidden').value:'';
+  if(!pClientId){showToast('Please select a client from the dropdown!','error');return;}
   if(!client){showToast('Select a client!','error');return;}
   if(!amount){showToast('Amount is required!','error');return;}
   const btn=document.getElementById('paySaveBtn');const orig=btn.textContent;
   btn.innerHTML='<span class="spinner"></span>Saving...';btn.disabled=true;
-  const pClientId=document.getElementById('p-client-id-hidden')?document.getElementById('p-client-id-hidden').value:'';
-  const row=[document.getElementById('p-inv').value||'INV-'+Date.now(),client,document.getElementById('p-dept').value||document.getElementById('p-dept-text').value,document.getElementById('p-month').value,amount||'0',document.getElementById('p-comm').value||'0',document.getElementById('p-date').value,document.getElementById('p-status').value,document.getElementById('p-notes').value,pClientId];
+  const row=[pClientId,document.getElementById('p-inv').value||'INV-'+Date.now(),client,document.getElementById('p-dept').value||document.getElementById('p-dept-text').value,document.getElementById('p-month').value,amount||'0',document.getElementById('p-comm').value||'0',document.getElementById('p-date').value,document.getElementById('p-status').value,document.getElementById('p-notes').value];
   try{
     if(editMode&&editRowNum)await gAction({action:'update',sheet:'Payments',rowNum:editRowNum,row:JSON.stringify(row)});
     else await gAction({action:'write',sheet:'Payments',row:JSON.stringify(row)});
@@ -1970,7 +1971,7 @@ function generateInvoicePDF(rowNum){
   if(!c&&pDept){c=allClients.find(x=>x['Client Name']===clientName&&x['Department']===pDept);}
   if(!c){c=allClients.find(x=>x['Client Name']===clientName);}
   const manager=c?allTeam.find(m=>m['Full Name']===c['Account Manager']):null;
-  const managerId=getAssignedMemberIds(clientId)||manager?manager['Member ID']:'--';
+  const managerId=c?(getAssignedMemberIds(c['ID'])||(manager?manager['Member ID']:'--')):'--';
   const invNo=p['Invoice No']||p['Invoice']||'INV-001';
   const month=p['Month']||'--';
   const status=p['Status']||'--';
