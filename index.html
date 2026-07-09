@@ -989,9 +989,16 @@ async function gReadExternal(sheetId,range){
     return val;
   }catch(e){externalSheetCache[cacheKey]=null;return null;}
 }
+function abbrToFullMonth(label){
+  const map={Jan:'January',Feb:'February',Mar:'March',Apr:'April',May:'May',Jun:'June',Jul:'July',Aug:'August',Sep:'September',Oct:'October',Nov:'November',Dec:'December'};
+  const parts=(label||'').trim().split(' ');
+  if(parts.length<2)return label;
+  return(map[parts[0]]||parts[0])+' '+parts[1];
+}
 async function fetchLiveEbayData(client,monthLabel){
   if(!client||client['Department']!=='eBay'||!client['Profit Sheet ID'])return null;
-  const range="'"+monthLabel+"'!I1:N1";
+  const tabName=abbrToFullMonth(monthLabel);
+  const range="'"+tabName+"'!I1:N1";
   const rows=await gReadExternal(client['Profit Sheet ID'],range);
   if(!rows||!rows[0])return null;
   const row=rows[0];
