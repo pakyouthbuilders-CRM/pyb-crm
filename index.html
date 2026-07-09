@@ -1146,7 +1146,7 @@ function renderDashboard(){
   const dRevs=depts.map(d=>fp.filter(p=>p['Department']===d).reduce((a,p)=>a+(parseFloat(p['Gross Revenue'])||0),0));
   const maxR=Math.max(...dRevs,1);
   document.getElementById('dept-bars').innerHTML=dRevs.every(r=>r===0)?'<div class="empty-state"><p>No progress data yet</p></div>':depts.map((d,i)=>'<div class="dept-row"><div class="dept-name">'+d+'</div><div class="bar-wrap"><div class="bar-fill '+bCls[i]+'" style="width:'+Math.round(dRevs[i]/maxR*100)+'%"></div></div><div class="dept-pct">'+fmt(dRevs[i])+'</div></div>').join('');
-  document.getElementById('dash-payments').innerHTML=allPayments.length===0?'<div class="empty-state"><p>No payments yet</p></div>':allPayments.slice(-4).reverse().map(p=>'<div class="pay-row"><div><div class="pay-name">'+(p['Client Name']||'?')+'</div><div class="pay-dept">'+(p['Department']||'')+'</div></div><div style="text-align:right"><div class="pay-amt">'+currencySymbol(p['Currency']||'USD')+getAmt(p).toLocaleString()+'</div>'+pill(p['Status'])+'</div></div>').join('');
+  document.getElementById('dash-payments').innerHTML=allPayments.length===0?'<div class="empty-state"><p>No payments yet</p></div>':allPayments.slice(-4).reverse().map(p=>'<div class="pay-row"><div><div class="pay-name">'+(p['Client Name']||'?')+'</div><div class="pay-dept">'+(p['Department']||'')+'</div></div><div style="text-align:right"><div class="pay-amt">'+currencySymbol(p['Currency']||'USD')+getComm(p).toLocaleString()+'</div>'+pill(p['Status'])+'</div></div>').join('');
   const od=allTasks.filter(t=>t['Status']!=='Done'&&isOverdue(t['Due Date']));
   document.getElementById('dash-overdue-tasks').innerHTML=od.length===0?'<div class="empty-state"><p>No overdue tasks!</p></div>':od.slice(0,4).map(t=>'<div class="pay-row"><div><div class="pay-name">'+(t['Task Title']||'?')+'</div><div class="pay-dept">'+t['Assigned To']+'</div></div>'+pill(t['Priority'])+'</div>').join('');
   const ta=allAttendance.filter(a=>a['Date']===today());
@@ -1162,9 +1162,9 @@ function filterMaster(){const s=document.getElementById('master-search').value.t
 
 function renderPayments(data){
   const list=data||allPayments;
-  document.getElementById('pay-received').innerHTML=fmtCurrencyBlock(groupByCurrency(list.filter(p=>p['Status']==='Received'),getAmt));
-  document.getElementById('pay-pending').innerHTML=fmtCurrencyBlock(groupByCurrency(list.filter(p=>p['Status']==='Pending'),getAmt));
-  document.getElementById('pay-overdue').innerHTML=fmtCurrencyBlock(groupByCurrency(list.filter(p=>p['Status']==='Overdue'),getAmt));
+  document.getElementById('pay-received').innerHTML=fmtCurrencyBlock(groupByCurrency(list.filter(p=>p['Status']==='Received'),getComm));
+  document.getElementById('pay-pending').innerHTML=fmtCurrencyBlock(groupByCurrency(list.filter(p=>p['Status']==='Pending'),getComm));
+  document.getElementById('pay-overdue').innerHTML=fmtCurrencyBlock(groupByCurrency(list.filter(p=>p['Status']==='Overdue'),getComm));
   document.getElementById('pay-count').textContent=list.length;
   document.getElementById('pay-body').innerHTML=list.length===0?'<tr><td colspan="9"><div class="empty-state"><p>No payments yet</p></div></td></tr>':list.map(p=>{const sym=currencySymbol(p['Currency']||'USD');return'<tr><td style="color:#6b7280">'+(p['Invoice No']||p['Invoice']||'?')+'</td><td><b>'+(p['Client Name']||p['Client']||'?')+'</b></td><td>'+tag(p['Department']||p['Dept'])+'</td><td>'+(p['Month']||'?')+'</td><td style="font-weight:700">'+sym+getAmt(p).toLocaleString()+'</td><td style="color:#16a34a;font-weight:700">'+sym+getComm(p).toLocaleString()+'</td><td>'+(p['Date Received']||p['Date']||'?')+'</td><td>'+pill(p['Status'])+'</td><td style="white-space:nowrap"><button class="btn-edit" onclick="openEditPaymentForm('+p._row+')">Edit</button><button class="btn-pdf" onclick="generateInvoicePDF('+p._row+')" title="Generate Invoice PDF">📄</button><button class="btn-email-ic" onclick="openEmailModal(\'invoice\','+p._row+')" title="Send Invoice Email">📧</button><button class="btn-del" onclick="confirmDelete(\'Payments\','+p._row+',\'payment\')">Del</button></td></tr>';}).join('');
 }
