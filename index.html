@@ -1022,8 +1022,11 @@ async function gAction(params){
   const url=SCRIPT+'?'+Object.entries(params).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');
   const r=await fetch(url);
   const text=await r.text();
-  try{const d=JSON.parse(text);if(d.status==='error')throw new Error(d.msg);return d;}
-  catch(e){return{status:'success'};}
+  let d;
+  try{d=JSON.parse(text);}
+  catch(parseErr){throw new Error('Server did not return valid JSON: '+text.slice(0,200));}
+  if(d.status==='error')throw new Error(d.msg||'Unknown server error');
+  return d;
 }
 
 function toObj(rows){
