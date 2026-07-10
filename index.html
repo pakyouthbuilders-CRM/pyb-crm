@@ -1278,18 +1278,20 @@ function viewMember(id){
       return '<tr><td>'+c['ID']+'</td><td><b>'+(c['Client Name']||'?')+'</b></td><td>'+tag(c['Department'])+'</td><td>'+(c['Store Name']||'?')+'</td><td style="color:#185FA5;font-weight:700">'+(asgn?asgn['Deal %']:c['Deal %']||'?')+'</td><td>'+pill(c['Status'])+'</td><td>'+btnHtml+'</td></tr>';
     }).join('')+'</tbody></table></div>';
 
+  const ppCurrency=p=>{const cid=p['Account (Client ID)']||p['Client ID']||'';const cc=allClients.find(x=>x['ID']===cid);return cc?cc['Currency']||'USD':'USD';};
   const ppHtml=mpp.length===0
     ?'<div class="empty-state"><p>No personal progress records yet.</p></div>'
     :'<div class="kpi-grid" style="margin-bottom:12px">'+
       '<div class="kpi-card"><div class="kpi-label">Total Records</div><div class="kpi-val">'+mpp.length+'</div></div>'+
-      '<div class="kpi-card"><div class="kpi-label">Total Commission</div><div class="kpi-val kpi-up">'+fmt(totalComm)+'</div></div>'+
+      '<div class="kpi-card"><div class="kpi-label">Total Commission</div><div class="kpi-val kpi-up">'+fmtCurrencyBlock(groupByCurrency(mpp.map(p=>({Currency:ppCurrency(p),v:parseFloat(p['Commission'])||0})),x=>x.v))+'</div></div>'+
       '<div class="kpi-card"><div class="kpi-label">Total Orders</div><div class="kpi-val">'+mpp.reduce(function(a,p){return a+(parseInt(p['Orders'])||0);},0)+'</div></div>'+
       '<div class="kpi-card"><div class="kpi-label">Accounts Worked</div><div class="kpi-val">'+(new Set(mpp.map(function(p){return p['Account (Client ID)']||p['Client ID']||'';}))  ).size+'</div></div>'+
     '</div>'+
     '<div class="table-wrap"><table><thead><tr><th>Month</th><th>Client ID</th><th>SKU Ref</th><th>Gross</th><th>COGS</th><th>Net Profit</th><th>Deal %</th><th>Commission</th><th>Notes</th><th>Del</th></tr></thead><tbody>'+
     mpp.map(function(p){
       var delBtn='<button class="btn-del" data-row="'+p._row+'" onclick="delPP(this)">Del</button>';
-      return '<tr><td>'+(p['Month']||'?')+'</td><td style="color:#6b7280;font-size:10px;font-weight:700">'+(p['Account (Client ID)']||p['Client ID']||'?')+'</td><td style="font-size:10px">'+(p['SKU Ref']||'--')+'</td><td>'+fmt(p['Gross Revenue'])+'</td><td>'+fmt(p['COGS'])+'</td><td style="color:#16a34a;font-weight:700">'+fmt(p['Net Profit'])+'</td><td style="color:#185FA5;font-weight:700">'+(p['Deal %']||'?')+'</td><td style="color:#d97706;font-weight:700">'+fmt(p['Commission'])+'</td><td style="font-size:10px;color:#6b7280">'+(p['Notes']||'--')+'</td><td>'+delBtn+'</td></tr>';
+      var sym=currencySymbol(ppCurrency(p));
+      return '<tr><td>'+(p['Month']||'?')+'</td><td style="color:#6b7280;font-size:10px;font-weight:700">'+(p['Account (Client ID)']||p['Client ID']||'?')+'</td><td style="font-size:10px">'+(p['SKU Ref']||'--')+'</td><td>'+sym+(parseFloat(p['Gross Revenue'])||0).toLocaleString()+'</td><td>'+sym+(parseFloat(p['COGS'])||0).toLocaleString()+'</td><td style="color:#16a34a;font-weight:700">'+sym+(parseFloat(p['Net Profit'])||0).toLocaleString()+'</td><td style="color:#185FA5;font-weight:700">'+(p['Deal %']||'?')+'</td><td style="color:#d97706;font-weight:700">'+sym+(parseFloat(p['Commission'])||0).toLocaleString()+'</td><td style="font-size:10px;color:#6b7280">'+(p['Notes']||'--')+'</td><td>'+delBtn+'</td></tr>';
     }).join('')+'</tbody></table></div>';
 
   const tasksHtml=mt.length===0?'<div class="empty-state"><p>No tasks</p></div>':mt.map(function(t){
@@ -1449,8 +1451,8 @@ function renderMemberDashboard(){
   }
 
   document.getElementById('my-task-preview').innerHTML=mp.length===0?'<div class="empty-state"><p>No pending tasks!</p></div>':mp.slice(0,4).map(t=>'<div class="pay-row"><div><div class="pay-name">'+(t['Task Title']||'?')+'</div><div class="pay-dept">Due: '+(t['Due Date']||'?')+(isOverdue(t['Due Date'])?' <span class="status-pill pill-red">OVERDUE</span>':'')+'</div></div>'+pill(t['Priority'])+'</div>').join('');
-  document.getElementById('my-client-preview').innerHTML=mc.length===0?'<div class="empty-state"><p>No clients assigned yet</p></div>':mc.map(c=>'<div class="pay-row"><div><div class="pay-name" style="font-size:11px;color:#6b7280">'+c['ID']+'</div><div class="pay-dept">'+tag(c['Department'])+' · <b>'+(c['Store Name']||'?')+'</b></div></div>'+pill(c['Status'])+'</div>').join('');
-  document.getElementById('my-clients-body').innerHTML=mc.length===0?'<tr><td colspan="5"><div class="empty-state"><p>No clients assigned yet</p></div></td></tr>':mc.map(c=>'<tr><td style="color:#6b7280;font-size:10px;font-weight:700">'+c['ID']+'</td><td>'+tag(c['Department'])+'</td><td><b>'+(c['Store Name']||'?')+'</b></td><td>'+(c['Deal %']||'?')+'</td><td>'+pill(c['Status'])+'</td></tr>').join('');
+  document.getElementById('my-client-preview').innerHTML=mc.length===0?'<div class="empty-state"><p>No clients assigned yet</p></div>':mc.map(c=>{const asgn=myAssignments.find(a=>a['Client ID']===c['ID']||a['Client ID']===c['Client ID']);return'<div class="pay-row"><div><div class="pay-name" style="font-size:11px;color:#6b7280">'+c['ID']+'</div><div class="pay-dept">'+tag(c['Department'])+' · <b>'+(c['Store Name']||'?')+'</b></div></div>'+pill(c['Status'])+'</div>';}).join('');
+  document.getElementById('my-clients-body').innerHTML=mc.length===0?'<tr><td colspan="5"><div class="empty-state"><p>No clients assigned yet</p></div></td></tr>':mc.map(c=>{const asgn=myAssignments.find(a=>a['Client ID']===c['ID']||a['Client ID']===c['Client ID']);const myDeal=asgn?asgn['Deal %']:(c['Deal %']||'?');return'<tr><td style="color:#6b7280;font-size:10px;font-weight:700">'+c['ID']+'</td><td>'+tag(c['Department'])+'</td><td><b>'+(c['Store Name']||'?')+'</b></td><td style="color:#185FA5;font-weight:700">'+myDeal+'</td><td>'+pill(c['Status'])+'</td></tr>';}).join('');
   const myAtt=allAttendance.filter(a=>a['Member Name']===name);
   document.getElementById('my-att-body').innerHTML=myAtt.length===0?'<tr><td colspan="6"><div class="empty-state"><p>No attendance records yet</p></div></td></tr>':myAtt.slice().reverse().map(a=>'<tr><td>'+(a['Date']||'?')+'</td><td>'+pill(a['Status'])+'</td><td>'+(a['Check In']||'?')+'</td><td>'+(a['Check Out']||'?')+'</td><td>'+(a['Hours Worked']||'?')+'</td><td style="color:#6b7280;font-size:10px">'+(a['Notes']||'?')+'</td></tr>').join('');
   const myUpd=allUpdates.filter(u=>u['Member Name']===name);
@@ -1493,18 +1495,19 @@ function viewClient(id,dept){
   const pe=document.getElementById(dk+'-profile');pe.style.display='block';
   const cp=allProgress.filter(p=>p['Client ID']===id||p['Client Name']===c['Client Name']);
   const idx=allClients.indexOf(c);
-  pe.innerHTML='<button class="back-btn" onclick="backToDept(\''+dk+'\')">Back to '+c['Department']+'</button><div class="profile-header"><div class="profile-avatar" style="background:'+aColor(idx)+'">'+ini(c['Client Name'])+'</div><div style="flex:1"><div class="profile-name">'+(c['Client Name']||'?')+' '+ctp(c['Client Type'])+'</div><div class="profile-meta">'+(c['Store Name']||'?')+' · '+tag(c['Department'])+' · '+pill(c['Status'])+'</div><div class="profile-meta">'+(c['Email']||'?')+' · '+(c['Phone']||'?')+'</div></div><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end"><button class="btn-update" onclick="openEditClientForm(\''+c['ID']+'\')">Edit</button><button class="btn-danger" onclick="confirmDelete(\'Clients\','+c._row+',\''+c['Client Name']+'\')">Delete</button></div></div><div class="profile-grid"><div class="info-block"><div class="info-label">Location</div><div class="info-val">'+(c['City']||'?')+', '+(c['Country']||'?')+'</div></div><div class="info-block"><div class="info-label">Deal Type</div><div class="info-val">'+(c['Deal Type']||'?')+'</div></div><div class="info-block"><div class="info-label">Deal %</div><div class="info-val" style="color:#185FA5">'+(c['Deal %']||'?')+'</div></div><div class="info-block"><div class="info-label">Account Manager</div><div class="info-val">'+(c['Account Manager']||'?')+'</div></div><div class="info-block"><div class="info-label">Contract Start</div><div class="info-val">'+(c['Contract Start']||'?')+'</div></div><div class="info-block"><div class="info-label">Status</div><div class="info-val">'+pill(c['Status'])+'</div></div></div>'+(c['Notes']?'<div class="card" style="margin-bottom:10px"><div class="info-label">Notes</div><div style="font-size:12px;margin-top:5px">'+c['Notes']+'</div></div>':'')+'<div class="card"><div class="card-title">Monthly Progress</div><div class="table-wrap"><table><thead><tr><th>Month</th><th>Net Sales</th><th>Cost of Goods</th><th>Net Profit</th><th>PYB Commission</th><th>Orders</th><th>Performance</th></tr></thead><tbody>'+(cp.length===0?'<tr><td colspan="7"><div class="empty-state"><p>No progress records yet</p></div></td></tr>':cp.map(p=>'<tr><td>'+p['Month']+'</td><td>'+fmt(p['Gross Revenue'])+'</td><td>'+fmt(p['Cost of Goods'])+'</td><td style="color:#16a34a;font-weight:700">'+fmt(p['Net Profit'])+'</td><td style="color:#d97706;font-weight:700">'+fmt(p['PYB Commission'])+'</td><td>'+(p['Orders']||'?')+'</td><td>'+pill(p['Performance'])+'</td></tr>').join(''))+'</tbody></table></div></div>';
+  pe.innerHTML='<button class="back-btn" onclick="backToDept(\''+dk+'\')">Back to '+c['Department']+'</button><div class="profile-header"><div class="profile-avatar" style="background:'+aColor(idx)+'">'+ini(c['Client Name'])+'</div><div style="flex:1"><div class="profile-name">'+(c['Client Name']||'?')+' '+ctp(c['Client Type'])+'</div><div class="profile-meta">'+(c['Store Name']||'?')+' · '+tag(c['Department'])+' · '+pill(c['Status'])+'</div><div class="profile-meta">'+(c['Email']||'?')+' · '+(c['Phone']||'?')+'</div></div><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end"><button class="btn-update" onclick="openEditClientForm(\''+c['ID']+'\')">Edit</button><button class="btn-danger" onclick="confirmDelete(\'Clients\','+c._row+',\''+c['Client Name']+'\')">Delete</button></div></div><div class="profile-grid"><div class="info-block"><div class="info-label">Location</div><div class="info-val">'+(c['City']||'?')+', '+(c['Country']||'?')+'</div></div><div class="info-block"><div class="info-label">Deal Type</div><div class="info-val">'+(c['Deal Type']||'?')+'</div></div><div class="info-block"><div class="info-label">Deal %</div><div class="info-val" style="color:#185FA5">'+(c['Deal %']||'?')+'</div></div><div class="info-block"><div class="info-label">Account Manager</div><div class="info-val">'+(c['Account Manager']||'?')+'</div></div><div class="info-block"><div class="info-label">Contract Start</div><div class="info-val">'+(c['Contract Start']||'?')+'</div></div><div class="info-block"><div class="info-label">Status</div><div class="info-val">'+pill(c['Status'])+'</div></div></div>'+(c['Notes']?'<div class="card" style="margin-bottom:10px"><div class="info-label">Notes</div><div style="font-size:12px;margin-top:5px">'+c['Notes']+'</div></div>':'')+'<div class="card"><div class="card-title">Monthly Progress</div><div class="table-wrap"><table><thead><tr><th>Month</th><th>Net Sales</th><th>Cost of Goods</th><th>Net Profit</th><th>PYB Commission</th><th>Orders</th><th>Performance</th></tr></thead><tbody>'+(cp.length===0?'<tr><td colspan="7"><div class="empty-state"><p>No progress records yet</p></div></td></tr>':cp.map(p=>{const sym=currencySymbol(p['Currency']||c['Currency']||'USD');return'<tr><td>'+p['Month']+'</td><td>'+sym+(parseFloat(p['Gross Revenue'])||0).toLocaleString()+'</td><td>'+sym+(parseFloat(p['Cost of Goods'])||0).toLocaleString()+'</td><td style="color:#16a34a;font-weight:700">'+sym+(parseFloat(p['Net Profit'])||0).toLocaleString()+'</td><td style="color:#d97706;font-weight:700">'+sym+(parseFloat(p['PYB Commission'])||0).toLocaleString()+'</td><td>'+(p['Orders']||'?')+'</td><td>'+pill(p['Performance'])+'</td></tr>';}).join(''))+'</tbody></table></div></div>';
 }
 function backToDept(dept){document.getElementById(dept+'-list').style.display='block';document.getElementById(dept+'-profile').style.display='none';}
 
 function renderGrowth(){
   const depts=['eBay','Walmart','TikTok'];
-  const data=depts.map(d=>{const dc=allClients.filter(c=>c['Department']===d);const dp=allProgress.filter(p=>p['Department']===d);return{dept:d,count:dc.length,gross:dp.reduce((a,p)=>a+(parseFloat(p['Gross Revenue'])||0),0),net:dp.reduce((a,p)=>a+(parseFloat(p['Net Profit'])||0),0),comm:dp.reduce((a,p)=>a+(parseFloat(p['PYB Commission'])||0),0),active:dc.filter(c=>c['Status']==='Active').length};});
-  document.getElementById('g-ebay').textContent=data[0].count;document.getElementById('g-ebay-rev').textContent=fmt(data[0].gross)+' gross';
-  document.getElementById('g-walmart').textContent=data[1].count;document.getElementById('g-walmart-rev').textContent=fmt(data[1].gross)+' gross';
-  document.getElementById('g-tiktok').textContent=data[2].count;document.getElementById('g-tiktok-rev').textContent=fmt(data[2].gross)+' gross';
-  document.getElementById('g-total').textContent=fmt(data.reduce((a,d)=>a+d.gross,0));
-  document.getElementById('growth-detail').innerHTML=data.map(d=>'<div class="pay-row"><div><div class="pay-name">'+d.dept+' Department</div><div class="pay-dept">'+d.count+' clients · '+d.active+' active · Net: '+fmt(d.net)+' · Commission: '+fmt(d.comm)+'</div></div><div class="pay-amt">'+fmt(d.gross)+'</div></div>').join('');
+  const data=depts.map(d=>{const dc=allClients.filter(c=>c['Department']===d);const dp=allProgress.filter(p=>p['Department']===d);return{dept:d,count:dc.length,gross:groupByCurrency(dp,p=>parseFloat(p['Gross Revenue'])||0),net:groupByCurrency(dp,p=>parseFloat(p['Net Profit'])||0),comm:groupByCurrency(dp,p=>parseFloat(p['PYB Commission'])||0),active:dc.filter(c=>c['Status']==='Active').length};});
+  document.getElementById('g-ebay').textContent=data[0].count;document.getElementById('g-ebay-rev').innerHTML=fmtCurrencyBlock(data[0].gross)+' gross';
+  document.getElementById('g-walmart').textContent=data[1].count;document.getElementById('g-walmart-rev').innerHTML=fmtCurrencyBlock(data[1].gross)+' gross';
+  document.getElementById('g-tiktok').textContent=data[2].count;document.getElementById('g-tiktok-rev').innerHTML=fmtCurrencyBlock(data[2].gross)+' gross';
+  const allProgTotal=groupByCurrency(allProgress,p=>parseFloat(p['Gross Revenue'])||0);
+  document.getElementById('g-total').innerHTML=fmtCurrencyBlock(allProgTotal);
+  document.getElementById('growth-detail').innerHTML=data.map(d=>'<div class="pay-row"><div><div class="pay-name">'+d.dept+' Department</div><div class="pay-dept">'+d.count+' clients · '+d.active+' active · Net: '+fmtCurrencyBlock(d.net)+' · Commission: '+fmtCurrencyBlock(d.comm)+'</div></div><div class="pay-amt">'+fmtCurrencyBlock(d.gross)+'</div></div>').join('');
 }
 function nav(id,el){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
@@ -2246,7 +2249,9 @@ function calcTargetCommission(){
   const net=parseFloat(document.getElementById('tgt-net').value)||0;
   const deal=parseFloat((document.getElementById('tgt-deal').value||'0').replace('%',''))||0;
   const exp=(net*deal)/100;
-  document.getElementById('tgt-exp-comm-preview').textContent='$'+exp.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+  const selCid=document.getElementById('tgt-client-select')?document.getElementById('tgt-client-select').value:'';
+  const selC=allClients.find(x=>x['ID']===selCid);
+  document.getElementById('tgt-exp-comm-preview').textContent=currencySymbol(selC?selC['Currency']:'USD')+exp.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
 }
 
 function openTargetForm(){
@@ -2365,18 +2370,17 @@ function renderTargets(data){
 
   // Forecast by dept
   const curTargets=allTargets.filter(t=>t['Month']===curMonth);
-  const totalForecast=curTargets.reduce((a,t)=>a+(parseFloat(t['Expected Commission'])||0),0);
-  const eForecastByDept=dept=>curTargets.filter(t=>t['Department']===dept).reduce((a,t)=>a+(parseFloat(t['Expected Commission'])||0),0);
-  document.getElementById('tgt-forecast-total').textContent=fmt(totalForecast);
-  document.getElementById('tgt-forecast-ebay').textContent=fmt(eForecastByDept('eBay'));
-  document.getElementById('tgt-forecast-walmart').textContent=fmt(eForecastByDept('Walmart'));
-  document.getElementById('tgt-forecast-tiktok').textContent=fmt(eForecastByDept('TikTok'));
+  const tgtCurrency=t=>{const c=allClients.find(x=>x['ID']===t['Client ID']);return c?c['Currency']||'USD':'USD';};
+  const eForecastByDept=dept=>groupByCurrency(curTargets.filter(t=>t['Department']===dept).map(t=>({Currency:tgtCurrency(t),v:parseFloat(t['Expected Commission'])||0})),x=>x.v);
+  document.getElementById('tgt-forecast-total').innerHTML=fmtCurrencyBlock(groupByCurrency(curTargets.map(t=>({Currency:tgtCurrency(t),v:parseFloat(t['Expected Commission'])||0})),x=>x.v));
+  document.getElementById('tgt-forecast-ebay').innerHTML=fmtCurrencyBlock(eForecastByDept('eBay'));
+  document.getElementById('tgt-forecast-walmart').innerHTML=fmtCurrencyBlock(eForecastByDept('Walmart'));
+  document.getElementById('tgt-forecast-tiktok').innerHTML=fmtCurrencyBlock(eForecastByDept('TikTok'));
   document.getElementById('tgt-count').textContent=curTargets.length;
-  document.getElementById('tgt-expected-comm').textContent=fmt(curTargets.reduce((a,t)=>a+(parseFloat(t['Expected Commission'])||0),0));
+  document.getElementById('tgt-expected-comm').innerHTML=fmtCurrencyBlock(groupByCurrency(curTargets.map(t=>({Currency:tgtCurrency(t),v:parseFloat(t['Expected Commission'])||0})),x=>x.v));
 
   // Actual commission for current month (live for eBay-linked accounts, Progress for the rest)
-  const actualCommSum=curTargets.reduce((a,t)=>{const act=getTargetActuals(t);return a+(act.actComm||0);},0);
-  document.getElementById('tgt-actual-comm').textContent=fmt(actualCommSum);
+  document.getElementById('tgt-actual-comm').innerHTML=fmtCurrencyBlock(groupByCurrency(curTargets.map(t=>({Currency:tgtCurrency(t),v:getTargetActuals(t).actComm||0})),x=>x.v));
 
   // Render table
   if(list.length===0){
@@ -2405,21 +2409,22 @@ function renderTargets(data){
       return'<span style="color:'+col+';font-weight:700;font-size:11px">'+pct+'%</span>';
     };
 
+    const tsym=currencySymbol(c?c['Currency']:'USD');
     return'<tr>'+
       '<td style="color:#6b7280;font-size:10px;font-weight:700">'+t['Client ID']+'</td>'+
       '<td><b style="font-size:11px">'+storeName+'</b>'+liveTag+'</td>'+
       '<td>'+tag(t['Department'])+'</td>'+
       '<td style="font-size:11px">'+t['Month']+'</td>'+
-      '<td style="color:#6b7280">'+fmt(t['Target Gross'])+'</td>'+
-      '<td style="font-weight:700">'+(actGross!==null?fmt(actGross):'<span style="color:#9ca3af;font-size:10px">Pending</span>')+'</td>'+
+      '<td style="color:#6b7280">'+tsym+(parseFloat(t['Target Gross'])||0).toLocaleString()+'</td>'+
+      '<td style="font-weight:700">'+(actGross!==null?tsym+actGross.toLocaleString():'<span style="color:#9ca3af;font-size:10px">Pending</span>')+'</td>'+
       '<td>'+achBadge(salesAch)+'</td>'+
-      '<td style="color:#6b7280">'+fmt(t['Target Net'])+'</td>'+
-      '<td style="font-weight:700;color:#16a34a">'+(actNet!==null?fmt(actNet):'<span style="color:#9ca3af;font-size:10px">Pending</span>')+'</td>'+
+      '<td style="color:#6b7280">'+tsym+(parseFloat(t['Target Net'])||0).toLocaleString()+'</td>'+
+      '<td style="font-weight:700;color:#16a34a">'+(actNet!==null?tsym+actNet.toLocaleString():'<span style="color:#9ca3af;font-size:10px">Pending</span>')+'</td>'+
       '<td>'+achBadge(profAch)+'</td>'+
       '<td style="color:#6b7280">'+(t['Target ROI']||'--')+'%</td>'+
       '<td style="font-weight:700">'+(actRoi!==null?actRoi+'%':'<span style="color:#9ca3af;font-size:10px">--</span>')+'</td>'+
-      '<td style="color:#7c3aed;font-weight:700">'+fmt(t['Expected Commission'])+'</td>'+
-      '<td style="color:#16a34a;font-weight:700">'+(actComm!==null?fmt(actComm):'<span style="color:#9ca3af;font-size:10px">Pending</span>')+'</td>'+
+      '<td style="color:#7c3aed;font-weight:700">'+tsym+(parseFloat(t['Expected Commission'])||0).toLocaleString()+'</td>'+
+      '<td style="color:#16a34a;font-weight:700">'+(actComm!==null?tsym+actComm.toLocaleString():'<span style="color:#9ca3af;font-size:10px">Pending</span>')+'</td>'+
       '<td><span style="font-weight:700;font-size:13px;color:'+getScoreColor(score)+'">'+score+'</span><span style="font-size:9px;color:#9ca3af">/100</span></td>'+
       '<td><span class="status-pill '+status.cls+'">'+status.label+'</span>'+(isAtRisk?'<span class="status-pill pill-red" style="margin-left:3px;font-size:8px">AT RISK</span>':'')+'</td>'+
       '<td style="white-space:nowrap"><button class="btn-edit" onclick="openEditTargetForm('+t._row+')">Edit</button><button class="btn-del" onclick="confirmDelete(&quot;Targets&quot;,'+t._row+',&quot;target&quot;)">Del</button></td>'+
@@ -2605,7 +2610,9 @@ function calcPPCommission(){
   const net=gross-cogs;
   const comm=(net*deal)/100;
   document.getElementById('pp-net').value=net>0?net.toFixed(2):'0';
-  document.getElementById('pp-comm-preview').textContent='$'+comm.toFixed(2);
+  const selCid=document.getElementById('pp-client-select')?document.getElementById('pp-client-select').value:'';
+  const selC=allClients.find(x=>x['ID']===selCid);
+  document.getElementById('pp-comm-preview').textContent=currencySymbol(selC?selC['Currency']:'USD')+comm.toFixed(2);
 }
 
 async function savePersonalProgress(){
@@ -3038,25 +3045,24 @@ function renderMyProgress(){
   const mid=currentUser.memberData?.['Member ID']||'';
   const mpp=allPersonalProgress.filter(p=>p['Member ID']===mid);
   const curMonth=getMonthLabel(0);
-  const thisComm=getMemberComm(mid,curMonth);
-  const totalComm=getMemberComm(mid);
+  const ppCurrency=p=>{const cid=p['Account (Client ID)']||p['Client ID']||'';const cc=allClients.find(x=>x['ID']===cid);return cc?cc['Currency']||'USD':'USD';};
   document.getElementById('myp-count').textContent=mpp.length;
-  document.getElementById('myp-this-comm').textContent=fmt(thisComm);
-  document.getElementById('myp-total-comm').textContent=fmt(totalComm);
+  document.getElementById('myp-this-comm').innerHTML=fmtCurrencyBlock(groupByCurrency(mpp.filter(p=>p['Month']===curMonth).map(p=>({Currency:ppCurrency(p),v:parseFloat(p['Commission'])||0})),x=>x.v));
+  document.getElementById('myp-total-comm').innerHTML=fmtCurrencyBlock(groupByCurrency(mpp.map(p=>({Currency:ppCurrency(p),v:parseFloat(p['Commission'])||0})),x=>x.v));
   document.getElementById('myp-accounts').textContent=new Set(mpp.map(p=>p['Account (Client ID)']||p['Client ID'])).size;
   document.getElementById('myp-body').innerHTML=mpp.length===0
     ?'<tr><td colspan="9"><div class="empty-state"><p>No personal progress records yet</p></div></td></tr>'
-    :mpp.slice().reverse().map(p=>'<tr>'
+    :mpp.slice().reverse().map(p=>{const sym=currencySymbol(ppCurrency(p));return'<tr>'
       +'<td>'+p['Month']+'</td>'
       +'<td style="color:#6b7280;font-size:10px;font-weight:700">'+(p['Account (Client ID)']||p['Client ID']||'?')+'</td>'
-      +'<td>'+fmt(p['Gross Revenue'])+'</td>'
-      +'<td>'+fmt(p['COGS'])+'</td>'
-      +'<td style="color:#16a34a;font-weight:700">'+fmt(p['Net Profit'])+'</td>'
+      +'<td>'+sym+(parseFloat(p['Gross Revenue'])||0).toLocaleString()+'</td>'
+      +'<td>'+sym+(parseFloat(p['COGS'])||0).toLocaleString()+'</td>'
+      +'<td style="color:#16a34a;font-weight:700">'+sym+(parseFloat(p['Net Profit'])||0).toLocaleString()+'</td>'
       +'<td style="color:#185FA5;font-weight:700">'+(p['Deal %']||'?')+'</td>'
-      +'<td style="color:#d97706;font-weight:700">'+fmt(p['Commission'])+'</td>'
+      +'<td style="color:#d97706;font-weight:700">'+sym+(parseFloat(p['Commission'])||0).toLocaleString()+'</td>'
       +'<td style="font-size:10px;color:#6b7280">'+(p['Notes']||'--')+'</td>'
       +'<td><button class="btn-del" data-row="'+p._row+'" onclick="delPP(this)">Del</button></td>'
-    +'</tr>').join('');
+    +'</tr>';}).join('');
 }
 
 function renderMyEarnings(){
