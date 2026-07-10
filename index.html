@@ -965,7 +965,7 @@ function doLogout(){
 
 async function gRead(range){
   try{
-    const r=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(range)+'?key='+API_KEY);
+    const r=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(range)+'?key='+API_KEY+'&_ts='+Date.now(),{cache:'no-store'});
     if(!r.ok)return[];
     const d=await r.json();
     return d.values||[];
@@ -981,7 +981,7 @@ async function gReadExternal(sheetId,range){
   const cacheKey=sheetId+'|'+range;
   if(externalSheetCache[cacheKey]!==undefined)return externalSheetCache[cacheKey];
   try{
-    const r=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+sheetId+'/values/'+encodeURIComponent(range)+'?key='+API_KEY);
+    const r=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+sheetId+'/values/'+encodeURIComponent(range)+'?key='+API_KEY+'&_ts='+Date.now(),{cache:'no-store'});
     if(!r.ok){externalSheetCache[cacheKey]=null;return null;}
     const d=await r.json();
     const val=d.values||null;
