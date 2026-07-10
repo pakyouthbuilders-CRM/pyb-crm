@@ -965,7 +965,7 @@ function doLogout(){
 
 async function gRead(range){
   try{
-    const r=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(range)+'?key='+API_KEY+'&_ts='+Date.now(),{cache:'no-store'});
+    const r=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(range)+'?key='+API_KEY);
     if(!r.ok)return[];
     const d=await r.json();
     return d.values||[];
