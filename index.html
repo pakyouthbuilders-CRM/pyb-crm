@@ -1042,6 +1042,9 @@ function toObj(rows){
 async function loadAll(silent=false){
   try{
     if(!silent)showToast('Loading...','info');
+    // Clear live external-sheet caches so Sync always pulls fresh eBay profit-sheet data
+    Object.keys(externalSheetCache).forEach(k=>delete externalSheetCache[k]);
+    liveTargetData={};
     const[cr,pr,pgr,tm,tk,at,ud,tg,ta,pp,lt,lv]=await Promise.all([
       gRead('Clients!A:Q'),gRead('Payments!A:K'),gRead('Progress!A:M'),
       gRead('Team!A:K'),gRead('Tasks!A:M'),gRead('Attendance!A:H'),gRead('DailyUpdates!A:H'),
@@ -1060,7 +1063,13 @@ async function loadAll(silent=false){
     });
     populateSelects();
     if(currentUser){
-      if(currentUser.isAdmin){renderDashboard();renderMaster();renderPayments();renderProgress();renderTeam();renderTasks();renderAttendance();renderUpdates();}
+      if(currentUser.isAdmin){
+        renderDashboard();renderMaster();renderPayments();renderProgress();renderTeam();renderTasks();renderAttendance();renderUpdates();
+        const targetsActive=document.getElementById('sec-targets')&&document.getElementById('sec-targets').classList.contains('active');
+        const ebayActive=document.getElementById('sec-ebay')&&document.getElementById('sec-ebay').classList.contains('active');
+        if(targetsActive){renderTargets();loadLiveTargetData(allTargets).then(()=>renderTargets());}
+        if(ebayActive){loadLiveTargetData(allTargets.filter(t=>{const c=allClients.find(x=>x['ID']===t['Client ID']);return c&&c['Department']==='eBay';})).then(()=>renderDept('ebay'));}
+      }
       else renderMemberDashboard();
     }
     if(!silent)showToast('Data loaded!','success');
