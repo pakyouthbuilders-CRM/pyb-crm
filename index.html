@@ -981,13 +981,20 @@ async function gReadExternal(sheetId,range){
   const cacheKey=sheetId+'|'+range;
   if(externalSheetCache[cacheKey]!==undefined)return externalSheetCache[cacheKey];
   try{
-    const r=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+sheetId+'/values/'+encodeURIComponent(range)+'?key='+API_KEY+'&_ts='+Date.now(),{cache:'no-store'});
-    if(!r.ok){externalSheetCache[cacheKey]=null;return null;}
+    const url='https://sheets.googleapis.com/v4/spreadsheets/'+sheetId+'/values/'+encodeURIComponent(range)+'?key='+API_KEY+'&_ts='+Date.now();
+    const r=await fetch(url,{cache:'no-store'});
+    if(!r.ok){
+      const bodyText=await r.text().catch(()=>'(no body)');
+      console.error('[LiveTarget] FAILED sheetId='+sheetId+' range='+range+' status='+r.status+' body='+bodyText);
+      externalSheetCache[cacheKey]=null;
+      return null;
+    }
     const d=await r.json();
     const val=d.values||null;
+    if(!val)console.warn('[LiveTarget] No values returned for sheetId='+sheetId+' range='+range+' (tab/range may not exist) response='+JSON.stringify(d));
     externalSheetCache[cacheKey]=val;
     return val;
-  }catch(e){externalSheetCache[cacheKey]=null;return null;}
+  }catch(e){console.error('[LiveTarget] EXCEPTION sheetId='+sheetId+' range='+range+' error='+e.message);externalSheetCache[cacheKey]=null;return null;}
 }
 function abbrToFullMonth(label){
   const map={Jan:'January',Feb:'February',Mar:'March',Apr:'April',May:'May',Jun:'June',Jul:'July',Aug:'August',Sep:'September',Oct:'October',Nov:'November',Dec:'December'};
@@ -996,14 +1003,18 @@ function abbrToFullMonth(label){
   return(map[parts[0]]||parts[0])+' '+parts[1];
 }
 async function fetchLiveEbayData(client,monthLabel){
-  if(!client||client['Department']!=='eBay'||!client['Profit Sheet ID'])return null;
+  if(!client){console.warn('[LiveTarget] No client passed');return null;}
+  if(client['Department']!=='eBay'){console.warn('[LiveTarget] Skipped '+client['ID']+': not eBay department');return null;}
+  if(!client['Profit Sheet ID']){console.warn('[LiveTarget] Skipped '+client['ID']+': no Profit Sheet ID set on client profile');return null;}
   const tabName=abbrToFullMonth(monthLabel);
   const range="'"+tabName+"'!I1:N1";
+  console.log('[LiveTarget] Fetching '+client['ID']+' -> sheetId='+client['Profit Sheet ID']+' tab="'+tabName+'"');
   const rows=await gReadExternal(client['Profit Sheet ID'],range);
-  if(!rows||!rows[0])return null;
+  if(!rows||!rows[0]){console.warn('[LiveTarget] No row 1 data for '+client['ID']+' tab="'+tabName+'" -- check the tab name spelling exactly matches, and sheet is shared as Anyone with link - Viewer');return null;}
   const row=rows[0];
   const netSales=parseFloat((row[0]||'0').toString().replace(/[$,]/g,''))||0;
   const profit=parseFloat((row[5]||'0').toString().replace(/[$,]/g,''))||0;
+  console.log('[LiveTarget] SUCCESS '+client['ID']+' netSales='+netSales+' profit='+profit);
   return{netSales,profit};
 }
 async function loadLiveTargetData(targetsList){
