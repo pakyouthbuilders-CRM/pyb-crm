@@ -981,7 +981,7 @@ async function gReadExternal(sheetId,range){
   const cacheKey=sheetId+'|'+range;
   if(externalSheetCache[cacheKey]!==undefined)return externalSheetCache[cacheKey];
   try{
-    const url='https://sheets.googleapis.com/v4/spreadsheets/'+sheetId+'/values/'+encodeURIComponent(range)+'?key='+API_KEY+'&_ts='+Date.now();
+    const url='https://sheets.googleapis.com/v4/spreadsheets/'+sheetId+'/values/'+encodeURIComponent(range)+'?key='+API_KEY;
     const r=await fetch(url,{cache:'no-store'});
     if(!r.ok){
       const bodyText=await r.text().catch(()=>'(no body)');
